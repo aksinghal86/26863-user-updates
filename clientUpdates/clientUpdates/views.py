@@ -127,6 +127,7 @@ def update_pfas_result_view(request):
             pfas_result.filename = form.cleaned_data['filename']
             pfas_result.data_origin = "EHE Update Portal"
             pfas_result.updated_by_water_provider = True
+            pfas_result.detected = detected(pfas_result.result)
             
             # TODO: Unhash this when ready to make changes to database
             # saves to the database

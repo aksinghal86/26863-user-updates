@@ -142,6 +142,14 @@ def get_max_annuals_by_year(combined_annuals):
             max_annuals_by_year[year] = record
     return list(max_annuals_by_year.values())
 
+def detected(result):
+    if result != 0:
+        return True
+    else:
+        return False
+
+
+
 
 
 # def upload_to_dropbox(file, pwsid):
