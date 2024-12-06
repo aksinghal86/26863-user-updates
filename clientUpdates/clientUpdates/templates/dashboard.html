@@ -2,48 +2,55 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h3>Sources</h3>
+    <p>
+        The following sources were filed on your behalf with the Office of the Claims Administrator for the Phase 1 3M and DuPont claims. Please review the sources and update the data as needed. If you have a source that is not listed here and you would like to either add that source or would like to get advice on whether a new source should be added, please reach out to EH&E immediately. 
+    </p>
+    <p>
+        For each source listed below, please review the following information by clicking on the <i class="bi bi-eye-fill"></i> icon: 
+        <ul>
+            <li><b>PFAS results: </b>If you have a higher PFAS result than what was reported for Phase 1 3M and DuPont claims, please update the result and provide us with a corresponding lab report. If a previously unimpacted source now has PFAS detections, please proceed to the source page, provide PFAS results and max flow rate and annual production.</li>
+            <li><b>Max Flow Rate: </b>This is unlikely to change but if you have a document that shows a higher max flow rate, please  update this value.</li>
+            <li><b>Annual Production: </b>For each impacted source below, i.e., sources with a Source Status of PFAS detected in the table below, please provide annual production for 2023. If the source is unimpacted, annual production is not needed at this time.</li>
+        </ul>
+    </p>
+    <p>
+        If you have no updates or corrections to make, no action is needed on your behalf at this time. EH&E or your legal team will be in contact once the Tyco and BASF claims are ready to be submitted with the Office of the Claims Administrator. 
+    </p>
+    <div class="container">
+        <h4>Sources</h4>
 
-    <table id="sourcesTable" class="table table-hover table-bordered">
-        <thead class="table-light">
-            <tr>
-                <!-- <th scope="col" style="width:5%;">#</th> -->
-                <th scope="col">Source Name</th>
-                <th scope="col" class="text-center" style="width:20%;">Source Type</th>
-                <th scope="col" class="text-center" style="width:18%;">Source Status</th>
-                <th scope="col" class="text-center" style="width:12%;">View Details</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for source in sources %}
-            <tr class="{% if source.all_nds %}unimpacted-row{% else %}impacted-row{% endif %}">
-                <!-- <th scope="row">{{ forloop.counter }}</th> -->
-                <td>{{ source.source_name }}</td>
-                <td class="text-center">{{ source.source_type }}</td>
-                <td class = "text-center">{% if source.all_nds %} Unimpacted {% else %} PFAS detected {% endif %}</td>
-                <td class="text-center">
-                    <a href="{% url 'source-detail' pwsid=source.pwsid source_name=source.source_name %}" 
-                        class="text-decoration-none" 
-                        style="color:inherit;">
-                        <i class="bi bi-eye-fill"></i>
-                    </a>
-                </td>
-            </tr>
-                
-            {% endfor %}
-        </tbody>
-    </table>
+        <table id="sourcesTable" class="table table-hover table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <!-- <th scope="col" style="width:5%;">#</th> -->
+                    <th scope="col">Source Name</th>
+                    <th scope="col" class="text-center" style="width:20%;">Source Type</th>
+                    <th scope="col" class="text-center" style="width:18%;">Source Status</th>
+                    <th scope="col" class="text-center" style="width:12%;">View Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for source in sources %}
+                <tr class="{% if source.all_nds %}unimpacted-row{% else %}impacted-row{% endif %}">
+                    <!-- <th scope="row">{{ forloop.counter }}</th> -->
+                    <td>{{ source.source_name }}</td>
+                    <td class="text-center">{{ source.source_type }}</td>
+                    <td class = "text-center">{% if source.all_nds %} Unimpacted {% else %} PFAS detected {% endif %}</td>
+                    <td class="text-center">
+                        <a href="{% url 'source-detail' pwsid=source.pwsid source_name=source.source_name %}" 
+                            class="text-decoration-none" 
+                            style="color:inherit;">
+                            <i class="bi bi-eye-fill"></i>
+                        </a>
+                    </td>
+                </tr>
+                    
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
 </div>    
-
-
-<style>
-    .impacted-row {
-        background-color: #e5e5e5; /* Subtle background to make it stand out slightly */
-    }
-    .unimpacted-row {
-        opacity: 0.8; /* Slight transparency to give a more subdued look */
-    }
-</style>
 
 
 <script>

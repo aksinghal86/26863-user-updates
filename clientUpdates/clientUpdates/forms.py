@@ -3,11 +3,25 @@ from django.utils import timezone
 from .models import FlowRate, PfasResult
 
 class MaxFlowRateUpdateForm(forms.ModelForm):
+    """
+    Form for updating Max Flow Rate. 
+    """
     class Meta:
         model = FlowRate
-        fields = ['flow_rate', 'unit']
+        fields = [
+            'flow_rate', 
+            'unit', 
+            'filename',
+            'comments'
+        ]
+        
+    def clean_filename(self):
+        filename = self.cleaned_data.get('filename')
+        if not filename:
+            raise forms.ValidationError("A file is required.")
+        return filename
 
-class AnnualProductionForm(forms.Form):
+class AnnualProductionForm(forms.ModelForm):
     """
     Form for updating Annual production. 
     """
@@ -17,7 +31,8 @@ class AnnualProductionForm(forms.Form):
             'year',
             'flow_rate',
             'unit',
-            'filename'
+            'filename',
+            'comments'
         ]
     
     def clean_flow_rate(self):
@@ -49,7 +64,8 @@ class PfasResultUpdateForm(forms.ModelForm):
             'lab',
             'analysis_method',
             'lab_sample_id', 
-            'filename'
+            'filename',
+            'comments'
         ]
 
         widgets = {

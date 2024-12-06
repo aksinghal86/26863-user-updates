@@ -1,0 +1,171 @@
+.login-container {
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-container .form-control {
+    padding: 10px;
+    font-size: 1rem;
+}
+
+.login-container .button {
+    margin-top: 10px;
+    padding: 10px;
+    font-size: 1rem;
+}
+
+body {
+    font-family: 'Helvetica', sans-serif; 
+    background-color: #f9fafb; /* Light gray background */
+    /* background-color: #f8f9fa;  */
+    color: #333; /* Darker gray for text */
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.navbar {
+    background-color: #ffffff; /* White background */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* top: 0; */
+    /* z-index: 1030; Ensures the navbar stays above other content */
+}
+
+.navbar .navbar-brand, .navbar-nav .nav-link {
+    color: #333; /* Dark gray */
+    font-weight: 500; /* Slightly bold for emphasis */
+    /* text-transform: uppercase; */
+}
+
+.navbar .nav-link:hover {
+    color: #0056b3;; 
+}
+
+/* Behavior for dashboard table */
+.table .impacted-row  {
+    opacity: 1;
+}
+
+.table .unimpacted-row {
+
+    opacity: 0.8; /* Slight transparency to give a more subdued look */
+}
+
+.container {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    max-width: 1250px; /* Limit max-width to keep it centered and neat */
+}
+
+h2 {
+    color: #333; /* Darker color for headings */
+    font-weight: 600; /* Slightly bolder */
+    border-bottom: 2px solid #eaeaea; /* Subtle separator line */
+    padding-bottom: 5px;
+    margin-top: 20px;
+}
+
+h3 {
+    color: #333; /* Darker color for headings */
+    font-weight: 400; /* Slightly bolder */
+    border-bottom: 2px solid #eaeaea; /* Subtle separator line */
+    padding-bottom: 5px;
+    margin-top: 20px;
+}
+
+h4 {
+    color: #333; /* Darker color for headings */
+    font-weight: 300; /* Slightly bolder */
+    border-bottom: 2px solid #eaeaea; /* Subtle separator line */
+    padding-bottom: 5px;
+    margin-top: 20px;
+}
+
+/* Cards styling */
+.card {
+    background-color: #ffffff; /* White card background */
+    border: none; /* Remove borders for a cleaner look */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); /* Light shadow for depth */
+    margin-bottom: 20px; /* Add spacing between cards */
+    padding: 5px;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.main-content {
+    flex: 1;
+    padding: 20px 100px; 
+}
+
+footer {
+    bottom: 0;
+    background-color: #ffffff;
+    width: 100%;
+    padding: 5px 0;
+    margin-top: auto;
+    font-size: 0.9em;
+    border-top: 1px solid #eaeaea;
+}
+
+footer a {
+    color: inherit;
+    text-decoration: underline;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+button, .btn {
+    border-radius: 6px; /* Rounded corners */
+    cursor: pointer;
+    margin: 0;
+    transition: background-color 0.3s ease;
+}
+
+
+
+/* Input fields styling */
+.form-control {
+    border: 1px solid #e0e0e0; /* Soft border */
+    border-radius: 6px; /* Rounded corners */
+    box-shadow: none;
+}
+
+/* Table styling */
+table {
+    width: 100%;
+    table-layout: auto;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+td.actions th.actions {
+    width: 50px;
+    text-align: center;
+}
+
+table th, table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #eaeaea; /* Soft border between rows */
+}
+
+/* Modal styling */
+.modal-content {
+    border-radius: 8px; /* Rounded corners */
+    padding: 15px;
+}
+
+.modal-header, .modal-footer {
+    border: none; /* Remove borders for cleaner look */
+}

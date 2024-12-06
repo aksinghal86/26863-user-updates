@@ -20,16 +20,31 @@
           <div class="mb-3">
             <label for="pfasResultAnalyteInput" class="form-label">Analyte</label>
             <select class="form-control" id="pfasResultAnalyteInput" name="analyte" required>
-              <option value="" disabled selected>Select the analyte</option>
-              <option value="PFOA">PFOA</option>
               <option value="PFOS">PFOS</option>
-              <option value="PFBA">PFBA</option>
+              <option value="PFOA">PFOA</option>
               <option value="PFBS">PFBS</option>
-              <option value="PFHxA">PFHxA</option>
+              <option value="PFBA">PFBA</option>
+              <option value="PFPeS">PFPeS</option>
+              <option value="PFPeA">PFPeA</option>
               <option value="PFHxS">PFHxS</option>
+              <option value="PFHxA">PFHxA</option>
+              <option value="PFHpS">PFHpS</option>
+              <option value="PFHpA">PFHpA</option>
               <option value="PFNA">PFNA</option>
               <option value="PFDA">PFDA</option>
+              <option value="PFUnA">PFUnA</option>
               <option value="GenX">GenX/HFPO-DA</option>
+              <option value="PFDoA">PFDoA</option>
+              <option value="11Cl-PF3OUdS">11Cl-PF3OUdS</option>
+              <option value="8:2FTS">8:2FTS</option>
+              <option value="6:2FTS">6:2FTS</option>
+              <option value="NFDHA">NFDHA</option>
+              <option value="PFEESA">PFEESA</option>
+              <option value="PFMPA">PFMPA</option>
+              <option value="NEtFOSAA">NEtFOSAA</option>
+              <option value="NMeFOSAA">NMeFOSAA</option>
+              <option value="PFTA">PFTA</option>
+              <option value="PFTrDA">PFTrDA</option>
             </select>
             <div class="invalid-feedback" id="analyte-error"></div>
           </div>
@@ -73,10 +88,17 @@
               <label for="pfasLabName" class="form-label">Lab</label>
               <select class="form-control" id="pfaLabName" name="lab" required>
                 <option value="" disabled selected>Select analytical lab</option>
-                <option value="Eurofins">Eurofins</option>
-                <option value="Pace Analytical">Pace Analytical</option>
-                <option value="Enthalpy">Enthalpy</option>
+                <option value="Alpha Analytical">Alpha Analytical</option>
+                <option value="ALS Environmental">ALS Environmental</option>
+                <option value="Anatek">Anatek Labs</option>
                 <option value="Babcock">Babcock</option>
+                <option value="BSK Associates">BSK Associates</option>
+                <option value="Eurofins">Eurofins</option>
+                <option value="Enthalpy Analytical">Enthalpy Analytical</option>
+                <option value="Pace Analytical">Pace Analytical</option>
+                <option value="SGS">SGS North America</option>
+                <option value="Suburban">Suburban Labs</option>
+                <option value="Weck">Weck Laboratories</option>
                 <option value="Other">Other</option>
               </select>
               <div class="invalid-feedback" id="lab-name-error"></div>
@@ -90,6 +112,8 @@
                 <option value="537 (Mod)">Method 537 (Modified)</option>
                 <option value="533">Method 533</option>
                 <option value="537.1 + 533">Methods 537.1 + 533</option>
+                <option value="1644">Method 1644</option>
+                <option value="Other">Other</option>
               </select>
               <div class="invalid-feedback" id="analysis-method-error"></div>
             </div>
@@ -106,9 +130,16 @@
           <div class="mb-3">
             <label for="pfasFileUpload" class="form-label">Upload lab report showing this result</label>
             <input type="file" class="form-control" id="pfasFileUpload" name="filename" accept=".pdf, .jpg, .jpeg, .png" required>
+            <small class="text-muted">Supported file types: .pdf, .jpg, .jpeg, .png</small>
             <div class="invalid-feedback" id="file-upload-error"></div>
           </div>
 
+          <!-- Comment -->
+          <div class="mb-3">
+            <label for="comments" class="form-label">Comment</label>
+            <textarea class="form-control" id="comments" name="comments" rows="4" placeholder="Enter your comments here"></textarea>
+          </div>
+          
           <button type="submit" class="btn btn-outline-success" id="submit-button">Save changes</button>
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
         </form>
@@ -127,13 +158,16 @@
     const analysisDateInput = document.getElementById('pfasAnalysisDateInput');
     const analyteInput = document.getElementById('pfasResultAnalyteInput'); // Added analyte input reference
     const submitButton = document.getElementById('submit-button');
+    const fileInput = document.getElementById('pfasFileUpload');
+    const maxFileSizeBytes = 25 * 1024 * 1024 // Max file size: 25 MB
+
     let currentResult = 0;
 
     form.onsubmit = function (event) {
       let valid = true;
 
       // When the form is submitted, the analyteInput field should not be disabled so it can
-      // pass the analyte value to the view. Keeping it disabled will pass an empty string.
+      // pass the anlayte value to the view. Keeping it disabled will pass an empty string.
       analyteInput.disabled = false;
 
       // Clear previous errors
@@ -180,22 +214,27 @@
         document.getElementById('analysis-date-error').innerHTML = "Analysis date cannot be in the future.";
       }
 
-      // Validate file type
-      const fileInput = document.getElementById('pfasFileUpload');
+      // Validate file type and size
+      
       const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
       const fileName = fileInput.value;
       const fileExtension = fileName.split('.').pop().toLowerCase();
+      const file = fileInput.files[0];
 
       if (!allowedExtensions.includes(fileExtension)) {
         valid = false;
         fileInput.classList.add('is-invalid');
         document.getElementById('file-upload-error').innerHTML = "Lab report must be a pdf or an image file.";
+      } else if (file && file.size > maxFileSizeBytes) {
+        valid = false;
+        fileInput.classList.add('is-invalid');
+        document.getElementById('file-upload-error').innerHTML = "File size must not exceed 25 MB.";
       }
 
       // Prevent form submission if invalid
       if (!valid) {
-        // switch analyteInput back to true so this field does not become enabled when a user has a failed submission.
-        analyteInput.disabled = true;
+        // switch analyteInput back to true so this field does not become enabled when a user has a failed submission
+        analyteInput.disabled = true
         event.preventDefault();
       }
     };
@@ -206,7 +245,6 @@
       var button = event.relatedTarget;
 
       // Extract data from data-* attributes (these attributes are from the Update button in the source_detail.html page)
-      var rowNames = button.getAttribute('data-row-names') || 0;
       var analyte = button.getAttribute('data-analyte');
       var pfasResultAttribute = button.getAttribute('data-pfas-result');
       var pfasResult = pfasResultAttribute && !isNaN(pfasResultAttribute) ? parseFloat(pfasResultAttribute) : 0;

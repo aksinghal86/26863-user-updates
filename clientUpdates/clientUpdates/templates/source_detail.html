@@ -9,6 +9,9 @@
         <div class="card-body">
             <div id="pfas-results-section">
                 <h4>PFAS Results</h4>
+                <p>
+                    The following PFAS results were provided to the Office of the Claims Administrator for {{ source.source_name }} for the Phase 1 3M and DuPont claim. Please update the result(s) if you have a higher result than shown below. 
+                </p>
                 <table class="table">
                     <thead>
                         <tr>
@@ -38,127 +41,132 @@
                     </tbody>
                 </table>
                 
-                <em><b>Important note</b></em>
-                {% if not source.all_nds %}
-                    <p>
-                        You may only see PFOA and PFOS concentrations above even though you have provided concentrations for other PFAS. This is intentional.
-                    </p>
-                    <p>
-                        Concentration of another PFAS is only necessary for <em>{{ source.source_name }}</em> if the concentration of that PFAS 
-                        exceeds {{ max_other_threshold }} ppt. Otherwise, concentrations for other PFAS are not necessary because of the way the Settlements formulae
-                        are set up for calculating recovery. 
-                    </p>
-                    <p>
-                        If you have a lab report that shows that the concentration for <b>PFAS other than PFOA and PFOS is greater than {{ max_other_threshold }} ppt,</b>
-                        then please use the button below to provide results. 
-                    </p>
-                {% else %}
-                    <p>
-                        For the 3M and DuPont claim that was filed on your behalf, you indicated that this source has not had a PFAS detection 
-                        and hence is unimpacted. 
-                    </p>
-                    <p>
-                        If you have had PFOA or PFOS detections since please update them above. If you have had detections 
-                        for other PFAS, please do so using the button below. 
-                    </p>
-                {% endif %}
-                <div class="text-center">
-                    <button type="button" class="btn btn-sm btn-outline-dark" data-bs-toggle="modal" data-bs-target="#updatePfasResultModal">
-                        Provide lab results for other PFAS
-                    </button>
+                <div>
+                    <em><b>Important note</b></em>
+                    {% if impacted %}
+                    <div id="unimpacted-pfas-text">
+                        <p>
+                            You may only see PFOA and PFOS concentrations above even though you have provided concentrations for other PFAS. This is intentional.
+                        </p>
+                        <p>
+                            Concentration of another PFAS is only necessary for <em>{{ source.source_name }}</em> if the concentration of that PFAS 
+                            exceeds {{ max_other_threshold }} ppt. Otherwise, concentrations for other PFAS are not necessary because of the way the Settlements formulae
+                            are set up for calculating recovery. 
+                        </p>
+                        <p>
+                            If you have a lab report that shows that the concentration for <b>PFAS other than PFOA and PFOS is greater than {{ max_other_threshold }} ppt,</b>
+                            then please use the button below to provide results. 
+                        </p>
+                    </div>
+                    {% else %}
+                    <div id="impacted-pfas-text">
+                        <p>
+                            For the 3M and DuPont claim that was filed on your behalf, you indicated that this source has not had a PFAS detection 
+                            and hence is unimpacted. 
+                        </p>
+                        <p>
+                            If you have had PFOA or PFOS detections since please update them above. If you have had detections 
+                            for other PFAS, please do so using the button below. 
+                        </p>
+                    </div>
+                    {% endif %}
+                    <div id="other-pfas-button" class="text-center">
+                        <button type="button" class="btn btn-sm btn-outline-dark" data-bs-toggle="modal" data-bs-target="#updatePfasResultModal">
+                            Provide lab results for other PFAS
+                        </button>
+                    </div>
+                    {% include 'modals/update_pfas_result_modal.html' %}
                 </div>
-                {% include 'modals/update_pfas_result_modal.html' %}
             </div> 
         </div> 
     </div> 
 
-    {% if not source.all_nds %}
-        <div class="card">
-            <div class="card-body">
-                <div id="max-flow-rate-section">
-                    <h4>Maximum Flow Rate</h4>
-                    <table class="table">
-                        <thead>
+    {% if impacted %}
+    <div class="card">
+        <div class="card-body">
+            <div id="max-flow-rate-section">
+                <h4>Maximum Flow Rate</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Flow Rate</th>
+                            <th>Unit</th>
+                            <th class="actions-col text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ max_flow_rate.flow_rate|floatformat:0|intcomma }}</td>
+                            <td>{{ max_flow_rate.unit|upper }}</td>
+                            <td class="actions-col text-center">
+                                <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#updateMaxFlowRateModal" 
+                                        data-row-names="{{ max_flow_rate.row_names }}" data-flow-rate="{{ max_flow_rate.flow_rate }}" data-unit="{{ max_flow_rate.unit }}" data-source-name="{{ max_flow_rate.source_name }}">
+                                    Update
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                {% include 'modals/update_max_flow_rate_modal.html' %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <div id="annual-production-section">
+                <h4>Annual Production</h4>
+                <p>
+                    Only the three highest years of annual production are needed. If the annual production for this source for 2023 is higher
+                    than other years, please provide the annual production for 2023. Otherwise, it is not needed but you may update it if you want to. 
+                </p>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Flow Rate</th>
+                            <th>Unit</th>
+                            <th class="actions-col text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for annual in annuals %}
                             <tr>
-                                <th>Flow Rate</th>
-                                <th>Unit</th>
-                                <th class="actions-col text-center">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>{{ max_flow_rate.flow_rate|floatformat:0|intcomma }}</td>
-                                <td>{{ max_flow_rate.unit|upper }}</td>
+                                <td>{{ annual.year|stringformat:'d' }}</td>
+                                <td>{{ annual.flow_rate|floatformat:0|intcomma }}</td>
+                                <td>{{ annual.unit|upper }}</td>
+                                
                                 <td class="actions-col text-center">
-                                    <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#updateMaxFlowRateModal" 
-                                            data-row-names="{{ max_flow_rate.row_names }}" data-flow-rate="{{ max_flow_rate.flow_rate }}" data-unit="{{ max_flow_rate.unit }}" data-source-name="{{ max_flow_rate.source_name }}">
-                                        Update
-                                    </button>
+                                    {% if source.all_nds or annual.year == 2023 %}
+                                        <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#addOrUpdateAnnualModal"
+                                                data-source-name="{{ source.source_name }}" data-year="{{ annual.year }}">
+                                            Update
+                                        </button>
+                                    {% else %}
+                                        <div class='text-center'>--</div>
+                                    {% endif %}
                                 </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    {% include 'modals/update_max_flow_rate_modal.html' %}
-                </div>
+                                
+                            </tr>        
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% include 'modals/update_annual_production_modal.html' %}
             </div>
         </div>
-        
-        <div class="card">
-            <div class="card-body">
-                <div id="annual-production-section">
-                    <h4>Annual Production</h4>
-                    <p>
-                        Only the three highest years of annual production are needed. If the annual production for this source for 2023 is higher
-                        than other years, please provide the annual production for 2023. Otherwise, it is not needed but you may update it if you want to. 
-                    </p>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Year</th>
-                                <th>Flow Rate</th>
-                                <th>Unit</th>
-                                <th class="actions-col text-center">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for annual in annuals %}
-                                <tr>
-                                    <td>{{ annual.year|stringformat:'d' }}</td>
-                                    <td>{{ annual.flow_rate|floatformat:0|intcomma }}</td>
-                                    <td>{{ annual.unit|upper }}</td>
-                                    
-                                    <td class="actions-col text-center">
-                                        {% if source.all_nds or annual.year == 2023 %}
-                                            <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#addOrUpdateAnnualModal"
-                                                    data-source-name="{{ source.source_name }}" data-year="{{ annual.year }}">
-                                                Update
-                                            </button>
-                                        {% else %}
-                                            <div class='text-center'>--</div>
-                                        {% endif %}
-                                    </td>
-                                    
-                                </tr>        
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    {% include 'modals/update_annual_production_modal.html' %}
-                </div>
-            </div>
-        </div>
+    </div>
 
     {% else %}
-        <div class="card">
-            <div class="card-body">
-                <h4>Maximum Flow Rates and Annual Production</h4>
-                <p>Since PFAS have not been detected at this source, annual production and maximum flow rates are not needed.</p>
-                <p>
-                    If PFAS have been detected, please update the PFAS results above. Doing so will allow you to enter the annual production 
-                    and maximum flow rates. 
-                </p>
-            </div>
+    <div class="card">
+        <div class="card-body">
+            <h4>Maximum Flow Rates and Annual Production</h4>
+            <p>Since PFAS have not been detected at this source, annual production and maximum flow rates are not needed.</p>
+            <p>
+                If PFAS have been detected, please update the PFAS results above. Doing so will allow you to enter the annual production 
+                and maximum flow rates. 
+            </p>
         </div>
-        
+    </div>
     {% endif %}
 </div>
 

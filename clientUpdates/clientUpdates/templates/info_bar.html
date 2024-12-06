@@ -1,0 +1,28 @@
+{% load humanize %}
+
+{% if user.is_authenticated %}
+    <div id="info-bar" class="container text-nowrap">
+        <div class="row">
+            <div class="col"><b>Claim ID: </b>{{ claim_pws.claim_number|stringformat:'d' }}</div>
+            <div class="col-6"><b>Water System Name: </b>{{ claim_pws.pws_name }}</div>
+            <div class="col"><b>Entity: </b>{{ pws.client_group }}</div>
+        </div>
+        <div class="row">
+            <div class="col"><b>PWSID: </b>{{ pws.pwsid }}</div>
+            <div class="col-6"><b>Law Firm: </b>{{ claim_pws.law_firm_3rd_party_representative }}</div>
+            <div class="col"><b>Last Login: </b>{{ user.last_login }}</div>
+            <!-- <div class="col"><b>3M + DuPont Phase: </b>{{ pws.phase }}</div>
+            <div class="col"><b>Tyco + BASF Phase: </b>{{ pws.phase_tb }}</div>     -->
+        </div>
+    </div>
+{% endif %}
+
+<style>
+    #info-bar {
+        background-color: #ffffff; /* White background */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        max-width: 1200px;
+        padding: 10px;
+        font-size: 14px;
+    }
+</style>

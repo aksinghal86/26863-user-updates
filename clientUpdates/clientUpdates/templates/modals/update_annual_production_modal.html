@@ -2,11 +2,11 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addOrUpdateModalLabel">Update Annual Production for 2023</h5>
+                <h5 class="modal-title" id="addOrUpdateModalLabel">Update Annual Production</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="updateAnnualProductionForm" method="post" action="{% url 'update-annual-production' %}">
+                <form id="updateAnnualProductionForm" method="post" action="/update-annual-production/" enctype="multipart/form-data">
                     {% csrf_token %}
                     <input type="hidden" name="pwsid" value="{{ source.pwsid }}">
                     <div class="mb-3">
@@ -24,8 +24,8 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="flowRateInput" class="form-label">Flow</label>
-                            <input type="number" class="form-control" id="flowRateInput" name="flow_rate" step="0.01" required>
-                            <div class="invalid-feedback" id="year-error"></div>
+                            <input type="number" class="form-control" id="flowRateInput" name="flow_rate" min="0" step="0.01" required>
+                            <div class="invalid-feedback" id="flow-rate-error"></div>
                         </div>
                         
                         <div class="col-md-6 mb-3">
@@ -42,14 +42,21 @@
                         </div>
                     </div>
                     
-                     <!-- File Upload -->
+                    <!-- File Upload -->
                     <div class="mb-3">
                         <label for="annualProductionFileUpload" class="form-label">Upload Annual Production File</label>
                         <input type="file" class="form-control" id="annualProductionFileUpload" name="filename" accept=".xls, .xlsx, .xlsm, .pdf, .jpg, .jpeg, .png" required>
+                        <small class="text-muted">Supported file types: .xls, .xlsx, .xlsm, .pdf, .jpg, .jpeg, .png</small>
                         <div class="invalid-feedback" id="file-upload-error"></div>
                     </div>
 
-                    <button type="submit" class="btn btn-outline-success">Save changes</button>
+                    <!-- Comment -->
+                    <div class="mb-3">
+                        <label for="comments" class="form-label">Comment</label>
+                        <textarea class="form-control" id="comments" name="comments" rows="4" placeholder="Enter your comments here"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-outline-success" id="submit-button">Save changes</button>
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
                 </form>
             </div>
@@ -60,36 +67,58 @@
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     var updateFlowRateModal = document.getElementById('addOrUpdateAnnualModal');
+    var form = document.getElementById('updateAnnualProductionForm');
+    var yearInput = document.getElementById('flowRateYear');
+    var fileInput = document.getElementById('annualProductionFileUpload');
+    const maxFileSizeBytes = 25 * 1024 * 1024 // Max file size: 25 MB
+    const submitButton = document.getElementById('submit-button');
+    var allowedExtensions = ['xls', 'xlsx', 'xlsm', 'pdf', 'jpg', 'jpeg', 'png'];
+
+    // When the modal is shown
     updateFlowRateModal.addEventListener('show.bs.modal', function (event) {
         // Button that triggered the modal
         var button = event.relatedTarget;
 
-        // Extract data from data-* attributes 
+        // Extract data from data-* attributes
         var year = parseInt(button.getAttribute('data-year'), 10); // Convert to integer
 
         // Set the year input value
-        var yearInput = document.getElementById('flowRateYear');
-        yearInput.value = year;
+        if (!isNaN(year)) {
+            yearInput.value = year;
+        } else {
+            yearInput.value = ''; // Default value if no valid year is provided
+        }
     });
-    
-    const form = document.getElementById('updateAnnualProductionForm');
+
+    // When the modal is hidden
+    updateFlowRateModal.addEventListener('hide.bs.modal', function () {
+        // Reset the form and clear validation errors
+        form.reset();
+        document.querySelectorAll('.invalid-feedback').forEach(el => el.innerHTML = '');
+        document.querySelectorAll('.form-control').forEach(el => el.classList.remove('is-invalid'));
+    });
+
+    // Form submission validation
     form.onsubmit = function (event) {
         let valid = true;
 
         // Clear previous errors
         document.querySelectorAll('.invalid-feedback').forEach(el => el.innerHTML = '');
-        document.querySelectorAll('.form-control').forEach(el => el.classList.remove('is-invalid'));  
-        
+        document.querySelectorAll('.form-control').forEach(el => el.classList.remove('is-invalid'));
+
         // Validate file type
-        const fileInput = document.getElementById('pfasFileUpload');
-        const allowedExtensions = ['.xls', '.xlsx', '.xlsm', '.pdf', '.jpg', '.jpeg', '.png'];
         const fileName = fileInput.value;
         const fileExtension = fileName.split('.').pop().toLowerCase();
+        const file = fileInput.files[0];
 
         if (!allowedExtensions.includes(fileExtension)) {
             valid = false;
             fileInput.classList.add('is-invalid');
-            document.getElementById('file-upload-error').innerHTML = "Annual production file must be a spreadsheet, pdf or an image file.";
+            document.getElementById('file-upload-error').innerHTML = "Annual production file must be a spreadsheet, pdf, or an image file.";
+        } else if (file && file.size > maxFileSizeBytes) {
+            valid = false;
+            fileInput.classList.add('is-invalid');
+            document.getElementById('file-upload-error').innerHTML = "File size must not exceed 25 MB.";
         }
 
         // Prevent form submission if invalid
@@ -97,9 +126,5 @@ document.addEventListener("DOMContentLoaded", function () {
             event.preventDefault();
         }
     };
-
-
-    
 });
-
 </script>

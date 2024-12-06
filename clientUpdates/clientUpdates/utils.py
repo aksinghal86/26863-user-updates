@@ -1,9 +1,109 @@
+import os
+
+import dropbox
+import logging
+import requests
 from itertools import chain
 from collections import defaultdict
 from django.core.files.storage import default_storage
 from django.http import JsonResponse
-import dropbox
+from django.utils import timezone
+from datetime import datetime, timedelta
 from django.conf import settings
+from django.contrib import messages
+from django.shortcuts import redirect
+from .models import Source
+logger = logging.getLogger('clientUpdates')
+
+def update_ehe_source_table():
+    """
+    The only changes that should ever me made are to EH&E's tables not claim tables (all prefixed with 'claim_')
+    When the water provider updates PFAS result(s), Max Flow Rate, or Annual Production, the following steps need to be taken:
+        - calculate new PFAS score for the source
+        - calculate new Adjusted Flow Rate (AFR) for the source using the highest max flow rate and three highest years of annual production (not including 2013)
+        - update the EHE source table accordingly. note that if PFAS result has been added for a previously unimpacted source, then all_nds needs to be changed to False
+        - calculate GFE per source
+    
+    In order to do so, the following needs to be done: 
+        - merge data from claim pfas results and claim flow rate tables with the corresponding EH&E tables to have the full data set of PFAS results and flow rates. 
+        - filter ehe tables by data_origin = "EHE Update Portal" and updated_by_water_provider = True
+        - ensure that have a) unique entry per year, per analyte and for max flow rate, and b) the highest value for each of those categories. 
+        PfasResult.get.object(pwsid=pwsid, source_name=source_name, analyte='PFOA').order_by(result_ppt, -1).first()
+        - find the max_other
+
+    """
+    return 
+
+def update_ehe_pws_table():
+    return
+
+def handle_update(request, form_class, extra_fields, impacted=None, calc_func=None, source_variable=None):
+    """
+    Handles common update logic for PFAS results, max flow rate, and annual production.
+    """
+    if request.method == 'POST':
+        pwsid = request.POST.get('pwsid')
+        source_name = request.POST.get('source_name')
+        form = form_class(request.POST, request.FILES)
+
+        if form.is_valid():
+            logger.debug("Received valid form data: %s", form.cleaned_data)
+
+            # Save form instance without committing immediately
+            instance = form.save(commit=False)
+
+            # Add shared fields
+            instance.pwsid = pwsid
+            instance.source_name = source_name
+            instance.submit_date = timezone.now()
+            instance.filename = form.cleaned_data.get('filename').name
+            instance.data_origin = "EHE Update Portal"
+            instance.updated_by_water_provider = True
+
+            # Add extra fields
+            for field, value in extra_fields.items():
+                setattr(instance, field, form.cleaned_data.get(value, value))
+
+            # Calculate additional fields if calc_func is provided
+            if calc_func:
+                calc_func(instance, form.cleaned_data)
+
+            # Add source variable if provided
+            if source_variable:
+                instance.source_variable = source_variable
+
+            try:
+                # TODO: Joe, please ensure this works for PFAS results, max flow rate, and annual production updates.
+                instance.save()
+                update_ehe_source_table()
+                update_ehe_pws_table()
+
+                filetype = 'Flow Rate' if source_variable else 'PFAS Results'
+                logger.info(f"{filetype} updated successfully for {source_name}.")
+                messages.success(request, f"{filetype} updated successfully.")
+
+                # Upload file to Dropbox
+                # TODO: Joe, pleae ensure that this works.
+                file = request.FILES.get('filename')
+                
+                if file:
+                    upload_to_dropbox(file, filetype, pwsid)
+
+                return redirect('source-detail', pwsid=pwsid, source_name=source_name)
+            except Exception as e:
+                logger.error("Error saving instance: %s", e)
+                messages.error(request, "Failed to save updates due to a system error.")
+                return redirect('source-detail', pwsid=pwsid, source_name=source_name)
+
+        else:
+            logger.error("Form validation failed with errors: %s", form.errors)
+            messages.error(request, "Form validation failed. Please correct the errors below.")
+            return redirect('source-detail', pwsid=pwsid, source_name=source_name)
+
+    messages.error(request, "Invalid request.")
+    return redirect('source-detail', pwsid=request.POST.get('pwsid'), source_name=request.POST.get('source_name'))
+
+
 
 def calc_ppt_result(result, unit):
     """ Returns results after converting from ppm, ppb, or ppt to ppt. """
@@ -38,6 +138,9 @@ def calc_gpm_flow_rate(flow_rate, unit):
 
 def get_max_entry(entries, key):
     """ Returns the entry with the maximum value for the given key. """
+    if not entries:
+        return None
+    
     return max(entries, key=lambda x: x[key], default=None)
 
 def get_combined_results(queryset_1, queryset_2, columns):
@@ -75,7 +178,7 @@ def add_pfoas_if_missing(pfas_results, pwsid, water_source_id, source_name):
 
 
 def get_max_other_threshold(pfas_results):
-    """ Finds the the threshold result for the maximum another analyte. """
+    """ Finds the threshold result for the maximum another analyte. """
     pfoa_result = next((result['result_ppt'] for result in pfas_results if result['analyte'] == 'PFOA'), 0)
     pfos_result = next((result['result_ppt'] for result in pfas_results if result['analyte'] == 'PFOS'), 0)
     return round((pfoa_result + pfos_result) ** 2, 1)
@@ -151,85 +254,112 @@ def detected(result):
 
 
 
+DROPBOX_TOKEN_URL = "https://api.dropbox.com/oauth2/token"
 
-# def upload_to_dropbox(file, pwsid):
-#     if not file: 
-#         return JsonResponse({'error': 'No file uploaded'}, status=400)
+def refresh_dropbox_access_token():
+    """
+    Refresh the Dropbox access token using the refresh token.
     
-#     # Save file to temporary location on server
-#     file_path = default_storage.save(f'temp/{file.name}', file)
+    Returns:
+        str: The new access token if successful, or None if failed.
+    """
+    try:
+        response = requests.post(
+            "https://api.dropbox.com/oauth2/token",
+            data={
+                'grant_type': 'refresh_token',
+                'refresh_token': settings.DROPBOX['refresh_token']
+                #'client_id': settings.DROPBOX['app_key'],
+                #'client_secret': settings.DROPBOX['app_secret']
+            },
+            auth=(settings.DROPBOX['app_key'], settings.DROPBOX['app_secret'])
+        )
+        response.raise_for_status()  # Fixed missing parentheses
+        token_data = response.json()
+
+        # Update access token in settings or database
+        settings.DROPBOX['access_token'] = token_data['access_token']
+        return token_data['access_token']
+    except requests.exceptions.RequestException as e:
+        print(f"Error refreshing Dropbox access token: {e}")
+        return None
+
+def ensure_dropbox_folder(dbx, folder_path):
+    """
+    Ensure the specified folder exists in Dropbox.
     
-#     # Dropbox Access Token (OAuth2 token, not refresh token)
-#     dropbox_access_token = settings.DROPBOX_OAUTH2_TOKEN
-    
-#     # Upload to Dropbox
-#     try:
-#         dbx = dropbox.Dropbox(dropbox_access_token)
-        
-#         # Check if the folder exists or create it
-#         folder_path = f"/PFAS results/{pwsid}"
-#         try:
-#             dbx.files_get_metadata(folder_path)
-#         except dropbox.exceptions.ApiError as e:
-#             if isinstance(e.error, dropbox.files.GetMetadataError):
-#                 dbx.files_create_folder_v2(folder_path)
+    Args:
+        dbx (dropbox.Dropbox): Authenticated Dropbox client.
+        folder_path (str): The folder path in Dropbox.
+    """
+    try:
+        dbx.files_get_metadata(folder_path)
+    except dropbox.exceptions.ApiError as e:
+        if isinstance(e.error, dropbox.files.GetMetadataError):
+            dbx.files_create_folder_v2(folder_path)
 
-#         # Upload the file
-#         with default_storage.open(file_path, 'rb') as f:
-#             dropbox_file_path = f"{folder_path}/{file.name}"
-#             dbx.files_upload(f.read(), dropbox_file_path, mode=dropbox.files.WriteMode.overwrite)
-
-#         return JsonResponse({'success': 'File uploaded to Dropbox successfully'})
-
-#     except Exception as e:
-#         print(f"Error occurred: {str(e)}")
-#         return JsonResponse({'error': str(e)}, status=500)
-
-
-def upload_to_dropbox(file, pwsid):
+def upload_to_dropbox(file, filetype, pwsid):
     """
     Upload a file to Dropbox under the specified folder.
     
     Args:
         file: The uploaded file object.
-        pwsid: A unique identifier for the folder in Dropbox.
+        filetype (str): Type of the file to organize folders (e.g., 'documents').
+        pwsid (str): A unique identifier for the folder in Dropbox.
     
     Returns:
         JsonResponse: A response indicating success or failure.
     """
     if not file:
         return JsonResponse({'error': 'No file uploaded'}, status=400)
-    
-    
-    dropbox_access_token = settings.DROPBOX_OAUTH2_TOKEN
+
+    # Get the current access token
+    dropbox_access_token = settings.DROPBOX['access_token']
     if not dropbox_access_token:
-        return JsonResponse({'error': 'Dropbox access token not configured'}, status=500)
-    
+        dropbox_access_token = refresh_dropbox_access_token()
+        if not dropbox_access_token:
+            return JsonResponse({'error': 'Failed to refresh Dropbox token'}, status=401)
+
     try:
         # Initialize Dropbox client
         dbx = dropbox.Dropbox(dropbox_access_token)
-        
-        # Define the folder and file paths in Dropbox
-        folder_path = f"/PFAS results/{pwsid}"
-        dropbox_file_path = f"{folder_path}/{file.name}"
-        
-        # Ensure the folder exists
-        try:
-            dbx.files_get_metadata(folder_path)
-        except dropbox.exceptions.ApiError as e:
-            if isinstance(e.error, dropbox.files.GetMetadataError):
-                dbx.files_create_folder_v2(folder_path)
-        
-        # Upload the file
-        dbx.files_upload(file.read(), dropbox_file_path, mode=dropbox.files.WriteMode.overwrite)
-        
-        # Return success response
-        return JsonResponse({'success': 'File uploaded to Dropbox successfully', 'path': dropbox_file_path})
 
+        # Define folder and file paths
+        folder_path = f"/uploads/{pwsid}/{filetype}"
+        dropbox_path = f"{folder_path}/{file.name}"
+
+        # Path for local upload
+        local_path = f"{pwsid}/{filetype}/{file.name}"
+
+        # Save locally
+        # TODO: Joe, might be a good idea to save locally temporarily and delete after 5 days. 
+        # safeguard against dropbox not working. 
+        # deleting after 5 days or so will help with storage issues if that becomes a problem. 
+
+        # if the file does not already exist, save to local storage.
+        if not os.path.exists(default_storage.path(local_path)):
+            default_storage.save(local_path, file)
+
+        # Ensure folder exists
+        ensure_dropbox_folder(dbx, folder_path)
+
+        # Upload the file
+        with file.open('rb') as f:
+            dbx.files_upload(f.read(), dropbox_path, mode=dropbox.files.WriteMode.overwrite)
+
+        # Return success response
+        logger.info(f"{file} uploaded to Dropbox under /uploads/{pwsid}/{filetype}/ successfully.")
+        return JsonResponse({'success': 'File uploaded to Dropbox successfully', 'path': dropbox_path})
     except dropbox.exceptions.AuthError:
-        return JsonResponse({'error': 'Invalid Dropbox access token'}, status=401)
+        # Refresh token and retry
+        dropbox_access_token = refresh_dropbox_access_token()
+        if dropbox_access_token:
+            dbx = dropbox.Dropbox(dropbox_access_token)
+            with file.open('rb') as f:
+                dbx.files_upload(f.read(), dropbox_path, mode=dropbox.files.WriteMode.overwrite)
+            return JsonResponse({'success': 'File uploaded to Dropbox successfully', 'path': dropbox_path})
+        return JsonResponse({'error': 'Dropbox authentication failed'}, status=401)
     except dropbox.exceptions.ApiError as e:
         return JsonResponse({'error': f'Dropbox API error: {str(e)}'}, status=500)
     except Exception as e:
         return JsonResponse({'error': f'Unexpected error: {str(e)}'}, status=500)
-

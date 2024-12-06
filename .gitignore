@@ -1,8 +1,19 @@
+# Ignore migrations 
 mirations/
 clientUpdates/migrations/
 clientUpdates/clientUpdates/migrations/
-clientUpdates/temp/
 
+# Ignore uploads
+clientUpdates/temp/
+clientUpdates/uploads/
+uploads/
+
+# ignore logs
+logs/
+*.log
+
+# Ignore static files
+staticfiles/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -161,4 +172,6 @@ uploads/
 
 # Static files
 staticfiles/
-static/
+.Rproj.user
+*.Rproj
+*.Rhistory

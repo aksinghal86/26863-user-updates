@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
-from .models import Pws, Source, PfasResult, FlowRate, ClaimPws, ClaimSource, ClaimFlowRate, ClaimPfasResult
+from .models import Pws, PfasResult, FlowRate, ClaimPws, ClaimSource, ClaimFlowRate, ClaimPfasResult
 from .forms import MaxFlowRateUpdateForm, AnnualProductionForm, PfasResultUpdateForm
 import logging
 # These are the custom functions in utils.py 
@@ -67,6 +67,8 @@ def source_detail_view(request, pwsid, source_name):
     pfas_results = add_pfoas_if_missing(max_pfas_results, source.pwsid, source.water_source_id, source.source_name)
     max_other_threshold = get_max_other_threshold(pfas_results)
     
+    impacted = True if not source.all_nds or updated_pfas_results else False
+
     #### Max Flow Rate ####
     columns_flow = ['pwsid', 'water_source_id', 'source_name', 'source_variable', 'year', 'flow_rate', 'unit', 'flow_rate_gpm', 'data_origin']
     claim_max_flow_rate = ClaimFlowRate.objects.filter(pwsid=source.pwsid, source_name=source_name, source_variable='VFR')
@@ -84,6 +86,7 @@ def source_detail_view(request, pwsid, source_name):
     # Prepare context for rendering
     context = {
         'source': source,
+        'impacted': impacted,
         'max_flow_rate': max_flow_rate,
         'annuals': annuals,
         'pfas_results': pfas_results,
@@ -92,151 +95,60 @@ def source_detail_view(request, pwsid, source_name):
 
     return render(request, 'source_detail.html', context)
 
-
-
 @login_required
 def update_pfas_result_view(request):
-    
-    if request.method == 'POST':
-        pwsid = request.POST.get('pwsid')
-        source_name = request.POST.get('source_name')
-        form = PfasResultUpdateForm(request.POST, request.FILES)
-        
-        if form.is_valid():
-            logger.debug("Received valid form data: %s", form.cleaned_data)
-            
-            # Save form instance without committing immediately
-            pfas_result = form.save(commit=False)
+    def calc_pfas_fields(instance, cleaned_data):
+        instance.result = float(cleaned_data['result'])
+        instance.unit = cleaned_data['unit']
+        instance.result_ppt = calc_ppt_result(instance.result, instance.unit)
 
-            pfas_result.pwsid = pwsid
-            pfas_result.source_name = source_name
-            pfas_result.sample_id = source_name
-            pfas_result.submit_date = timezone.now()
-            pfas_result.analyte = form.cleaned_data['analyte']
-            
-            # Calculate result in ppt based on unit and value provided
-            pfas_result.result = float(form.cleaned_data['result'])
-            pfas_result.unit = form.cleaned_data['unit']
-            pfas_result.result_ppt = calc_ppt_result(pfas_result.result, pfas_result.unit)
-
-            pfas_result.sampling_date = form.cleaned_data['sampling_date']
-            pfas_result.analysis_date = form.cleaned_data['analysis_date']
-            pfas_result.lab = form.cleaned_data['lab']
-            pfas_result.analysis_method = form.cleaned_data['analysis_method']
-            pfas_result.lab_sample_id = form.cleaned_data['lab_sample_id']
-            pfas_result.filename = form.cleaned_data['filename']
-            pfas_result.data_origin = "EHE Update Portal"
-            pfas_result.updated_by_water_provider = True
-            pfas_result.detected = detected(pfas_result.result)
-            
-            # TODO: Unhash this when ready to make changes to database
-            # saves to the database
-            pfas_result.save()
-
-            logger.info("Added or updated %s result of %s ppt for %s in the 'pfas-result' table.", 
-                        pfas_result.analyte, 
-                        pfas_result.result_ppt, 
-                        pfas_result.source_name)
-            
-            messages.success(request, 'PFAS result updated successfully.')
-
-            file = request.FILES.get('filename')
-            upload_to_dropbox(file, pwsid)
-
-            return redirect('source-detail', pwsid=pwsid, source_name=source_name)
-        else:
-            logger.error("Form validation failed with errors: %s", form.errors)
-            messages.error(request, "Form validation failed. Please correct the errors below.")
-            return redirect('source-detail', pwsid=pwsid, source_name=source_name)
-
-    # Handle GET request to render form with existing data
-    form = PfasResultUpdateForm(instance=pfas_result)
-    logger.debug("Rendering the form for PFAS result input")
-    messages.error(request, "Invalid request.")
-    return render(request, 'update_pfas_result_modal.html', {'form': form, 'pfas_result': pfas_result})
-
-
+    return handle_update(
+        request,
+        form_class=PfasResultUpdateForm,
+        extra_fields={
+            'analyte': 'analyte',
+            'sampling_date': 'sampling_date',
+            'analysis_date': 'analysis_date',
+            'lab': 'lab',
+            'analysis_method': 'analysis_method',
+            'lab_sample_id': 'lab_sample_id', 
+            'comments': 'comments'
+        },
+        calc_func=calc_pfas_fields,
+        source_variable=None
+    )
 
 @login_required
-def update_max_flow_rate_view(request, row_names):
-    max_flow_rate = get_object_or_404(ClaimFlowRate, row_names=row_names)
-    
-    if request.method == 'POST':
-        form = MaxFlowRateUpdateForm(request.POST)
-        if form.is_valid():
-            new_unit = form.cleaned_data['unit']
-            new_flow_rate = form.cleaned_data['flow_rate']
-            flow_rate_gpm = calc_gpm_flow_rate(new_flow_rate, new_unit)
+def update_max_flow_rate_view(request):
+    def calc_max_flow_rate_fields(instance, cleaned_data):
+        instance.flow_rate = cleaned_data['flow_rate']
+        instance.unit = cleaned_data['unit']
+        instance.flow_rate_gpm = calc_gpm_flow_rate(instance.flow_rate, instance.unit)
 
-            # Print/log the updates instead of saving during development phase
-            logger.info(f"Updating flow_rate_gpm for row {row_names}:")
-            logger.info(f"Old flow rate: {max_flow_rate.flow_rate} {max_flow_rate.unit}, New flow rate: {new_flow_rate} {new_unit}")
-
-            max_flow_rate.flow_rate = new_flow_rate
-            max_flow_rate.unit = new_unit
-            max_flow_rate.flow_rate_gpm = flow_rate_gpm
-            # max_flow_rate.save()
-            messages.success(request, f"Max flow rate updated successfully.")
-            return redirect('source-detail', pwsid=max_flow_rate.pwsid, source_name=max_flow_rate.source_name)
-    else:
-        form = MaxFlowRateUpdateForm(instance=max_flow_rate)
-
-    return redirect('source-detail', pwsid=max_flow_rate.pwsid, source_name=max_flow_rate.source_name)
-
-
-
+    return handle_update(
+        request,
+        form_class=MaxFlowRateUpdateForm,
+        extra_fields={
+            'comments': 'comments'
+        },
+        calc_func=calc_max_flow_rate_fields,
+        source_variable='VFR'
+    )
 
 @login_required
 def update_annual_production_view(request):
-    if request.method == 'POST':
-        pwsid = request.POST.get('pwsid')
-        source_name = request.POST.get('source_name')
-        form = AnnualProductionForm(request.POST)
-        
-        if form.is_valid():
-            logger.debug("Received valid form data: %s", form.cleaned_data)
+    def calc_annual_production_fields(instance, cleaned_data):
+        instance.flow_rate = cleaned_data['flow_rate']
+        instance.unit = cleaned_data['unit']
+        instance.flow_rate_gpm = calc_gpm_flow_rate(instance.flow_rate, instance.unit)
+        instance.year = cleaned_data['year']
 
-            # Save form instance without committing immediately
-            annual_production = form.save(commit=False)
-
-            annual_production.pwsid = pwsid
-            annual_production.source_name = source_name
-            annual_production.submit_date = timezone.now()
-            annual_production.year = form.cleaned_data['year']
-
-            # Calculate annual production in GPM based on unit and value provided
-            annual_production.flow_rate = form.cleaned_data['flow_rate']
-            annual_production.unit = form.cleaned_data['unit']
-            annual_production.flow_rate_gpm = calc_gpm_flow_rate(annual_production.flow_rate, annual_production.unit)
-
-            annual_production.source_variable = 'AFR'
-            annual_production.filename = form.cleaned_data['filename']
-            annual_production.data_origin = "EHE Update Portal"
-            annual_production.updated_by_water_provider = True
-
-            # TODO: Unhash this when ready to make changes to database
-            # annual_production.save()
-
-            logger.info("Added or updated %s annual production of %s GPM for %s in the 'flow-rate' table.", 
-                        annual_production.year, 
-                        annual_production.flow_rate_gpm, 
-                        annual_production.source_name)
-            
-            messages.success(request, f"Annual production updated successfully.")
-
-            # TODO: needs to be done. 
-            # file = request.FILES.get('filename')
-            # upload_to_dropbox(file, pwsid) 
-
-            return redirect('source-detail', pwsid=pwsid, source_name=source_name)
-        else:
-            # Log form errors if form validation fails
-            logger.error("Form validation failed with errors: %s", form.errors)
-            messages.error(request, "Form validation failed. Please correct the errors below.")
-            return redirect('source-detail', pwsid=pwsid, source_name=source_name)
-
-    # Handle GET request to render form with existing data
-    form = AnnualProductionForm(instance=annual_production)
-    logger.debug(f"Rendering the form for Annual Production input")
-    messages.error(request, "Invalid request.")
-    return render(request, 'updated_annual_production_modal.html', {'form': form, 'annual_production': annual_production})
+    return handle_update(
+        request,
+        form_class=AnnualProductionForm,
+        extra_fields={
+            'comments': 'comments'
+        },
+        calc_func=calc_annual_production_fields,
+        source_variable='AFR'
+    )
