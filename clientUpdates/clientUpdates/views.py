@@ -4,8 +4,11 @@ from django.utils import timezone
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
+from django.conf import settings
+from django.core.mail import EmailMessage
+from django.http import JsonResponse
 from .models import Pws, PfasResult, FlowRate, ClaimPws, ClaimSource, ClaimFlowRate, ClaimPfasResult
-from .forms import MaxFlowRateUpdateForm, AnnualProductionForm, PfasResultUpdateForm
+from .forms import MaxFlowRateUpdateForm, AnnualProductionForm, PfasResultUpdateForm, ContactForm
 import logging
 # These are the custom functions in utils.py 
 from .utils import *
@@ -152,3 +155,41 @@ def update_annual_production_view(request):
         calc_func=calc_annual_production_fields,
         source_variable='AFR'
     )
+
+@login_required
+def contact_view(request):
+    pwsid = request.user.username
+    recipients = settings.EMAIL_RECIPIENTS
+    
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            email = form.cleaned_data['email']
+            subject = form.cleaned_data['subject']
+            message = form.cleaned_data['message']
+            full_message = f"From: {name}\n\n{message}"
+
+            email_message = EmailMessage(
+                subject=f"{subject} (from {pwsid})",
+                body=full_message,
+                from_email=settings.EMAIL_HOST_USER,  
+                to=recipients,
+                reply_to=[email], 
+            )
+            email_message.send(fail_silently=False)
+
+            # Return a JSON response for AJAX
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'message': 'Email sent successfully.'})
+
+            return render(request, 'dashboard.html')
+        
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'error': 'Invalid form submission'}, status=400)
+        
+    else:
+        form = ContactForm()
+    
+    return render(request, 'contact.html', {'form': form})

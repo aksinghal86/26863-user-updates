@@ -32,6 +32,7 @@ body {
 
 .navbar {
     background-color: #ffffff; /* White background */
+    padding: 15px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     /* top: 0; */
     /* z-index: 1030; Ensures the navbar stays above other content */

@@ -108,3 +108,10 @@ class PfasResultUpdateForm(forms.ModelForm):
         if not filename:
             raise forms.ValidationError("A file is required.")
         return filename
+
+class ContactForm(forms.Form):
+    name = forms.CharField(max_length=100, required=True, label="Your Name")
+    email = forms.EmailField(required=True, label="Your Email")
+    subject = forms.CharField(max_length=150, required=True, label="Subject")
+    message = forms.CharField(widget=forms.Textarea, required=True, label="Message")
+    

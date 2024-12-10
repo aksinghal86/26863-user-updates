@@ -1,3 +1,6 @@
+# ignore settings
+clientUpdates/settings.py
+
 # Ignore migrations 
 mirations/
 clientUpdates/migrations/
