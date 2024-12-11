@@ -145,14 +145,6 @@ def handle_update(request, form_class, extra_fields, impacted=None, calc_func=No
 
             try:
 
-                print(type(instance))
-
-                if isinstance(instance, PfasResult):
-                    print("success")
-
-                data = list(PfasResult.objects.all().values())
-                df = pd.DataFrame(data)
-
                 # TODO: Joe, please ensure this works for PFAS results, max flow rate, and annual production updates.
                 instance.save()
                 update_ehe_source_table(instance)
@@ -330,8 +322,6 @@ def detected(result):
         return True
     else:
         return False
-
-
 
 
 DROPBOX_TOKEN_URL = "https://api.dropbox.com/oauth2/token"
