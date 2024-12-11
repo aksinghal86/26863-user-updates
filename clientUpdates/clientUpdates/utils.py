@@ -3,6 +3,7 @@ import os
 import dropbox
 import logging
 import requests
+import pandas as pd
 from itertools import chain
 from collections import defaultdict
 from django.core.files.storage import default_storage
@@ -12,10 +13,10 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib import messages
 from django.shortcuts import redirect
-from .models import Source
+from .models import PfasResult, Source, ClaimSource
 logger = logging.getLogger('clientUpdates')
 
-def update_ehe_source_table():
+def update_ehe_source_table(instance):
     """
     The only changes that should ever me made are to EH&E's tables not claim tables (all prefixed with 'claim_')
     When the water provider updates PFAS result(s), Max Flow Rate, or Annual Production, the following steps need to be taken:
@@ -32,9 +33,79 @@ def update_ehe_source_table():
         - find the max_other
 
     """
+
+    # if the instance being passed is a PfasResult model...
+    if isinstance(instance, PfasResult):
+
+        # get instance characteristics
+        pwsid = instance.pwsid
+        source_name = instance.source_name
+
+        # get ehe source dataframe
+        ehe_source = list(Source.objects.filter(pwsid=pwsid, source_name=source_name).values())
+        ehe_source = pd.DataFrame(ehe_source)
+
+
+        # if the ehe_source table, when filtered to the pwsid & source_name, is empty...
+        if ehe_source.empty:
+
+            # if a pfas result is being updated, then this implies that the source is impacted.
+            new_ehe_source = Source(pwsid=pwsid, source_name=source_name, all_nds=False)
+            # save this instance to the ehe source table
+            new_ehe_source.save()
+
+            print("ehe_source updated")
+
+        # otherwise, the source already exists in the ehe_source dataframe, and we can make sure that
+        # the all_nds field is False for this source (again it is implied that if the source is in the ehe source
+        # table, and there is an update to the pfas results, it is because the source is impacted).
+        else:
+            ehe_source["all_nds"] = False
+
+
+
+    #data = list(PfasResult.objects.all().values())
+    # = pd.DataFrame(data)
+    print("debug")
+
+
     return 
 
-def update_ehe_pws_table():
+def update_ehe_pws_table(instance):
+
+
+
+    # function in R to update claim amount??:
+    """calculate_defendant_amt < - function(afr, pfas_score, defendant)
+    {
+    if (defendant % in%c("3M", "Dupont")) {
+    if (defendant == "3M")
+    {
+        mult < -  pfas_score * 3.8357733278 + 1316.4938775985
+    exp < -  pfas_score * -0.0000019989 + 0.7182915632
+    } else if (defendant == "Dupont") {
+    mult < -  pfas_score * 0.3677206678+126.4523560009
+    exp < -  pfas_score * -0.0000019887+0.7182900455
+    }
+
+    base_amt < -  if_else(pfas_score != 0, (afr ^ exp) * mult, 0)
+    gfe < - if_else(pfas_score >= 4, base_amt * 4, base_amt)
+    # see "analysis/tyco_basf_models.R" script
+    } else if (defendant == 'Tyco') {
+    log_gfe < - 0.4403859 * log(pfas_score) + 0.6939285 * log(afr) + 4.3743621
+    gfe < - exp(log_gfe)
+    } else if (defendant == 'BASF') {
+    log_gfe < - 0.4398083 * log(pfas_score) + 0.6938430 * log(afr) + 3.5034023
+    gfe < - exp(log_gfe)
+    }
+
+    return (gfe)
+    }"""
+
+
+
+
+
     return
 
 def handle_update(request, form_class, extra_fields, impacted=None, calc_func=None, source_variable=None):
@@ -73,9 +144,18 @@ def handle_update(request, form_class, extra_fields, impacted=None, calc_func=No
                 instance.source_variable = source_variable
 
             try:
+
+                print(type(instance))
+
+                if isinstance(instance, PfasResult):
+                    print("success")
+
+                data = list(PfasResult.objects.all().values())
+                df = pd.DataFrame(data)
+
                 # TODO: Joe, please ensure this works for PFAS results, max flow rate, and annual production updates.
                 instance.save()
-                update_ehe_source_table()
+                update_ehe_source_table(instance)
                 update_ehe_pws_table()
 
                 filetype = 'Flow Rate' if source_variable else 'PFAS Results'

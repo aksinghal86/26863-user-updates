@@ -10,8 +10,9 @@ from django.http import JsonResponse
 from .models import Pws, PfasResult, FlowRate, ClaimPws, ClaimSource, ClaimFlowRate, ClaimPfasResult
 from .forms import MaxFlowRateUpdateForm, AnnualProductionForm, PfasResultUpdateForm, ContactForm
 import logging
-# These are the custom functions in utils.py 
 from .utils import *
+import pandas as pd
+# These are the custom functions in utils.py from .utils import *
 
 
 logger = logging.getLogger('clientUpdates')
@@ -30,10 +31,33 @@ def dashboard(request):
     # Retrieve the PWS associated with the logged-in user; otherwise, throw an error.
     pws_record = Pws.objects.get(form_userid=request.user.username)
     if not pws_record: 
-        return redirect('some-error-page') 
-    
-    # Pull all the sources filed in the claims portal
-    sources = ClaimSource.objects.filter(pwsid=pws_record.pwsid)
+        return redirect('some-error-page')
+
+    # get claim_source dataframe
+    claim_source = list(ClaimSource.objects.filter(pwsid=pws_record.pwsid).values())
+    claim_source = pd.DataFrame(claim_source)
+
+    # get ehe_source dataframe. This dataframe will include any changes to the all_nds field
+    # made by the user.
+    ehe_source = list(Source.objects.filter(pwsid=pws_record.pwsid).values())
+    ehe_source = pd.DataFrame(ehe_source)
+
+    # if the ehe_source dataframe is not empty...
+    if not ehe_source.empty:
+
+        ehe_source = ehe_source[["source_name", "all_nds"]]
+
+        # apply changes to the all_nds field
+        for row in ehe_source.itertuples(index=False):
+            # get source name in ehe table
+            source_name = row.source_name
+            # get True/False value from ehe table
+            all_nds = row.all_nds
+            # change claim table all_nds value based on ehe table all_nds value
+            claim_source.loc[claim_source["source_name"] == source_name, "all_nds"] = all_nds
+
+    # rename the dataframe back to the original name passed into the html
+    sources = claim_source
 
     # TODO:  @Elizabeth Hora, please add a column "all_nds" to the claim_source table. 
 

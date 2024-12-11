@@ -30,14 +30,14 @@
                 </tr>
             </thead>
             <tbody>
-                {% for source in sources %}
+                {% for source in sources.itertuples %}
                 <tr class="{% if source.all_nds %}unimpacted-row{% else %}impacted-row{% endif %}">
                     <!-- <th scope="row">{{ forloop.counter }}</th> -->
                     <td>{{ source.source_name }}</td>
                     <td class="text-center">{{ source.source_type }}</td>
                     <td class = "text-center">{% if source.all_nds %} Unimpacted {% else %} PFAS detected {% endif %}</td>
                     <td class="text-center">
-                        <a href="{% url 'source-detail' pwsid=source.pwsid source_name=source.source_name %}" 
+                        <a href="{% url 'source-detail' pwsid=source.pwsid source_name=source.source_name %}"
                             class="text-decoration-none" 
                             style="color:inherit;">
                             <i class="bi bi-eye-fill"></i>
