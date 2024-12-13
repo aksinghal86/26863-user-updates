@@ -161,7 +161,8 @@
     const fileInput = document.getElementById('pfasFileUpload');
     const maxFileSizeBytes = 25 * 1024 * 1024 // Max file size: 25 MB
 
-    let currentResult = 0;
+    //let currentResult = 0;
+    let claimsResult = 0;
 
     form.onsubmit = function (event) {
       let valid = true;
@@ -186,10 +187,10 @@
         newResultInPpt = newResult * 1000000; // Convert ppm to ppt
       }
 
-      if (newResultInPpt <= currentResult) {
+      if (newResultInPpt <= claimsResult) {
         valid = false;
         resultInput.classList.add('is-invalid');
-        document.getElementById('result-error').innerHTML = `The new result must be higher than ${currentResult} ppt`;
+        document.getElementById('result-error').innerHTML = `The new result must be higher than ${claimsResult} ppt`;
       }
 
       // Validate sampling date
@@ -246,9 +247,13 @@
 
       // Extract data from data-* attributes (these attributes are from the Update button in the source_detail.html page)
       var analyte = button.getAttribute('data-analyte');
-      var pfasResultAttribute = button.getAttribute('data-pfas-result');
-      var pfasResult = pfasResultAttribute && !isNaN(pfasResultAttribute) ? parseFloat(pfasResultAttribute) : 0;
-      currentResult = pfasResult;  // Set the current result to the variable used in validation (don't prepopulate the input)
+      //var pfasResultAttribute = button.getAttribute('data-pfas-result');
+      //var pfasResult = pfasResultAttribute && !isNaN(pfasResultAttribute) ? parseFloat(pfasResultAttribute) : 0;
+      var claimResultAttribute = button.getAttribute('data-claims-result');
+      var claimPfasResult = claimResultAttribute && !isNaN(claimResultAttribute) ? parseFloat(claimResultAttribute) : 0;
+      // Set the current result to the variable used in validation (don't prepopulate the input)
+      //currentResult = pfasResult;
+      claimsResult = claimPfasResult
       var unit = button.getAttribute('data-unit');
 
       // Set the form action dynamically

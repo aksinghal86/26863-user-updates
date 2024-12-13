@@ -13,8 +13,10 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib import messages
 from django.shortcuts import redirect
-from .models import PfasResult, Source, ClaimSource
+from .models import PfasResult, Source, ClaimSource, ClaimPfasResult
+
 logger = logging.getLogger('clientUpdates')
+
 
 def update_ehe_source_table(instance):
     """
@@ -45,7 +47,6 @@ def update_ehe_source_table(instance):
         ehe_source = list(Source.objects.filter(pwsid=pwsid, source_name=source_name).values())
         ehe_source = pd.DataFrame(ehe_source)
 
-
         # if the ehe_source table, when filtered to the pwsid & source_name, is empty...
         if ehe_source.empty:
 
@@ -62,19 +63,14 @@ def update_ehe_source_table(instance):
         else:
             ehe_source["all_nds"] = False
 
-
-
     #data = list(PfasResult.objects.all().values())
     # = pd.DataFrame(data)
     print("debug")
 
+    return
 
-    return 
 
 def update_ehe_pws_table(instance):
-
-
-
     # function in R to update claim amount??:
     """calculate_defendant_amt < - function(afr, pfas_score, defendant)
     {
@@ -102,11 +98,8 @@ def update_ehe_pws_table(instance):
     return (gfe)
     }"""
 
-
-
-
-
     return
+
 
 def handle_update(request, form_class, extra_fields, impacted=None, calc_func=None, source_variable=None):
     """
@@ -147,8 +140,8 @@ def handle_update(request, form_class, extra_fields, impacted=None, calc_func=No
 
                 # TODO: Joe, please ensure this works for PFAS results, max flow rate, and annual production updates.
                 instance.save()
-                update_ehe_source_table(instance)
-                update_ehe_pws_table()
+                #update_ehe_source_table(instance)
+                #update_ehe_pws_table()
 
                 filetype = 'Flow Rate' if source_variable else 'PFAS Results'
                 logger.info(f"{filetype} updated successfully for {source_name}.")
@@ -157,7 +150,7 @@ def handle_update(request, form_class, extra_fields, impacted=None, calc_func=No
                 # Upload file to Dropbox
                 # TODO: Joe, pleae ensure that this works.
                 file = request.FILES.get('filename')
-                
+
                 if file:
                     upload_to_dropbox(file, filetype, pwsid)
 
@@ -176,11 +169,10 @@ def handle_update(request, form_class, extra_fields, impacted=None, calc_func=No
     return redirect('source-detail', pwsid=request.POST.get('pwsid'), source_name=request.POST.get('source_name'))
 
 
-
 def calc_ppt_result(result, unit):
     """ Returns results after converting from ppm, ppb, or ppt to ppt. """
     if unit == 'ppt':
-        result_ppt = result 
+        result_ppt = result
     elif unit == 'ppb':
         result_ppt = result * 1e3
     elif unit == 'ppm':
@@ -189,6 +181,7 @@ def calc_ppt_result(result, unit):
         raise ValueError(f"Unsupported unit '{unit}' provided.")
 
     return result_ppt
+
 
 def calc_gpm_flow_rate(flow_rate, unit):
     """ Returns flow rate after converting form MGD, MGY, GPM, GPY, or AFPY to GPM. """
@@ -204,7 +197,7 @@ def calc_gpm_flow_rate(flow_rate, unit):
         flow_rate_gpm = flow_rate * 325851 / (365 * 1440)
     else:
         raise ValueError(f"Unsupported unit '{unit}' provided.")
-    
+
     return flow_rate_gpm
 
 
@@ -212,8 +205,9 @@ def get_max_entry(entries, key):
     """ Returns the entry with the maximum value for the given key. """
     if not entries:
         return None
-    
+
     return max(entries, key=lambda x: x[key], default=None)
+
 
 def get_combined_results(queryset_1, queryset_2, columns):
     """ Combines two querysets by selecting only the specified columns. """
@@ -221,14 +215,108 @@ def get_combined_results(queryset_1, queryset_2, columns):
     results_2 = list(queryset_2.values(*columns))
     return list(chain(results_1, results_2))
 
+
 def get_max_results_by_analyte(combined_pfas_results):
     """ Finds the maximum result per analyte from a combined list of records. """
     max_results_by_analyte = defaultdict(lambda: None)
     for record in combined_pfas_results:
         analyte = record['analyte']
-        if max_results_by_analyte[analyte] is None or record['result_ppt'] > max_results_by_analyte[analyte]['result_ppt']:
+        if max_results_by_analyte[analyte] is None or record['result_ppt'] > max_results_by_analyte[analyte][
+            'result_ppt']:
             max_results_by_analyte[analyte] = record
     return list(max_results_by_analyte.values())
+
+
+def get_max_recent_results(claim_pfas_inst, ehe_pfas_inst, pwsid, watersourceID, source_name):
+
+    # pre-define columns.
+    columns = ['pwsid', 'water_source_id', 'source_name', 'analyte', 'result_ppt', 'sampling_date', 'analysis_date',
+               'lab_sample_id', 'data_origin']
+
+    # convert claim_pfas object into a dataframe
+    claim_pfas = list(claim_pfas_inst.values())
+    claim_pfas = pd.DataFrame(claim_pfas, columns=columns)
+
+    # convert ehe_pfas object into a dataframe
+    ehe_pfas = list(ehe_pfas_inst.values())
+    ehe_pfas = pd.DataFrame(ehe_pfas)
+
+    # the final dataframe to be using. This will default to a copy of the claim_pfas dataframe
+    final_pfas = claim_pfas
+
+    # create a copy of the result_ppt column. This is because the source_detail page should have flexibility
+    # in showing either the max result of an analyte or the most recent result of an analyte; however, a user
+    # should not be able to change the result of an analyte that is lower than the original claim's result.
+    # Two columns will be needed to provide the functionality above. The source "result_ppt" column will
+    # be a combination of max analyte results and most recent changes, whereas the "claim_result_ppt" column
+    # will be a record of the original claim's values for each analyte.
+    final_pfas.insert(1, "claim_result_ppt", value=final_pfas["result_ppt"])
+
+    # modify the final_pfas dataframe based on values in ehe_pfas:
+    if not ehe_pfas.empty:
+
+        # get the max submission date per analyte
+        max_time = ehe_pfas.groupby(["analyte"], as_index=False)["submit_date"].max()
+        # only one row per analyte
+        max_time = max_time.merge(ehe_pfas, how='left', on=["analyte", "submit_date"])
+
+        # for each of the analytes in the max_time dataframe...
+        for row in max_time.itertuples():
+            # if the analyte already exists, change the value in-place.
+            if row.analyte in final_pfas["analyte"].values:
+                final_pfas.loc[final_pfas["analyte"] == row.analyte, "result_ppt"] = row.result_ppt
+                final_pfas.loc[final_pfas["analyte"] == row.analyte, "analysis_date"] = row.analysis_date
+                final_pfas.loc[final_pfas["analyte"] == row.analyte, "sampling_date"] = row.sampling_date
+            # otherwise, add the analyte to the dataframe.
+            else:
+                temp = pd.DataFrame({
+
+                    'pwsid': [pwsid],
+                    'water_source_id': [watersourceID],
+                    'source_name': [source_name],
+                    "analyte": [row.analyte],
+                    "result_ppt": [row.result_ppt],
+                    'sampling_date': [row.sampling_date],
+                    'analysis_date': [row.analysis_date],
+                    'lab_sample_id': [row.lab_sample_id],
+                    'data_origin': 'N/A'
+
+                })
+                # combine both dataframes
+                final_pfas = pd.concat([final_pfas, temp])
+
+    # see if pfoa & pfos are included within the analytes --- if not, add them in.
+
+    pfoa_pfos = ['PFOA', 'PFOS']
+    analyte_list = final_pfas["analyte"].values
+
+    for elem in pfoa_pfos:
+        if not elem in analyte_list:
+            temp = pd.DataFrame({
+
+                'pwsid': [pwsid],
+                'water_source_id': [watersourceID],
+                'source_name': [source_name],
+                "analyte": [elem],
+                "result_ppt": [0],
+                "claim_result_ppt": [0],
+                'sampling_date': None,
+                'analysis_date': None,
+                'lab_sample_id': None,
+                'data_origin': 'N/A'
+
+            })
+
+            final_pfas = pd.concat([final_pfas, temp])
+
+        else:
+            pass
+
+    # convert the final_pfas dataframe into the original form, which was a list of records
+    final_pfas = final_pfas.to_dict(orient='records')
+
+    return final_pfas
+
 
 def add_pfoas_if_missing(pfas_results, pwsid, water_source_id, source_name):
     """ Add PFOA and PFOS if they are not in the list. """
@@ -254,6 +342,7 @@ def get_max_other_threshold(pfas_results):
     pfoa_result = next((result['result_ppt'] for result in pfas_results if result['analyte'] == 'PFOA'), 0)
     pfos_result = next((result['result_ppt'] for result in pfas_results if result['analyte'] == 'PFOS'), 0)
     return round((pfoa_result + pfos_result) ** 2, 1)
+
 
 def get_filtered_annuals(combined_annuals, all_nds):
     """
@@ -299,14 +388,15 @@ def get_filtered_annuals(combined_annuals, all_nds):
             'year': 2023,
             'flow_rate': 0,
             'unit': 'GPY',
-            'data_origin': 'EHE portal',  
-            'updated_by_water_provider': True  
+            'data_origin': 'EHE portal',
+            'updated_by_water_provider': True
         })
 
     # Sort filtered annuals by year in increasing order
     filtered_annuals = sorted(filtered_annuals, key=lambda x: x['year'])
 
     return filtered_annuals
+
 
 def get_max_annuals_by_year(combined_annuals):
     """ Finds the maximum annual production by year from a combined list of records. """
@@ -317,6 +407,7 @@ def get_max_annuals_by_year(combined_annuals):
             max_annuals_by_year[year] = record
     return list(max_annuals_by_year.values())
 
+
 def detected(result):
     if result != 0:
         return True
@@ -325,6 +416,7 @@ def detected(result):
 
 
 DROPBOX_TOKEN_URL = "https://api.dropbox.com/oauth2/token"
+
 
 def refresh_dropbox_access_token():
     """
@@ -354,6 +446,7 @@ def refresh_dropbox_access_token():
         print(f"Error refreshing Dropbox access token: {e}")
         return None
 
+
 def ensure_dropbox_folder(dbx, folder_path):
     """
     Ensure the specified folder exists in Dropbox.
@@ -367,6 +460,7 @@ def ensure_dropbox_folder(dbx, folder_path):
     except dropbox.exceptions.ApiError as e:
         if isinstance(e.error, dropbox.files.GetMetadataError):
             dbx.files_create_folder_v2(folder_path)
+
 
 def upload_to_dropbox(file, filetype, pwsid):
     """

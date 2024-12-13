@@ -28,15 +28,17 @@ def root_redirect(request):
 
 @login_required
 def dashboard(request):
+
     # Retrieve the PWS associated with the logged-in user; otherwise, throw an error.
     pws_record = Pws.objects.get(form_userid=request.user.username)
-    if not pws_record: 
+    if not pws_record:
         return redirect('some-error-page')
 
     # get claim_source dataframe
     claim_source = list(ClaimSource.objects.filter(pwsid=pws_record.pwsid).values())
     claim_source = pd.DataFrame(claim_source)
 
+    """
     # get ehe_source dataframe. This dataframe will include any changes to the all_nds field
     # made by the user.
     ehe_source = list(Source.objects.filter(pwsid=pws_record.pwsid).values())
@@ -57,9 +59,10 @@ def dashboard(request):
             claim_source.loc[claim_source["source_name"] == source_name, "all_nds"] = all_nds
 
     # rename the dataframe back to the original name passed into the html
+    """
     sources = claim_source
 
-    # TODO:  @Elizabeth Hora, please add a column "all_nds" to the claim_source table. 
+    # TODO:  @Elizabeth Hora, please add a column "all_nds" to the claim_source table.
 
     context = {
         'pws': pws_record,
@@ -86,13 +89,18 @@ def source_detail_view(request, pwsid, source_name):
     source = get_object_or_404(ClaimSource, pwsid=pwsid, source_name=source_name)
 
     #### PFAS Results ####
-    columns = ['pwsid', 'water_source_id', 'source_name', 'analyte', 'result_ppt', 'sampling_date', 'analysis_date', 'lab_sample_id', 'data_origin']
+    #columns = ['pwsid', 'water_source_id', 'source_name', 'analyte', 'result_ppt', 'sampling_date', 'analysis_date', 'lab_sample_id', 'data_origin']
     claim_pfas_results = ClaimPfasResult.objects.filter(pwsid=source.pwsid, source_name=source_name).exclude(analyte__isnull=True)
     updated_pfas_results = PfasResult.objects.filter(pwsid=source.pwsid, source_name=source_name, updated_by_water_provider=True)
-    combined_pfas_results = get_combined_results(claim_pfas_results, updated_pfas_results, columns)
-    max_pfas_results = get_max_results_by_analyte(combined_pfas_results)
-    pfas_results = add_pfoas_if_missing(max_pfas_results, source.pwsid, source.water_source_id, source.source_name)
-    max_other_threshold = get_max_other_threshold(pfas_results)
+
+
+    max_recent_results = get_max_recent_results(claim_pfas_results, updated_pfas_results, source.pwsid, source.water_source_id, source.source_name)
+
+    # combined_pfas_results = get_combined_results(claim_pfas_results, updated_pfas_results, columns)
+    # max_pfas_results = get_max_results_by_analyte(combined_pfas_results)
+    # pfas_results = add_pfoas_if_missing(max_pfas_results, source.pwsid, source.water_source_id, source.source_name)
+
+    max_other_threshold = get_max_other_threshold(max_recent_results)
     
     impacted = True if not source.all_nds or updated_pfas_results else False
 
@@ -116,7 +124,7 @@ def source_detail_view(request, pwsid, source_name):
         'impacted': impacted,
         'max_flow_rate': max_flow_rate,
         'annuals': annuals,
-        'pfas_results': pfas_results,
+        'pfas_results': max_recent_results,
         'max_other_threshold': max_other_threshold
     }
 
