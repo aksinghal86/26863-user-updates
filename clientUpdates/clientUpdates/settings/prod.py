@@ -20,15 +20,23 @@ MIDDLEWARE += ['clientUpdates.middleware.DebugHeadersMiddleware']
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname}; {asctime}; logger name: {name}; module: {module}; msg: {message}',
+            'style': '{',
+        }
+    },
     'handlers': {
         'console': {
-            'level': 'WARNING',
+            'level': 'INFO',
             'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
         },
         'file': {
-            'level': 'ERROR',
+            'level': 'INFO',
             'class': 'logging.FileHandler',
             'filename': os.path.join(LOG_DIR, 'production.log'),
+            'formatter': 'verbose',
         },
     },
     'loggers': {
@@ -37,5 +45,10 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
+        'clientUpdates': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        }
     },
 }
