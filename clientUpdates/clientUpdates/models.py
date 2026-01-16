@@ -799,3 +799,14 @@ class srcPaymentDist(models.Model):
     class Meta:
         managed = True
         db_table = 'source_payment_dist'
+
+class ClaimSubmission(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    pwsid = models.TextField(blank=True, null=True)
+    x3m_dupont_claim = models.BooleanField(blank=True, null=True)
+    tyco_basf_claim = models.BooleanField(blank=True, null=True)
+    any_claim_submission = models.BooleanField(blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'claim_submissions'

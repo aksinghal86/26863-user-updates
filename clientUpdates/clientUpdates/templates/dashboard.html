@@ -24,34 +24,25 @@
         {% if claim == "3M_DuPont" %} 3M/Dupont Phase I Supplemental Fund {% else %} Tyco/BASF Supplemental Fund {% endif %}
     </h3>
 
-    <p>
-        The table below lists all the sources that were filed by <strong>{{pws.pwsid}}</strong> for the
-        {% if claim == "3M_DuPont" %} 3M/Dupont Phase I Action Fund Claim{% else %} Tyco/BASF Action Fund Claim{% endif %}.
-        Moreover, the table provides information on whether each source is eligible to file a Supplemental Fund Claim.
-    </p>
-
     <div class="alert alert-primary" style="display:flex">
         <i class="bi bi-info-circle h5" style="padding-right:2px; color:blue; width:5%"></i>
 
         <div>
 
             <h5 style="border-bottom: 2px solid rgba(8,66,152,0.25); margin-bottom:10px;">Please note the following:</h5>
-            <ol style="margin: 0px;">
-                <li>
-                    <p>Use the "Submit Notification" button to notify EH&E staff once <strong>{{pws.pwsid}}</strong> is
-                    ready to file a Supplemental Fund Claim for an eligible source. This would occur when:</p>
 
-                    <ul>
-                        <li style="text-align:left;">A source was "unimpacted" (i.e., there was no measureable concentration
-                            of PFAS detected in the water source) at the time of filing the action fund claim but has since
-                            exhibited detections of PFAS; OR</li>
+            <p>Use the "Submit Notification" button to notify EH&E staff once <strong>{{pws.pwsid}}</strong> is
+                ready to file a Supplemental Fund Claim for an eligible source. This would occur when:</p>
+                <ol style="margin:0px;">
+                    <li style="text-align:left;">A source was "unimpacted" (i.e., there was no measureable concentration
+                        of PFAS detected in the water source) at the time of filing the action fund claim but has since
+                        exhibited detections of PFAS; OR</li>
 
-                        <br>
+                    <br>
 
-                        <li style="text-align:left;">A source exhibited PFAS detections <strong>below</strong> the Proposed Federal PFAS MCLs or applicable State PFAS MCLs at
-                                the time of filing the action fund claim, but have since had one or more PFAS detections <strong>above</strong> the Proposed Federal PFAS MCLs or applicable State PFAS MCLs.</li>
-                    </ul>
-                </li>
+                    <li style="text-align:left;">A source exhibited PFAS detections <strong>below</strong> the Proposed Federal PFAS MCLs or applicable State PFAS MCLs at
+                            the time of filing the action fund claim, but have since had one or more PFAS detections <strong>above</strong> the Proposed Federal PFAS MCLs or applicable State PFAS MCLs.</li>
+                </ol>
 
                 <br>
 
@@ -72,13 +63,25 @@
 
     </div>
 
+
+    <p style="padding:0px 12px;">
+        The table below lists all the sources that were filed by <strong>{{pws.pwsid}}</strong> for the
+        {% if claim == "3M_DuPont" %} 3M/Dupont Phase I Action Fund Claim{% else %} Tyco/BASF Action Fund Claim{% endif %}.
+        Moreover, the table provides information on whether each source is eligible to file a Supplemental Fund Claim. If
+        a source is eligible for the Supplemental Fund Claim, the row in the table below will also
+        be highlighted in <span style="background-color: rgba(0, 153, 0, 0.25);">green</span>.
+    </p>
+
+
+
+
     <div class="container">
         <h4>Sources</h4>
 
         <table id="sourcesTable" class="table table-hover table-bordered">
             <thead class="table-light">
                 <tr>
-                    <th scope="col" class="text-center" style="width:15%;">Source Name</th>
+                    <th scope="col" class="text-center" style="width:20%;">Source Name</th>
                     <!--<th scope="col" style="width:20%;">Source Type</th>-->
                     <th scope="col" class="text-center">Source Eligibility</th>
                     <th scope="col" class="text-center">Eligibility Reason</th>
@@ -90,21 +93,21 @@
             </thead>
             <tbody>
                 {% for source in sources %}
-                <tr class="{% if not source.reg_bump %}text-center{% else %}ineligible-row text-center{% endif %}">
-                    <td>{{ source.source_name }}</td>
-                    <td class="text-center">{% if not source.reg_bump %} Eligible {% else %} Not Eligible {% endif %}</td>
-                    <td class="text-center">{% if source.reg_bump %} PFAS detections above applicable Federal/State MCLs
+                <tr style="{% if not source.reg_bump %}background-color: rgba(0, 153, 0, 0.25);{% endif %}">
+                    <td class="{% if not source.reg_bump %}text-center{% else %}opacity-50 text-center{% endif %}">{{ source.source_name }}</td>
+                    <td class="{% if not source.reg_bump %}text-center{% else %}opacity-50 text-center{% endif %}">{% if not source.reg_bump %} Eligible {% else %} Not Eligible {% endif %}</td>
+                    <td class="{% if not source.reg_bump %}text-center{% else %}opacity-50 text-center{% endif %}">{% if source.reg_bump %} PFAS detections above applicable Federal/State MCLs
                     {% elif not source.reg_bump and source.all_nds %} No PFAS detections {% else %} PFAS detections below applicable Federal/State MCLs {% endif %}</td>
-                    <td class="text-center">
+                    <td class="{% if source.reg_bump or source.sup_notif_sent %}opacity-50 text-center{% else %}text-center{% endif %}">
                         <a href="{% url 'contact_phase1' claim=claim source_name=source.source_name message=1 %}" class="btn btn-primary {%if source.reg_bump or source.sup_notif_sent %}no-click{%endif%}">Submit Notification</a>
                     </td>
-                    <td class="text-center">
+                    <td class="{% if not source.reg_bump %}text-center{% else %}opacity-50 text-center{% endif %}">
                         {% if source.sup_notif_sent %} Yes {% else %} No {% endif %}
                     </td>
-                    <td class="text-center">
+                    <td class="{% if not source.reg_bump %}text-center{% else %}opacity-50 text-center{% endif %}">
                         {{source.sup_status}}
                     </td>
-                    <td class="text-center">
+                    <td class="{% if not source.reg_bump %}text-center{% else %}opacity-50 text-center{% endif %}">
                         <a href="{% url 'source-detail' claim=claim pwsid=source.pwsid source_name=source.source_name %}"
                             class="text-decoration-none"
                             style="color:inherit;">
@@ -116,8 +119,6 @@
             </tbody>
         </table>
     </div>
-
-    
 </div>    
 {% endif %}
 

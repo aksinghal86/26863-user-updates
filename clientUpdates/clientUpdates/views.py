@@ -5,7 +5,7 @@ from django.views.decorators.cache import never_cache
 from .models import (Pws, Source, PfasResult, FlowRate, ClaimSource, ClaimFlowRate,
                      ClaimPfasResult, paymentInfo,
                      TB_ClaimPfasResult, TB_ClaimFlowRate, supplementalSourceTracker, TB_ClaimSource,
-                     pwsPaymentDist, srcPaymentDist)
+                     pwsPaymentDist, srcPaymentDist, ClaimSubmission)
 from .forms import MaxFlowRateUpdateForm, AnnualProductionForm, PfasResultUpdateForm, ContactForm
 
 # Custom functions
@@ -38,6 +38,8 @@ from django.db.models import Q, Sum
 #         return super().dispatch(request, *args, **kwargs)
 
 """JF commented out on 07/01/2025 to focus on payment dashboard, rather than update dashboard. """
+
+
 # def root_redirect(request):
 #     if request.user.is_authenticated:
 #         return redirect('dashboard')
@@ -65,10 +67,10 @@ def root_redirect(request):
     else:
         return redirect('login')
 
+
 @login_required
 @never_cache
 def dashboard(request, claim, supplemental=0):
-
     # Retrieve the PWS associated with the logged-in user; otherwise, throw an error.
     pws_record = Pws.objects.get(form_userid=request.user.username)
     if not pws_record:
@@ -91,24 +93,21 @@ def dashboard(request, claim, supplemental=0):
     context = {
         'pws': pws_record,
         'sources': sources,
-        'claim':claim
+        'claim': claim
     }
-    if supplemental: 
+    if supplemental:
         return render(request, 'dashboard.html', context)
     else:
         return render(request, 'dashboard_simple.html', context)
-        
 
 
 @login_required
 def payment_dashboard(request, claim):
-
     # 10/27/2025 JF: Commenting this view function out until further notice. For now,
     # redirect to the landing page.
 
     # Retrieve the PWS associated with the logged-in user; otherwise, throw an error.
     pws_record = Pws.objects.get(form_userid=request.user.username)
-
 
     # if claim == "3M_DuPont":
     #     pws_payment_info = pwsPaymentDist.objects.filter(
@@ -168,7 +167,6 @@ def source_payment_info(request, claim):
     pws_record = Pws.objects.get(form_userid=request.user.username)
 
     if claim == "3M_DuPont":
-
         src_payment = srcPaymentDist.objects.filter(
             Q(pwsid=pws_record.pwsid),
             Q(fund_description='3M Phase One Action Fund') | Q(fund_description='Dupont Phase One Action Fund')
@@ -185,7 +183,6 @@ def source_payment_info(request, claim):
 
 @login_required
 def payment_details(request):
-
     # Retrieve the PWS associated with the logged-in user; otherwise, throw an error.
     pws_record = Pws.objects.get(form_userid=request.user.username)
 
@@ -202,27 +199,46 @@ def payment_details(request):
 
 
 @login_required
-def landing_page (request):
+def landing_page(request):
     # Retrieve the PWS associated with the logged-in user; otherwise, throw an error.
-    pws_record = Pws.objects.get(form_userid=request.user.username)
+    try:
 
-    context = {
-        'pws': pws_record,
-    }
+        pws_submitted_claim = ClaimSubmission.objects.get(pwsid=request.user.username)
+        pws_record = Pws.objects.get(form_userid=request.user.username)
 
-    return render(request, 'landing_page.html', context)
+        context = {
+            'pws': pws_record,
+        }
+
+        return render(request, 'landing_page.html', context)
+    # exception handling for if the query in the above try statement returns nothing.
+    except ClaimSubmission.DoesNotExist:
+
+        context = {
+            'pws': request.user.username,
+        }
+
+        return render(request, 'no_data_landing_page.html', context)
+
+
+
+
+
+
+
 
 @login_required
 def source_detail_view(request, claim, pwsid, source_name):
-
     if claim == "3M_DuPont":
         source = get_object_or_404(ClaimSource, pwsid=pwsid, source_name=source_name)
-        pfas_results = ClaimPfasResult.objects.filter(pwsid=pwsid, source_name=source_name).exclude(analyte__isnull=True)
+        pfas_results = ClaimPfasResult.objects.filter(pwsid=pwsid, source_name=source_name).exclude(
+            analyte__isnull=True)
         flow_data = ClaimFlowRate.objects.filter(pwsid=pwsid, source_name=source_name)
 
     if claim == "Tyco_BASF":
         source = get_object_or_404(TB_ClaimSource, pwsid=pwsid, source_name=source_name)
-        pfas_results = TB_ClaimPfasResult.objects.filter(pwsid=pwsid, source_name=source_name).exclude(analyte__isnull=True)
+        pfas_results = TB_ClaimPfasResult.objects.filter(pwsid=pwsid, source_name=source_name).exclude(
+            analyte__isnull=True)
         flow_data = TB_ClaimFlowRate.objects.filter(pwsid=pwsid, source_name=source_name)
 
     pfas_results = list(pfas_results.values())
@@ -240,7 +256,7 @@ def source_detail_view(request, claim, pwsid, source_name):
         'flow_rate_mgd': max_gpm * 1440 / 1_000_000,
         'flow_rate_afpy': max_gpm * 1440 * 365 / 325851,
     })
-    
+
     annuals = [fr for fr in flow_data if fr['year'] is not None]
     for annual in annuals:
         gpm = annual.get('flow_rate_gpm') or 0
@@ -260,11 +276,6 @@ def source_detail_view(request, claim, pwsid, source_name):
     }
 
     return render(request, 'source_detail.html', context)
-
-
-
-
-
 
 
 #
@@ -395,6 +406,7 @@ def update_pfas_result_view(request):
         source_variable=None
     )
 
+
 @login_required
 def update_max_flow_rate_view(request):
     def calc_max_flow_rate_fields(instance, cleaned_data):
@@ -411,6 +423,7 @@ def update_max_flow_rate_view(request):
         calc_func=calc_max_flow_rate_fields,
         source_variable='VFR'
     )
+
 
 @login_required
 def update_annual_production_view(request):
@@ -430,6 +443,7 @@ def update_annual_production_view(request):
         calc_func=calc_annual_production_fields,
         source_variable='AFR'
     )
+
 
 # @login_required
 # def contact_view(request, source_name=None, message=0):
@@ -493,11 +507,8 @@ def contact_view(request, claim=None, source_name=None, message=0):
                 reply_to=[email],
             )
 
-
             email_message.send(fail_silently=False)
             messages.success(request, "This is a test!")
-
-
 
             # Return a JSON response for AJAX.
             # if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -538,8 +549,45 @@ def contact_view(request, claim=None, source_name=None, message=0):
     return render(request, 'contact.html', {'form': form,
                                             'source_name': source_name,
                                             'message': message,
-                                            'pwsid':pwsid,
-                                            'claim':claim})
+                                            'pwsid': pwsid,
+                                            'claim': claim})
+
+@login_required
+def no_data_contact_view(request):
+    pwsid = request.user.username
+    recipients = settings.EMAIL_RECIPIENTS
+
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            email = form.cleaned_data['email']
+            subject = form.cleaned_data['subject']
+            message = form.cleaned_data['message']
+            full_message = f"From: {name}\n\n{message}"
+
+            email_message = EmailMessage(
+                subject=f"{subject} (from {pwsid})",
+                body=full_message,
+                from_email=settings.EMAIL_HOST_USER,
+                to=recipients,
+                reply_to=[email],
+            )
+
+            email_message.send(fail_silently=False)
+            messages.success(request, "This is a test!")
+
+            return render(request, 'no_data_landing_page.html')
+
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'error': 'Invalid form submission'}, status=400)
+
+    else:
+        form = ContactForm()
+
+    return render(request, 'no_data_contact.html', {'form': form,'pwsid': pwsid})
+
 
 
 @login_required
@@ -568,13 +616,13 @@ def activity_view(request):
 
     # Format flow rate log entries
     flow_logs = [
-    {
-        'time': flow['submit_date'],
-        'source_name': flow['source_name'],
-        'table_name': 'Flow Rate',
-        'source_variable': flow['source_variable'],  # Keep the original value for logic
-        'change': f"{'Annual Production for ' + str(int(flow['year'])) if flow['source_variable'] == 'AFR' else 'Max Flow Rate'} changed to {flow['flow_rate']} {flow['unit']}",
-    }
+        {
+            'time': flow['submit_date'],
+            'source_name': flow['source_name'],
+            'table_name': 'Flow Rate',
+            'source_variable': flow['source_variable'],  # Keep the original value for logic
+            'change': f"{'Annual Production for ' + str(int(flow['year'])) if flow['source_variable'] == 'AFR' else 'Max Flow Rate'} changed to {flow['flow_rate']} {flow['unit']}",
+        }
         for flow in flow_rates
     ]
 
@@ -583,6 +631,7 @@ def activity_view(request):
 
     # Pass logs to template
     return render(request, 'activity.html', {'activity_logs': activity_logs})
+
 
 @login_required
 def logout_view(request):

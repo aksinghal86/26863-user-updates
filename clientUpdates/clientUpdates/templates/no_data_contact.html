@@ -1,0 +1,149 @@
+{% extends 'base_generic.html' %}
+
+
+{% block navbar %}
+    <nav class="navbar navbar-expand-lg bg-light navbar-light fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'landing_page' %}">
+                EH&E AFFF Claims Portal
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'landing_page' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'no_data_contact' %}">Contact</a>
+                    </li>
+                    <li>
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="nav-link" style="border:none; background: none !important;">Log Out</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+
+
+
+
+{% block content %}
+
+<h3>Contact EH&E</h3>
+<p>Please use the form below to contact EH&E with any inquiries. We will get back to you within 2-5 business days upon receiving your email.</p>
+<p>Please be specific about the questions that you have and if you have been in contact with a specific person, provide their name as well.</p>
+<form id="contactForm" method="post">
+    {% csrf_token %}
+
+    <div class="form-floating mb-4">
+        <input type="text" id="id_name" name="name" class="form-control" placeholder="Your Name" required>
+        <label for="id_name">Your Name</label>
+    </div>
+
+    <div class="form-floating mb-4">
+        <input type="email" id="id_email" name="email" class="form-control" placeholder="Your Email" required>
+        <label for="id_email">Your Email</label>
+    </div>
+
+    <div class="form-floating mb-4">
+        <input type="text" id="id_subject" name="subject" class="form-control" value="{% if source_name is not None %}{{claim}}{%if claim == '3M_DuPont'%} Phase 1 {% else %} {% endif %}Supplemental Fund Claim; PWSID: {{pwsid}}; Source: {{source_name}}{% else %}{% endif %}" placeholder="Subject">
+        <label for="id_subject">Subject</label>
+    </div>
+
+    <div class="form-floating mb-4">
+        <textarea id="id_message" name="message" class="form-control" placeholder="Message" rows="6" style="height: 150px;" required></textarea>
+        <label for="id_message">Message</label>
+    </div>
+
+    <div class="mb-4">
+        <button type="submit" class="btn btn-outline-success" id="submit-button">Send</button>
+        <button type="button" class="btn btn-outline-secondary" onclick="window.location.href='{% url 'landing_page' %}'">Cancel</button>
+
+    </div>
+
+    <div id="loader-container">
+        <div id="loader"></div>
+    </div>
+
+</form>
+
+<script>
+    document.getElementById('contactForm').addEventListener('submit', async function(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        const form = event.target;
+        const formData = new FormData(form);
+
+
+        var loaderContainer = document.getElementById('loader-container');
+        loaderContainer.style.display = 'flex';
+
+        var loader = document.getElementById('loader');
+        loader.style.display = 'block';
+
+        try {
+            // Send the form data using Fetch API
+            const response = await fetch(form.action || window.location.href, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': 'XMLHttpRequest',
+                },
+                body: formData
+            });
+
+
+
+            if (response.ok) {
+                loader.style.display = 'none';
+                loaderContainer.style.display = 'none';
+                // Show a non-blocking alert
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-success';
+                alertDiv.innerText = "Thank you! Your message has been sent. We will reach out to you within 2-5 business days.";
+                form.parentElement.insertBefore(alertDiv, form);
+
+                // Automatically redirect after a short delay
+                setTimeout(() => {
+                    if (window.history.length > 1) {
+                        window.history.back();
+                    } else {
+                        window.location.href = "{% url 'landing_page' %}";
+                    }
+                }, 1500);
+            } else {
+
+                loader.style.display = 'none';
+                loaderContainer.style.display = 'none';
+                const errorText = await response.text();
+                // Handle errors
+
+                // delay alert slightly so that loader can disappear before alert message shows up
+                setTimeout(() => {alert("An error occurred: please try again or report this issue to jfontaine@eheinc.com.")}, 100);
+            }
+        } catch (error) {
+            loader.style.display = 'none';
+            loaderContainer.style.display = 'none';
+            console.error("An error occurred:", error);
+            alert("An unexpected error occurred. Please try again later.")
+        }
+    });
+
+    // code to make the subject line
+    const subject = document.getElementById("id_subject");
+    function makeSubjectReadOnly() {
+        if(subject.value !== "") {
+
+            subject.readOnly = true;
+
+        }
+    };
+    makeSubjectReadOnly();
+
+</script>
+{% endblock %}
