@@ -2,22 +2,6 @@
 
 {% block content %}
 
-{% if pws.data_origin == 'EHE Forms Portal' %}
-<div class="container-mt-4">
-    <p>
-        Looks like you are in the wrong EH&E portal. This portal is only intended for systems that have already submitted a Phase 1 3M and DuPont claim with the Office of the Claims Administrator. Our records indicate that <b>{{ pws.pws_name }} ({{ pws.pwsid}})</b> has <em>not</em> yet filed a claim. 
-    </p>
-    <p>
-        Perhaps you are looking for <a href="https://app.form.com/online/81596113/?nav=default&login=">EH&E Forms portal</a>, which is designed to receive information for systems that have yet to file a claim. If that is the case, please head over to <a href="https://app.form.com/online/81596113/?nav=default&login=">EH&E Forms portal</a> and login using the same username and password you used to log into this portal. In the Forms portal, you will be able to provide all the relevant information needed to file a claim with the Office of the Claims Administrator for a new system. 
-    </p>
-
-    <p>
-        We apologize for the confusion. If you have any questions, please <a href="{% url 'contact_default' %}">contact us</a> and one of us at EH&E will be in touch with you within two business days.
-    </p>
-</div>
-
-
-{% else %}
 <div class="container mt-4">
 
     <h3 class="no-bottom-border" style="text-align:center; font-weight:bold;">
@@ -119,8 +103,7 @@
             </tbody>
         </table>
     </div>
-</div>    
-{% endif %}
+</div>
 
 <script>
     $(document).ready(function() {

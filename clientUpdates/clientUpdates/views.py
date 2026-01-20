@@ -95,6 +95,7 @@ def dashboard(request, claim, supplemental=0):
         'sources': sources,
         'claim': claim
     }
+
     if supplemental:
         return render(request, 'dashboard.html', context)
     else:
