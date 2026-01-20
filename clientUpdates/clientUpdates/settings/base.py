@@ -80,7 +80,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTHENTICATION_BACKENDS = [
-    'clientUpdates.backends.PwsTableAuthBackend',
+    'clientUpdates.backends.pwsCredsAuthBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 

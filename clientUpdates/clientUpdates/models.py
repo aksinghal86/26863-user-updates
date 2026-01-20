@@ -810,3 +810,16 @@ class ClaimSubmission(models.Model):
     class Meta:
         managed = True
         db_table = 'claim_submissions'
+
+class pwsCreds(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    pwsid = models.TextField(blank=True, null=True)
+    pws_name = models.TextField(blank=True, null=True)
+    username = models.TextField(blank=True, null=True)
+    password = models.TextField(blank=True, null=True)
+    consortium_firm = models.TextField(blank=True, null=True)
+    date_of_retention = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'consortium_pws_creds'
