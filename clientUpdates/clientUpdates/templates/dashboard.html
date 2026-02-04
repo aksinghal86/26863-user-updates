@@ -82,8 +82,8 @@
                     <td class="{% if not source.reg_bump %}text-center{% else %}opacity-50 text-center{% endif %}">{% if not source.reg_bump %} Eligible {% else %} Not Eligible {% endif %}</td>
                     <td class="{% if not source.reg_bump %}text-center{% else %}opacity-50 text-center{% endif %}">{% if source.reg_bump %} PFAS detections above applicable Federal/State MCLs
                     {% elif not source.reg_bump and source.all_nds %} No PFAS detections {% else %} PFAS detections below applicable Federal/State MCLs {% endif %}</td>
-                    <td class="{% if source.reg_bump or source.sup_notif_sent %}opacity-50 text-center{% else %}text-center{% endif %}">
-                        <a href="{% url 'contact_phase1' claim=claim source_name=source.source_name message=1 %}" class="btn btn-primary {%if source.reg_bump or source.sup_notif_sent %}no-click{%endif%}">Submit Notification</a>
+                    <td class="{% if source.reg_bump or source.sup_notif_sent or source.completion_date %}opacity-50 text-center{% else %}text-center{% endif %}">
+                        <a href="{% url 'contact_phase1' claim=claim source_name=source.source_name message=1 %}" class="btn btn-primary {%if source.reg_bump or source.sup_notif_sent or source.completion_date %}no-click{%endif%}">Submit Notification</a>
                     </td>
                     <td class="{% if not source.reg_bump %}text-center{% else %}opacity-50 text-center{% endif %}">
                         {% if source.sup_notif_sent %} Yes {% else %} No {% endif %}
