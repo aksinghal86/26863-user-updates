@@ -9,20 +9,20 @@ SESSION_COOKIE_SECURE = True
 SECURE_SSL_REDIRECT = False
 
 ## OLD: DO blocked SMTP ports 465, 587 on Oct, 2025, so this does not work anymore
-#EMAIL_BACKEND = 'clientUpdates.custom_smtp_backend.CustomEmailBackend'
-#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-#EMAIL_HOST = 'smtp.gmail.com'
-#EMAIL_PORT = 587
-#EMAIL_USE_TLS = True
-#EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-#EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-#EMAIL_RECIPIENTS = os.getenv('EMAIL_RECIPIENTS', '').split(',')
+EMAIL_BACKEND = 'clientUpdates.custom_smtp_backend.CustomEmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_RECIPIENTS = os.getenv('EMAIL_RECIPIENTS', '').split(',')
 
-EMAIL_BACKEND = "anymail.backends.sendgrid.EmailBackend"
-ANYMAIL = { "SENDGRID_API_KEY": os.getenv("SENDGRID_API_KEY") }
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
-SERVER_EMAIL = DEFAULT_FROM_EMAIL
-EMAIL_RECIPIENTS = os.getenv("EMAIL_RECIPIENTS", "").split(",")
+# EMAIL_BACKEND = "anymail.backends.sendgrid.EmailBackend"
+# ANYMAIL = { "SENDGRID_API_KEY": os.getenv("SENDGRID_API_KEY") }
+# DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
+# SERVER_EMAIL = DEFAULT_FROM_EMAIL
+# EMAIL_RECIPIENTS = os.getenv("EMAIL_RECIPIENTS", "").split(",")
 
 MIDDLEWARE += ['clientUpdates.middleware.DebugHeadersMiddleware']
 
