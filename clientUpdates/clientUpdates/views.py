@@ -26,6 +26,9 @@ from django.http import JsonResponse, Http404
 from itertools import chain
 from datetime import datetime
 from django.db.models import Q, Sum
+import logging
+
+logger = logging.getLogger('clientUpdates')
 
 """JF commented out on 07/01/2025 to focus on payment dashboard, rather than update dashboard. """
 # class CustomLoginView(LoginView):
@@ -497,19 +500,33 @@ def contact_view(request, claim=None, source_name=None, message=0):
             name = form.cleaned_data['name']
             email = form.cleaned_data['email']
             subject = form.cleaned_data['subject']
+
+            if claim:
+                subject = f"{subject}"
+            else:
+                subject = f"{subject} (from {pwsid})"
+
             message = form.cleaned_data['message']
             full_message = f"From: {name}\n\n{message}"
 
             email_message = EmailMessage(
-                subject=f"{subject} (from {pwsid})",
+                subject=subject,
                 body=full_message,
                 from_email=settings.EMAIL_HOST_USER,
                 to=recipients,
                 reply_to=[email],
             )
 
-            email_message.send(fail_silently=False)
-            messages.success(request, "This is a test!")
+            try:
+                if source_name:
+                    logger.info(f"{name} of {pwsid} (email={email}) trying to send email about {claim} supplemental claims for {source_name}...")
+                else:
+                    logger.info(f"{name} of {pwsid} (email={email}) trying to send general contact email...")
+                email_message.send(fail_silently=False)
+            except Exception as e:
+                logger.error(f"{e}. The user tried to send an email but failed.")
+            else:
+                logger.info(f"Email sent successfully!")
 
             # Return a JSON response for AJAX.
             # if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -534,7 +551,14 @@ def contact_view(request, claim=None, source_name=None, message=0):
                 source.sup_notif_sent = True
                 source.notif_datetime = timezone.now()
                 source.sup_status = "Claim Under Review"
-                source.save()
+                try:
+                    logger.info(f"Attempting to save notification information for {source_name} (PWSID: {pwsid})...")
+                    source.save()
+                except Exception as e:
+                    logger.error(f"{e}. An error occurred saving the notification information for {source_name} (PWSID: {pwsid}) to the database.")
+                else:
+                    logger.info("Notification information for the source was saved successfully!")
+
 
                 return redirect('dashboard', claim=claim, supplemental=1)
 
@@ -576,8 +600,14 @@ def no_data_contact_view(request):
                 reply_to=[email],
             )
 
-            email_message.send(fail_silently=False)
-            messages.success(request, "This is a test!")
+            try:
+                logger.info(f"{name} of {pwsid} (email={email}) trying to send general contact email...")
+                email_message.send(fail_silently=False)
+            except Exception as e:
+                logger.error(f"{e}. The user tried to send an email but failed.")
+            else:
+                logger.info(f"Email sent successfully!")
+
 
             return render(request, 'no_data_landing_page.html')
 

@@ -14,6 +14,6 @@ def info_bar_context(request):
                 'claim_pws': claim_pws_record,
             }
         except (Pws.DoesNotExist, ClaimPws.DoesNotExist):
-            logger.warning("Pws or ClaimPws record does not exist.")
+            #logger.info("Pws or ClaimPws record does not exist.")
             return {}
     return {}
