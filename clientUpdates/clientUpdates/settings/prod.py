@@ -47,6 +47,12 @@ LOGGING = {
             'filename': os.path.join(LOG_DIR, 'production.log'),
             'formatter': 'verbose'
         },
+        'disallowedHost': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOG_DIR, 'disallowedhosts.log'),
+            'formatter': 'verbose'
+        }
     },
     'loggers': {
         'django': {
@@ -58,6 +64,10 @@ LOGGING = {
             'handlers': ['console', 'file'],
             'level': 'INFO',
             'propagate': False,
+        },
+        'django.security.DisallowedHost': {
+            'handlers': ['disallowedHost'],
+            'propagate': False
         }
     },
 }
