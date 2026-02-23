@@ -5,6 +5,7 @@ import requests
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.http import JsonResponse
+from ..utils.file_upload_utils import upload_to_local
 
 logger = logging.getLogger('clientUpdates')
 DROPBOX_TOKEN_URL = "https://api.dropbox.com/oauth2/token"
@@ -92,9 +93,10 @@ def upload_to_dropbox(file, filetype, pwsid):
         # Ensure folder exists
         ensure_dropbox_folder(dbx, folder_path)
 
-        # Upload the file
+        # Upload the file to both dropbox and locally
         with file.open('rb') as f:
             dbx.files_upload(f.read(), dropbox_path, mode=dropbox.files.WriteMode.overwrite)
+            upload_to_local(pwsid=pwsid, file=file, folder="Supplemental Claim")
 
         # Return success response
         logger.info(f"{file} uploaded to Dropbox under /uploads/{pwsid}/{filetype}/ successfully.")
