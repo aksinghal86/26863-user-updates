@@ -28,10 +28,17 @@
         <label for="id_message">Message</label>
     </div>
 
-    <div class="mb-4">
+
+    <div {% if not claim %} hidden {% else %} {% endif %}>
+        <label for="file_upload" class="form-label">Please attach the lab report that will be associated with your Supplemental Fund Claim for this source.</label>
+        <input {% if claim %} required {% else %} {% endif %} type="file" class="form-control" id="file_upload" name="file_upload" accept=".pdf, .jpg, .jpeg, .png">
+        <div class="invalid-feedback" id="file-upload-error"></div>
+    </div>
+
+
+    <div class="mb-4" style="padding-bottom: 20px; margin-top: 20px;">
         <button type="submit" class="btn btn-outline-success" id="submit-button">Send</button>
         <button type="button" class="btn btn-outline-secondary" onclick="window.location.href='{% url 'landing_page' %}'">Cancel</button>
-
     </div>
 
     <div id="loader-container">
@@ -41,65 +48,114 @@
 </form>
 
 <script>
+
     document.getElementById('contactForm').addEventListener('submit', async function(event) {
+
+        // Utility functions
+        const clearValidationErrors = () => {
+          document.querySelectorAll('.invalid-feedback').forEach(el => (el.innerHTML = ''));
+          document.querySelectorAll('.form-control').forEach(el => el.classList.remove('is-invalid'));
+          console.log('in clearvalidation errors func');
+        };
+
+        const showValidationError = (inputElement, errorMessage) => {
+          const errorElement = inputElement.nextElementSibling;
+          if (errorElement) {
+            errorElement.innerHTML = errorMessage;
+          }
+          inputElement.classList.add('is-invalid');
+        };
+
         event.preventDefault(); // Prevent default form submission
 
-        const form = event.target;
-        const formData = new FormData(form);
+        clearValidationErrors();
 
+        const fileInput = document.getElementById('file_upload');
+        const fileExists = fileInput.checkVisibility();
 
-        var loaderContainer = document.getElementById('loader-container');
-        loaderContainer.style.display = 'flex';
+        const validateFile = () => {
+          const maxFileSizeBytes = 25 * 1024 * 1024; // Max file size: 25 MB
+          const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
+          const fileName = fileInput.value;
+          const fileExtension = fileName.split('.').pop().toLowerCase();
+          const file = fileInput.files[0];
 
-        var loader = document.getElementById('loader');
-        loader.style.display = 'block';
+          if (!allowedExtensions.includes(fileExtension)) {
+            showValidationError(fileInput, "Lab report must be a pdf or an image file.");
+            return false;
+          }
 
-        try {
-            // Send the form data using Fetch API
-            const response = await fetch(form.action || window.location.href, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': 'XMLHttpRequest',
-                },
-                body: formData
-            });
+          if (file && file.size > maxFileSizeBytes) {
+            showValidationError(fileInput, "File size must not exceed 25 MB.");
+            return false;
+          }
+          console.log('true');
+          return true;
+        };
+        const isFileValid = validateFile();
 
+        if (!isFileValid && fileExists) {
+            event.preventDefault();
+        }
 
+        else {
 
-            if (response.ok) {
-                loader.style.display = 'none';
-                loaderContainer.style.display = 'none';
-                // Show a non-blocking alert
-                const alertDiv = document.createElement('div');
-                alertDiv.className = 'alert alert-success';
-                alertDiv.innerText = "Thank you! Your message has been sent. We will reach out to you within 2-5 business days.";
-                form.parentElement.insertBefore(alertDiv, form);
+            const form = event.target;
+            const formData = new FormData(form);
 
-                // Automatically redirect after a short delay
-                setTimeout(() => {
-                    if (window.history.length > 1) {
-                        window.history.back();
-                    } else {
-                        window.location.href = "{% url 'landing_page' %}";
-                    }
-                }, 1500);
-            } else {
+            var loaderContainer = document.getElementById('loader-container');
+            loaderContainer.style.display = 'flex';
 
-                loader.style.display = 'none';
-                loaderContainer.style.display = 'none';
-                const errorText = await response.text();
-                // Handle errors
+            var loader = document.getElementById('loader');
+            loader.style.display = 'block';
 
-                // delay alert slightly so that loader can disappear before alert message shows up
-                setTimeout(() => {alert("An error occurred: please try again or report this issue to jfontaine@eheinc.com.")}, 100);
+            try {
+                // Send the form data using Fetch API
+                const response = await fetch(form.action || window.location.href, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': 'XMLHttpRequest',
+                    },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    loader.style.display = 'none';
+                    loaderContainer.style.display = 'none';
+                    // Show a non-blocking alert
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-success';
+                    alertDiv.innerText = "Thank you! Your message has been sent. We will reach out to you within 2-5 business days.";
+                    form.parentElement.insertBefore(alertDiv, form);
+
+                    // Automatically redirect after a short delay
+                    setTimeout(() => {
+                        if (window.history.length > 1) {
+                            window.history.back();
+                        } else {
+                            window.location.href = "{% url 'landing_page' %}";
+                        }
+                    }, 1500);
+                }
+                else {
+
+                    loader.style.display = 'none';
+                    loaderContainer.style.display = 'none';
+                    const errorText = await response.text();
+                    // Handle errors
+
+                    // delay alert slightly so that loader can disappear before alert message shows up
+                    setTimeout(() => {alert("An error occurred: please try again or report this issue to jfontaine@eheinc.com.")}, 100);
+                }
+            } catch (error) {
+                    loader.style.display = 'none';
+                    loaderContainer.style.display = 'none';
+                    console.error("An error occurred:", error);
+                    alert("An unexpected error occurred. Please try again later.")
             }
-        } catch (error) {
-            loader.style.display = 'none';
-            loaderContainer.style.display = 'none';
-            console.error("An error occurred:", error);
-            alert("An unexpected error occurred. Please try again later.")
         }
     });
+
 
     // code to make the subject line
     const subject = document.getElementById("id_subject");

@@ -1,5 +1,8 @@
 # Custom models and forms
+import os
+
 from django.contrib.auth import logout
+from django.core.files.storage import default_storage
 from django.views.decorators.cache import never_cache
 
 from .models import (Pws, Source, PfasResult, FlowRate, ClaimSource, ClaimFlowRate,
@@ -26,6 +29,8 @@ from django.http import JsonResponse, Http404
 from itertools import chain
 from datetime import datetime
 from django.db.models import Q, Sum
+from .utils.dropbox_utils import upload_to_dropbox
+from .utils.file_upload_utils import upload_to_local, validate_file
 import logging
 
 logger = logging.getLogger('clientUpdates')
@@ -494,47 +499,72 @@ def contact_view(request, claim=None, source_name=None, message=0):
     recipients = settings.EMAIL_RECIPIENTS
 
     if request.method == 'POST':
-        form = ContactForm(request.POST)
+        form = ContactForm(request.POST, request.FILES)
 
         if form.is_valid():
             name = form.cleaned_data['name']
             email = form.cleaned_data['email']
             subject = form.cleaned_data['subject']
+            message = form.cleaned_data['message']
+            full_message = f"From: {name}\n\n{message}"
+            uploaded_file = request.FILES.get('file_upload')
+
+            if uploaded_file:
+
+                # save file content to be used later
+                file_content = uploaded_file.read()
+
+                # save file to dropbox and locally
+                try:
+
+                    validate_file(uploaded_file)
+                    upload_to_dropbox(file=uploaded_file, filetype="Supplemental Claim", pwsid=pwsid)
+                    upload_to_local(pwsid=pwsid, file=uploaded_file, folder="Supplemental Claim")
+
+                except Exception as e:
+                    logger.error(f"Error: {e}. Attempted to upload file to dropbox and locally but failed.")
 
             if claim:
                 subject = f"{subject}"
+                email_message = EmailMessage(
+                    subject=subject,
+                    body=full_message,
+                    from_email=settings.EMAIL_HOST_USER,
+                    to=recipients,
+                    reply_to=[email],
+                )
+
+                email_message.attach(uploaded_file.name, file_content, uploaded_file.content_type)
+
             else:
                 subject = f"{subject} (from {pwsid})"
-
-            message = form.cleaned_data['message']
-            full_message = f"From: {name}\n\n{message}"
-
-            email_message = EmailMessage(
-                subject=subject,
-                body=full_message,
-                from_email=settings.EMAIL_HOST_USER,
-                to=recipients,
-                reply_to=[email],
-            )
+                email_message = EmailMessage(
+                    subject=subject,
+                    body=full_message,
+                    from_email=settings.EMAIL_HOST_USER,
+                    to=recipients,
+                    reply_to=[email],
+                )
 
             try:
+
                 if source_name:
                     logger.info(f"{name} of {pwsid} (email={email}) trying to send email about {claim} supplemental claims for {source_name}...")
+
                 else:
                     logger.info(f"{name} of {pwsid} (email={email}) trying to send general contact email...")
+
                 email_message.send(fail_silently=False)
+
             except Exception as e:
                 logger.error(f"{e}. The user tried to send an email but failed.")
+
             else:
                 logger.info(f"Email sent successfully!")
 
-            # Return a JSON response for AJAX.
-            # if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            #     return JsonResponse({'message': 'Email sent successfully.'})
-
             # if this is a user filling out a regular contact form, unrelated to supplemental funds:
             if claim is None:
-                return render(request, 'dashboard.html')
+                return render(request, 'landing_page.html')
 
             # otherwise...:
             else:
@@ -551,11 +581,14 @@ def contact_view(request, claim=None, source_name=None, message=0):
                 source.sup_notif_sent = True
                 source.notif_datetime = timezone.now()
                 source.sup_status = "Claim Under Review"
+
                 try:
                     logger.info(f"Attempting to save notification information for {source_name} (PWSID: {pwsid})...")
                     source.save()
+
                 except Exception as e:
                     logger.error(f"{e}. An error occurred saving the notification information for {source_name} (PWSID: {pwsid}) to the database.")
+
                 else:
                     logger.info("Notification information for the source was saved successfully!")
 

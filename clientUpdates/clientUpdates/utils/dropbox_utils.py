@@ -89,18 +89,6 @@ def upload_to_dropbox(file, filetype, pwsid):
         folder_path = f"/uploads/{pwsid}/{filetype}"
         dropbox_path = f"{folder_path}/{file.name}"
 
-        # Path for local upload
-        local_path = f"{pwsid}/{filetype}/{file.name}"
-
-        # Save locally
-        # TODO: Joe, might be a good idea to save locally temporarily and delete after 5 days. 
-        # safeguard against dropbox not working. 
-        # deleting after 5 days or so will help with storage issues if that becomes a problem. 
-
-        # if the file does not already exist, save to local storage.
-        if not os.path.exists(default_storage.path(local_path)):
-            default_storage.save(local_path, file)
-
         # Ensure folder exists
         ensure_dropbox_folder(dbx, folder_path)
 
@@ -111,6 +99,7 @@ def upload_to_dropbox(file, filetype, pwsid):
         # Return success response
         logger.info(f"{file} uploaded to Dropbox under /uploads/{pwsid}/{filetype}/ successfully.")
         return JsonResponse({'success': 'File uploaded to Dropbox successfully', 'path': dropbox_path})
+
     except dropbox.exceptions.AuthError:
         # Refresh token and retry
         dropbox_access_token = refresh_dropbox_access_token()
