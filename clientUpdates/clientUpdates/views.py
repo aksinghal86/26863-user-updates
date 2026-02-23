@@ -518,8 +518,8 @@ def contact_view(request, claim=None, source_name=None, message=0):
                 try:
 
                     validate_file(uploaded_file)
+                    # upload to dropbox and locally
                     upload_to_dropbox(file=uploaded_file, filetype="Supplemental Claim", pwsid=pwsid)
-                    upload_to_local(pwsid=pwsid, file=uploaded_file, folder="Supplemental Claim")
 
                 except Exception as e:
                     logger.error(f"Error: {e}. Attempted to upload file to dropbox and locally but failed.")
