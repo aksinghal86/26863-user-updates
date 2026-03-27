@@ -1,0 +1,12 @@
+{% extends 'base_generic_alt.html' %}
+
+{% block content %}
+<div class="alert alert-success">
+    <h1 style="text-align:center;">Success!</h1>
+    <h4 style="text-align:center;" class="no-bottom-border">Your form has been submitted.</h4>
+</div>
+
+<div style="display:flex; justify-content: center;">
+    <a href="{% url 'landing_page' %}" class="btn btn-primary" style="width:20%;">Return to Home Page</a>
+</div>
+{% endblock %}

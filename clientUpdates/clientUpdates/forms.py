@@ -1,6 +1,7 @@
 from django import forms
 from django.utils import timezone
-from .models import FlowRate, PfasResult
+from .models import FlowRate, PfasResult, phase2PwsInfo, phase2SourceInfo, phase2MaxFlow, phase2AnnualFlow, phase2PfasResults
+
 
 class MaxFlowRateUpdateForm(forms.ModelForm):
     """
@@ -132,3 +133,140 @@ class ContactForm(forms.Form):
     #         raise forms.ValidationError("File must be under 5MB.")
     #
     #     return file
+
+
+class pwsInfoForm(forms.ModelForm):
+    class Meta:
+
+        model = phase2PwsInfo
+
+        fields = [
+            'pwsid',
+            'pws_name',
+            'ein',
+            'facility_address',
+            'facility_city',
+            'facility_state',
+            'facility_zip',
+            'mailing_address',
+            'mailing_city',
+            'mailing_state',
+            'mailing_zip',
+            'primary_contact_name',
+            'primary_contact_title',
+            'primary_contact_telephone',
+            'primary_contact_cell_phone',
+            'primary_contact_email',
+            'secondary_contact_name',
+            'secondary_contact_title',
+            'secondary_contact_telephone',
+            'secondary_contact_cell_phone',
+            'secondary_contact_email',
+            'tertiary_contact_name',
+            'tertiary_contact_title',
+            'tertiary_contact_telephone',
+            'tertiary_contact_cell_phone',
+            'tertiary_contact_email',
+            'ucmr5_required',
+            'pfas_required_state',
+            'connections_15',
+            'residents_25',
+            'pop_fewer_3300_062223',
+            'pop_fewer_3300_063023',
+            'pop_fewer_3300_051524',
+            'pws_in_usa',
+            'pws_owned_state_fed',
+            'sdwis_owner_code',
+            'sdwis_facility_code',
+            'sdwis_activity_code',
+            'pfas_detected_06222023',
+            'pfas_detected_06302023',
+            'pfas_detected_05152024',
+            'comments'
+        ]
+
+class phase2SourceInfoForm(forms.ModelForm):
+    class Meta:
+
+        model = phase2SourceInfo
+
+        exclude = [
+            'id',
+            'pwsid',
+            'pws_name'
+        ]
+
+class phase2MaxFlowForm(forms.ModelForm):
+
+    class Meta:
+        model = phase2MaxFlow
+
+        exclude = [
+            'id',
+            'pwsid',
+            'pws_name'
+        ]
+
+
+class phase2AnnualFlowForm(forms.ModelForm):
+    class Meta:
+        model = phase2AnnualFlow
+
+        fields = [
+            'year',
+            'source_name',
+            'flow_rate',
+            'units',
+            'flow_rate_reduced',
+            'did_not_exist',
+            'file_name'
+        ]
+
+class phase2PfasResultsForm(forms.ModelForm):
+    class Meta:
+        model = phase2PfasResults
+        fields = [
+            'analyte',
+            'result',
+            'units',
+            'sample_date',
+            'file_name'
+        ]
+
+class formConstants(forms.Form):
+    comments_annual_flow = forms.CharField(widget=forms.Textarea, required=False)
+    comments_pfas = forms.CharField(widget=forms.Textarea, required=False)
+    source_name = forms.CharField(max_length=150)
+
+class annualFiles(forms.Form):
+    annualFile1 = forms.FileField(required=False)
+    annualFile2 = forms.FileField(required=False)
+    annualFile3 = forms.FileField(required=False)
+    annualFile4 = forms.FileField(required=False)
+    annualFile5 = forms.FileField(required=False)
+    annualFile6 = forms.FileField(required=False)
+    annualFile7 = forms.FileField(required=False)
+    annualFile8 = forms.FileField(required=False)
+    annualFile9 = forms.FileField(required=False)
+    annualFile10 = forms.FileField(required=False)
+    annualFile11 = forms.FileField(required=False)
+    annualFile12 = forms.FileField(required=False)
+    annualFile13 = forms.FileField(required=False)
+
+class pfasFiles(forms.Form):
+    pfasFile1 = forms.FileField(required=False)
+    pfasFile2 = forms.FileField(required=False)
+    pfasFile3 = forms.FileField(required=False)
+    pfasFile4 = forms.FileField(required=False)
+    pfasFile5 = forms.FileField(required=False)
+    pfasFile6 = forms.FileField(required=False)
+    pfasFile7 = forms.FileField(required=False)
+
+class maxFlowFile(forms.Form):
+    maxFlowFile = forms.FileField(required=False)
+
+
+
+
+
+

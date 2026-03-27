@@ -9,6 +9,7 @@ from .dropbox_utils import upload_to_dropbox
 from django.utils import timezone
 from django.contrib import messages
 from django.shortcuts import redirect
+from django.conf import settings
 
 
 logger = logging.getLogger('clientUpdates')
@@ -88,8 +89,7 @@ def handle_update(request, form_class, extra_fields, impacted=None, calc_func=No
     messages.error(request, "Invalid request.")
     return redirect('source-detail', pwsid=request.POST.get('pwsid'), source_name=request.POST.get('source_name'))
 
-# def file_upload(instance, filename):
-#     print("{0}/{1}".format( instance.pwsid, filename))
-#     return "{0}/{1}".format(instance.pwsid, filename)
 
+def file_upload(instance, filename):
+    return "{0}/{1}".format(instance.pwsid, filename)
 

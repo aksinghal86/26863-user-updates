@@ -1,0 +1,306 @@
+{% extends 'base_generic_alt.html' %}
+{% load static %}
+
+{% block content %}
+<div>
+    <form id="pwsInfoForm" action="{% if true %}{{action}}{% endif %}" method="post" onSubmit="return confirm('Are you sure you would like to submit this form?')">
+        {% csrf_token %}
+
+        <!--Basic PWS Info and Facility Address-->
+
+        <div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
+            <h3>General PWS Information</h3>
+            <div class="form-group">
+                <label for="ein">Employee Identification Number</label>
+                <input required id="ein" name="ein" type="text" class="form-control" value="{{form.ein.value|default_if_none:''}}">
+            </div>
+            <div class="form-group">
+                <label for="facility_address">Facility Address</label>
+                <input required id="facility_address" name="facility_address" type="text" class="form-control" value="{{form.facility_address.value|default_if_none:''}}">
+            </div>
+            <div class="form-row" style="display:flex; justify-content:space-between;">
+                <div class="form-group" style="width:50%;">
+                    <label for="facility_city">Facility City</label>
+                    <input required id="facility_city" name="facility_city" type="text" class="form-control" value="{{form.facility_city.value|default_if_none:''}}">
+                </div>
+                <div class="form-group" style="width:20%;">
+                    <label for="facility_state">Facility State</label>
+                    <select required id="facility_state" name="facility_state" class="form-select">
+                        <option disabled {% if not form.facility_state.value %} selected {% endif %} value=""></option>
+                        {% for i in stateOptions %}
+                        <option value="{{i.0}}" {% if form.facility_state.value == i.0 %} selected {% endif %}>{{i.0}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group" style="width:30%;">
+                    <label for="facility_zip">Facility Zip Code</label>
+                    <input required id="facility_zip" name="facility_zip" type="text" class="form-control" value="{{form.facility_zip.value|default_if_none:''}}">
+                </div>
+            </div>
+        </div>
+
+        <!--Mailing Address-->
+
+        <div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
+            <h3>Mailing Address</h3>
+            <div class="form-group">
+                <label for="mailing_address">Address</label>
+                <input required id="mailing_address" name="mailing_address" type="text" class="form-control" value="{{form.mailing_address.value|default_if_none:''}}">
+            </div>
+            <div class="form-row" style="display:flex; justify-content:space-between;">
+                <div class="form-group" style="width:50%;">
+                    <label for="mailing_city">City</label>
+                    <input required id="mailing_city" name="mailing_city" type="text" class="form-control" value="{{form.ein.value|default_if_none:''}}">
+                </div>
+                <div class="form-group" style="width:20%;">
+                    <label for="mailing_state">State</label>
+                    <select required id="mailing_state" name="mailing_state" class="form-select">
+                        <option disabled {% if not form.mailing_state.value %} selected {% endif %} value=""></option>
+                        {% for i in stateOptions %}
+                        <option value="{{i.0}}" {% if form.mailing_state.value == i.0 %} selected {% endif %}>{{i.0}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group" style="width:30%;">
+                    <label for="mailing_zip">Zip Code</label>
+                    <input required id="mailing_zip" name="mailing_zip" type="text" class="form-control" value="{{form.mailing_zip.value|default_if_none:''}}">
+                </div>
+            </div>
+        </div>
+
+        <!--Primary Contact-->
+        <div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
+            <h3>Primary Contact</h3>
+            <div class="form-group">
+                <label for="primary_contact_name">Name</label>
+                <input required id="primary_contact_name" name="primary_contact_name" value="{{form.primary_contact_name.value|default_if_none:''}}" type="text" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="primary_contact_title">Title</label>
+                <input required id="primary_contact_title" name="primary_contact_title" type="text" class="form-control" value="{{form.primary_contact_title.value|default_if_none:''}}">
+            </div>
+            <div class="form-group">
+                <label for="primary_contact_telephone">Telephone</label>
+                <input required id="primary_contact_telephone" name="primary_contact_telephone" type="text" class="form-control" value="{{form.primary_contact_telephone.value|default_if_none:''}}">
+            </div>
+            <div class="form-group">
+                <label for="primary_contact_cell_phone">Mobile Phone</label>
+                <input required id="primary_contact_cell_phone" name="primary_contact_cell_phone" type="text" class="form-control" value="{{form.primary_contact_cell_phone.value|default_if_none:''}}">
+            </div>
+            <div class="form-group">
+                <label for="primary_contact_email">Email</label>
+                <input required id="primary_contact_email" name="primary_contact_email" type="text" class="form-control" value="{{form.primary_contact_email.value|default_if_none:''}}">
+            </div>
+        </div>
+
+                <!--Secondary Contact-->
+        <div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
+            <h3>Secondary Contact</h3>
+            <div class="form-group">
+                <label for="secondary_contact_name">Name</label>
+                <input id="secondary_contact_name" name="secondary_contact_name" type="text" class="form-control" value="{{form.secondary_contact_name.value|default_if_none:''}}">
+            </div>
+            <div class="form-group">
+                <label for="secondary_contact_title">Title</label>
+                <input id="secondary_contact_title" name="secondary_contact_title" type="text" class="form-control" value="{{form.secondary_contact_title.value|default_if_none:''}}">
+            </div>
+            <div class="form-group">
+                <label for="secondary_contact_telephone">Telephone</label>
+                <input id="secondary_contact_telephone" name="secondary_contact_telephone" type="text" class="form-control" value="{{form.secondary_contact_telephone.value|default_if_none:''}}">
+            </div>
+            <div class="form-group">
+                <label for="secondary_contact_cell_phone">Mobile Phone</label>
+                <input id="secondary_contact_cell_phone" name="secondary_contact_cell_phone" type="text" class="form-control" value="{{form.secondary_contact_cell_phone.value|default_if_none:''}}">
+            </div>
+            <div class="form-group">
+                <label for="secondary_contact_email">Email</label>
+                <input id="secondary_contact_email" name="secondary_contact_email" type="text" class="form-control" value="{{form.secondary_contact_email.value|default_if_none:''}}">
+            </div>
+        </div>
+
+                <!--Tertiary Contact-->
+        <div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
+            <h3>Tertiary Contact</h3>
+            <div class="form-group">
+                <label for="tertiary_contact_name">Name</label>
+                <input id="tertiary_contact_name" name="tertiary_contact_name" type="text" class="form-control" value="{{form.tertiary_contact_name.value|default_if_none:''}}">
+            </div>
+            <div class="form-group">
+                <label for="tertiary_contact_title">Title</label>
+                <input id="tertiary_contact_title" name="tertiary_contact_title" type="text" class="form-control" value="{{form.tertiary_contact_title.value|default_if_none:''}}">
+            </div>
+            <div class="form-group">
+                <label for="tertiary_contact_telephone">Telephone</label>
+                <input id="tertiary_contact_telephone" name="tertiary_contact_telephone" type="text" class="form-control" value="{{form.tertiary_contact_telephone.value|default_if_none:''}}">
+            </div>
+            <div class="form-group">
+                <label for="tertiary_contact_cell_phone">Mobile Phone</label>
+                <input id="tertiary_contact_cell_phone" name="tertiary_contact_cell_phone" type="text" class="form-control" value="{{form.tertiary_contact_cell_phone.value|default_if_none:''}}">
+            </div>
+            <div class="form-group">
+                <label for="tertiary_contact_email">Email</label>
+                <input id="tertiary_contact_email" name="tertiary_contact_email" type="text" class="form-control" value="{{form.tertiary_contact_email.value|default_if_none:''}}">
+            </div>
+        </div>
+
+        <!--Yes/No Questions-->
+        <div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
+            <h3>Yes/No Questions</h3>
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between; border-bottom: 2px solid rgba(210, 210, 210, 0.5);">
+                <label for="ucmr5_required" class="tf-label">Is the PWS required to test under UCMR-5?</label>
+                <select required id="ucmr5_required" name="ucmr5_required" class="form-select tf-select">
+                    <option disabled {% if not form.ucmr5_required.value %} selected {% endif %} value=""></option>
+                    <option {% if form.ucmr5_required.value == "Yes" %} selected {% endif %} value="Yes">Yes</option>
+                    <option {% if form.ucmr5_required.value == "No" %} selected {% endif %}value="No">No</option>
+                </select>
+            </div>
+            <div hidden class="invalid-feedback"></div>
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between;">
+                <label for="pfas_required_state" class="tf-label">Is the PWS required to test for PFAS by state law?</label>
+                <select required id="pfas_required_state" name="pfas_required_state" class="form-select tf-select">
+                    <option disabled {% if not form.pfas_required_state.value %} selected {% endif %} value=""></option>
+                    <option {% if form.pfas_required_state.value == "Yes" %} selected {% endif %} value="Yes">Yes</option>
+                    <option {% if form.pfas_required_state.value == "No" %} selected {% endif %} value="No">No</option>
+                </select>
+            </div>
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between;">
+                <label for="connections_15" class="tf-label">Does the PWS serve at least 15 service connections used by year-round residents?</label>
+                <select required id="connections_15" name="connections_15" class="form-select tf-select">
+                    <option disabled {% if not form.connections_15.value %} selected {% endif %} value=""></option>
+                    <option {% if form.connections_15.value == "Yes" %} selected {% endif %} value="Yes">Yes</option>
+                    <option {% if form.connections_15.value == "No" %} selected {% endif %} value="No">No</option>
+                </select>
+            </div>
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between;">
+                <label for="residents_25" class="tf-label">Does the PWS serve at least 25 year-round residents?</label>
+                <select required id="residents_25" name="residents_25" class="form-select tf-select">
+                    <option disabled {% if not form.residents_25.value %} selected {% endif %} value=""></option>
+                    <option {% if form.residents_25.value == "Yes" %} selected {% endif %} value="Yes">Yes</option>
+                    <option {% if form.residents_25.value == "No" %} selected {% endif %} value="No">No</option>
+                </select>
+            </div>
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between;">
+                <label for="pop_fewer_3300_062223" class="tf-label">Did the PWS serve fewer than 3,300 people according to SDWIS as of June 22, 2023?</label>
+                <select required id="pop_fewer_3300_062223" name="pop_fewer_3300_062223" class="form-select tf-select">
+                    <option disabled {% if not form.pop_fewer_3300_062223.value %} selected {% endif %} value=""></option>
+                    <option {% if form.pop_fewer_3300_062223.value == "Yes" %} selected {% endif %} value="Yes">Yes</option>
+                    <option {% if form.pop_fewer_3300_062223.value == "No" %} selected {% endif %} value="No">No</option>
+                </select>
+            </div>
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between;">
+                <label for="pop_fewer_3300_063023" class="tf-label">Did the PWS serve fewer than 3,300 people according to SDWIS as of June 30, 2023?</label>
+                <select required id="pop_fewer_3300_063023" name="pop_fewer_3300_063023" class="form-select tf-select">
+                    <option disabled {% if not form.pop_fewer_3300_063023.value %} selected {% endif %} value=""></option>
+                    <option {% if form.pop_fewer_3300_063023.value == "Yes" %} selected {% endif %} value="Yes">Yes</option>
+                    <option {% if form.pop_fewer_3300_063023.value == "No" %} selected {% endif %} value="No">No</option>
+                </select>
+            </div>
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between;">
+                <label for="pop_fewer_3300_051524" class="tf-label">Did the PWS serve fewer than 3,300 people according to SDWIS as of May 15, 2024?</label>
+                <select required id="pop_fewer_3300_051524" name="pop_fewer_3300_051524" class="form-select tf-select">
+                    <option disabled {% if not form.pop_fewer_3300_051524.value %} selected {% endif %} value=""></option>
+                    <option {% if form.pop_fewer_3300_051524.value == "Yes" %} selected {% endif %} value="Yes">Yes</option>
+                    <option {% if form.pop_fewer_3300_051524.value == "No" %} selected {% endif %} value="No">No</option>
+                </select>
+            </div>
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between;">
+                <label for="pfas_detected_06222023" class="tf-label">Did any of the PWS's water sources exhibit measurable concentration(s) of PFAS on or before June 22, 2023?</label>
+                <select required id="pfas_detected_06222023" name="pfas_detected_06222023" class="form-select tf-select">
+                    <option disabled {% if not form.pfas_detected_06222023.value %} selected {% endif %} value=""></option>
+                    <option {% if form.pfas_detected_06222023.value == "Yes" %} selected {% endif %} value="Yes">Yes</option>
+                    <option {% if form.pfas_detected_06222023.value == "No" %} selected {% endif %} value="No">No</option>
+                </select>
+            </div>
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between;">
+                <label for="pfas_detected_06302023" class="tf-label">Did any of the PWS's water sources exhibit measurable concentration(s) of PFAS on or before June 30, 2023?</label>
+                <select required id="pfas_detected_06302023" name="pfas_detected_06302023" class="form-select tf-select">
+                    <option disabled {% if not form.pfas_detected_06302023.value %} selected {% endif %} value=""></option>
+                    <option {% if form.pfas_detected_06302023.value == "Yes" %} selected {% endif %} value="Yes">Yes</option>
+                    <option {% if form.pfas_detected_06302023.value == "No" %} selected {% endif %} value="No">No</option>
+                </select>
+            </div>
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between;">
+                <label for="pfas_detected_05152024" class="tf-label">Did any of the PWS's water sources exhibit measurable concentration(s) of PFAS on or before May 15, 2024?</label>
+                <select required id="pfas_detected_05152024" name="pfas_detected_05152024" class="form-select tf-select">
+                    <option disabled {% if not form.pfas_detected_05152024.value %} selected {% endif %} value=""></option>
+                    <option {% if form.pfas_detected_05152024.value == "Yes" %} selected {% endif %} value="Yes">Yes</option>
+                    <option {% if form.pfas_detected_05152024.value == "No" %} selected {% endif %} value="No">No</option>
+                </select>
+            </div>
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between;">
+                <label for="pws_in_usa" class="tf-label">Is the PWS located in the USA or one of its territories?</label>
+                <select required id="pws_in_usa" name="pws_in_usa" class="form-select tf-select">
+                    <option disabled {% if not form.pws_in_usa.value %} selected {% endif %} value=""></option>
+                    <option {% if form.pws_in_usa.value == "Yes" %} selected {% endif %} value="Yes">Yes</option>
+                    <option {% if form.pws_in_usa.value == "No" %} selected {% endif %} value="No">No</option>
+                </select>
+            </div>
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between;">
+                <label for="pws_owned_state_fed" class="tf-label">Is the PWS owned by a state (or territory of the USA) or the federal government?</label>
+                <select required id="pws_owned_state_fed" name="pws_owned_state_fed" class="form-select tf-select">
+                    <option disabled {% if not form.pws_owned_state_fed.value %} selected {% endif %} value=""></option>
+                    <option {% if form.pws_owned_state_fed.value == "Yes" %} selected {% endif %} value="Yes">Yes</option>
+                    <option {% if form.pws_owned_state_fed.value == "No" %} selected {% endif %} value="No">No</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
+            <h3>SDWIS Codes</h3>
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between;">
+                <label for="sdwis_owner_code" class="tf-label">What is the PWS Owner Type Code as listed in SDWIS?</label>
+                <select required id="sdwis_owner_code" name="sdwis_owner_code" class="form-select tf-select2">
+                    <option disabled {% if not form.sdwis_owner_code.value %} selected {% endif %} value=""></option>
+                    {% for i in sdwisOwnerCodes %}
+                        <option {% if form.sdwis_owner_code.value == i.0 %} selected {% endif %} value="{{i.0}}">{{i.1}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between;">
+                <label for="sdwis_facility_code" class="tf-label">What is the PWS Facility Code as listed in SDWIS?</label>
+                <select required id="sdwis_facility_code" name="sdwis_facility_code" class="form-select tf-select2">
+                    <option disabled {% if not form.sdwis_facility_code.value %} selected {% endif %} value=""></option>
+                    {% for i in sdwisFacilityCodes %}
+                        <option {% if form.sdwis_facility_code.value == i.0 %} selected {% endif %} value="{{i.0}}">{{i.1}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between;">
+                <label for="sdwis_activity_code" class="tf-label">What is the PWS Facility Activity Code as listed in SDWIS?</label>
+                <select required id="sdwis_activity_code" name="sdwis_activity_code" class="form-select tf-select2">
+                    <option disabled {% if not form.sdwis_activity_code.value %} selected {% endif %} value=""></option>
+                    {% for i in sdwisActivityCodes %}
+                        <option {% if form.sdwis_activity_code.value == i.0 %} selected {% endif %} value="{{i.0}}">{{i.1}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
+            <h3>Comments</h3>
+            <div class="form-group">
+                <label for="comments">If you have any questions or comments about your form submittal, please include
+                them below:</label>
+                <textarea id="comments" name="comments" class="form-control" type="text-area">{{form.comments.value|default_if_none:''}}</textarea>
+            </div>
+        </div>
+
+        <div class="card-alt" style="background:none; width:75%; height:200%; margin:20px auto; display:flex; justify-content:center;">
+            <input id="submit" type="submit" value="Submit" class="btn btn-primary" style="width:20%; font-size:1.5em;">
+        </div>
+
+        <div id="loader-container">
+            <div id="loader"></div>
+        </div>
+    </form>
+</div>
+
+
+{% endblock %}
+
+{% block extra_scripts %}
+
+    <script src="{% static 'js/pwsInfoForm.js' %}"></script>
+
+{% endblock %}
+

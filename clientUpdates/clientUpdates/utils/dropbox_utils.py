@@ -1,3 +1,5 @@
+import datetime
+
 import dropbox
 import logging
 import os
@@ -6,6 +8,8 @@ from django.conf import settings
 from django.core.files.storage import default_storage
 from django.http import JsonResponse
 from ..utils.file_upload_utils import upload_to_local
+from dropbox.exceptions import ApiError
+from dropbox.sharing import SharedLinkSettings
 
 logger = logging.getLogger('clientUpdates')
 DROPBOX_TOKEN_URL = "https://api.dropbox.com/oauth2/token"
@@ -40,6 +44,34 @@ def refresh_dropbox_access_token():
         print(f"Error refreshing Dropbox access token: {e}")
         return None
 
+
+def dropboxLink(pwsid):
+    dropbox_access_token = settings.DROPBOX['access_token']
+    if not dropbox_access_token:
+        dropbox_access_token = refresh_dropbox_access_token()
+        if not dropbox_access_token:
+            return JsonResponse({'error': 'Failed to refresh Dropbox token'}, status=401)
+
+    folderPath = f"/uploads/{pwsid}"
+
+    try:
+        #expiration_time = datetime.datetime.now(tz=datetime.UTC) + datetime.timedelta(hours=1)
+        # Initialize Dropbox client
+        dbx = dropbox.Dropbox(dropbox_access_token)
+        linkMetaData = dbx.sharing_create_shared_link_with_settings(folderPath)
+        dropboxLink = linkMetaData.url
+        return dropboxLink
+
+
+    except ApiError as e:
+        # error was thrown because a shared link already exists. Get the most recent one:
+        ## the direct only parameter is to only provide access to the folderPath, no Parent folders above it
+        existingLink = dbx.sharing_list_shared_links(path=folderPath, direct_only=True)
+        # extract the url of the link
+        url = existingLink.links[-1].url
+        # ensure there is no expiration
+        dbx.sharing_modify_shared_link_settings(url, settings=SharedLinkSettings(), remove_expiration=True)
+        return url
 
 
 
@@ -96,7 +128,7 @@ def upload_to_dropbox(file, filetype, pwsid):
         # Upload the file to both dropbox and locally
         with file.open('rb') as f:
             dbx.files_upload(f.read(), dropbox_path, mode=dropbox.files.WriteMode.overwrite)
-            upload_to_local(pwsid=pwsid, file=file, folder="Supplemental Claim")
+            upload_to_local(pwsid=pwsid, file=file, folder=filetype)
 
         # Return success response
         logger.info(f"{file} uploaded to Dropbox and local storage successfully for {pwsid}.")
@@ -110,7 +142,7 @@ def upload_to_dropbox(file, filetype, pwsid):
             dbx = dropbox.Dropbox(dropbox_access_token)
             with file.open('rb') as f:
                 dbx.files_upload(f.read(), dropbox_path, mode=dropbox.files.WriteMode.overwrite)
-                upload_to_local(pwsid=pwsid, file=file, folder="Supplemental Claim")
+                upload_to_local(pwsid=pwsid, file=file, folder=filetype)
             logger.info(f"{file} uploaded to Dropbox and local storage successfully for {pwsid}.")
             return JsonResponse({'success': 'File uploaded to Dropbox successfully', 'path': dropbox_path})
         return JsonResponse({'error': 'Dropbox authentication failed'}, status=401)

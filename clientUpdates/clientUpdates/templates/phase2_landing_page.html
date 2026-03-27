@@ -1,0 +1,158 @@
+{% extends 'base_generic_alt.html' %}
+{% load static %}
+
+{% block content %}
+<div class="alert alert-primary" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
+    <h3 style="margin: 0px; text-align:center; border-bottom:none; font-weight:bold; color: rgb(8, 66, 152); width: 100%;">Hello, {{pws}}!</h3>
+    <br>
+    <p>
+        {{ pws }} is potentially eligible for the 3M/DuPont Phase 2 Action Fund Claim.
+        To process the claim for {{ pws }}, EH&E will need to collect general information
+        about the Public Water System (PWS), in addition to <span style="font-weight:bold; font-style:italic">each</span>
+        of its Sources. A representative of {{ pws }} can provide this information by completing the forms
+        below as indicated.
+    </p>
+    <p>
+        <b>
+            Please refer to the the <a href="{% url 'phase2-helpful-info' %}">Helpful Information</a> page
+            for additional details related to filing a 3M/DuPont Phase 2 Action Fund Claim.
+        </b>
+    </p>
+    <p>
+        If you have any questions or experience any trouble while navigating this application, please
+        <a href="{% url 'no_data_contact' %}">contact us</a> and we will get back to you
+        within 2-5 business days.
+    </p>
+</div>
+
+<div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
+    <h3>PWS Characteristics Form</h3>
+    <p>
+        This form is meant to collect general information about the PWS, including (but not limited to)
+        mailing information, contact information, population data, and occurrences of PFAS detections. Only
+        <span style="font-weight:bold; font-style:italic">one</span> "PWS Characteristics Form" is required
+        per PWS.
+    </p>
+    <table>
+        <thead>
+            <tr>
+                <th class="text-center">PWSID</th>
+                <th class="text-center">Last Modified</th>
+                <th class="text-center"></th>
+                <th class="text-center"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in pwsGenInfo %}
+            <tr style="border-bottom: 1px solid #eaeaea;">
+                <td class="text-center td-no-border">
+                    <i style="width:100%;">{{record.pwsid}}</i>
+                </td>
+                <td class="text-center td-no-border">
+                    {{record.timestamp}}
+                </td>
+                <td class="text-center td-no-border">
+                    <a type="button" class="btn btn-warning" href="{% url 'pws-info-edit' pwsid=record.pwsid %}">
+                        <b class="bi bi-pencil">
+                            View or Edit Form
+                        </b>
+                    </a>
+                </td>
+                <td class="text-center td-no-border">
+                    <form action="{% url 'pws-info-delete' pwsid=record.pwsid %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" value="submit" class="btn btn-danger">
+                            <b class="bi bi-trash" style="color:#e3d8d8;">  Delete Form</b>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div style="display:flex; justify-content:flex-end;">
+        <a id="addPWSForm" type="button" class="btn btn-primary mt30 {% if pwsGenInfo %}no-click{% else %}add-form{% endif %}" href="{% url 'pws-info-create' %}">
+            <p class="bi bi-plus-circle" style="margin:0;">  Add Form</p>
+        </a>
+    </div>
+</div>
+
+<div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
+    <h3>Source Forms</h3>
+    <p>
+        Please complete a "Source Data" form for <span style="font-weight:bold; font-style:italic">each</span> of your
+        Water Sources. As defined by the settlements, a Water Source is:
+    </p>
+
+    <ul>
+        <li>
+            A groundwater well, with sampling done at the wellhead.
+        </li>
+        <li>
+            A surface water treatment plant (supplied by one or more
+            surface water sources or surface water combined with groundwater),
+            with sampling done at the entry point into the treatment plant.
+        </li>
+        <li>
+            Used, now or in the past, for drinking water. I.e., active and inactive Water Sources
+            can be included if they are used to supply drinking water.
+        </li>
+    </ul>
+
+    <p>
+        This form is meant to collect information including (but not limited to) the Water Source's maximum flow rate,
+        annual production data, and PFAS data.
+    </p>
+    <table>
+        <thead>
+            <tr>
+                <th class="text-center">Source Name</th>
+                <th class="text-center">Last Modified</th>
+                <th class="text-center"></th>
+                <th class="text-center"></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for record in sourceGenInfo %}
+            <tr style="border-bottom: 1px solid #eaeaea;">
+                <td class="text-center td-no-border">
+                    <i style="width:100%;">{{record.source_name}}</i>
+                </td>
+                <td class="text-center td-no-border">{{record.timestamp}}</td>
+                <td class="text-center td-no-border">
+                    <a type="button" class="btn btn-warning" href="{% url 'source-form-edit' pwsid=record.pwsid source_name=record.source_name %}">
+                        <b class="bi bi-pencil">
+                            View or Edit Form
+                        </b>
+                    </a>
+                </td>
+                <td class="text-center td-no-border">
+                    <form action="{% url 'source-info-delete' pwsid=record.pwsid source_name=record.source_name %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" value="submit" class="btn btn-danger">
+                            <b class="bi bi-trash" style="color:#e3d8d8;">  Delete Form</b>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div style="display:flex; justify-content:flex-end;">
+        <a id="addSourceForm" type="button" class="btn btn-primary add-form mt30" href="{% url 'source-form-create' %}">
+            <p class="bi bi-plus-circle" style="margin:0;">  Add Form</p>
+        </a>
+    </div>
+
+    <div id="loader-container">
+        <div id="loader"></div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+
+    <script src="{% static 'js/phase2LandingPage.js' %}"></script>
+
+{% endblock %}

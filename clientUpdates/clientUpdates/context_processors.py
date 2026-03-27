@@ -1,4 +1,4 @@
-from clientUpdates.models import Pws, ClaimPws
+from .models import Pws, ClaimPws
 import logging
 
 logger = logging.getLogger('clientUpdates')

@@ -1,6 +1,10 @@
-from django.contrib.auth.models import AbstractUser
+import django_localflavor_us.us_states as us_states
 from django.db import models
 
+from .utils.dropbox_utils import upload_to_dropbox
+from .utils.handler import file_upload
+
+years = [(y, y) for y in range(2013, 2024)]
 
 ## DJANGO user ##
 class AuthGroup(models.Model):
@@ -332,6 +336,7 @@ class FlowRate(models.Model):
         managed = True
         db_table = 'flow_rate'
 
+
 class PfasResult(models.Model):
     row_names = models.BigAutoField(primary_key=True)
     water_source_id = models.BigIntegerField(blank=True, null=True)
@@ -643,6 +648,7 @@ class paymentInfo(models.Model):
         managed = True
         db_table = 'payment_information'
 
+
 class TB_ClaimPfasResult(models.Model):
     row_names = models.BigAutoField(primary_key=True)
     pwsid = models.TextField(blank=True, null=True)
@@ -718,6 +724,7 @@ class supplementalSourceTracker(models.Model):
         managed = True
         db_table = 'supplemental_fund_source_tracker'
 
+
 class TB_ClaimSource(models.Model):
     row_names = models.BigAutoField(primary_key=True)
     claim_number = models.FloatField(blank=True, null=True)
@@ -748,10 +755,10 @@ class TB_ClaimSource(models.Model):
     timestamp = models.DateTimeField(blank=True, null=True)
     data_origin = models.TextField(default="Claims Portal")
 
-
     class Meta:
         managed = True
         db_table = 'claim_tb_source'
+
 
 class pwsPaymentDist(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -796,10 +803,10 @@ class srcPaymentDist(models.Model):
     total_transaction_value = models.FloatField(blank=True, null=True)
     payment_date = models.DateField(blank=True, null=True)
 
-
     class Meta:
         managed = True
         db_table = 'source_payment_dist'
+
 
 class ClaimSubmission(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -811,6 +818,7 @@ class ClaimSubmission(models.Model):
     class Meta:
         managed = True
         db_table = 'claim_submissions'
+
 
 class pwsCreds(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -824,3 +832,138 @@ class pwsCreds(models.Model):
     class Meta:
         managed = True
         db_table = 'consortium_pws_creds'
+
+
+class phase2PwsInfo(models.Model):
+    id = models.AutoField(primary_key=True, null=False, blank=False)
+    pwsid = models.TextField(blank=True, null=True)
+    pws_name = models.TextField(blank=True, null=True)
+    ein = models.TextField(blank=True, null=True)
+    facility_address = models.TextField(blank=True, null=True)
+    facility_city = models.TextField(blank=True, null=True)
+    facility_state = models.CharField(blank=True, choices=us_states.STATE_CHOICES, null=True)
+    facility_zip = models.TextField(blank=True, null=True)
+    mailing_address = models.TextField(blank=True, null=True)
+    mailing_city = models.TextField(blank=True, null=True)
+    mailing_state = models.CharField(blank=True, choices=us_states.STATE_CHOICES, null=True)
+    mailing_zip = models.TextField(blank=True, null=True)
+    primary_contact_name = models.TextField(blank=True, null=True)
+    primary_contact_title = models.TextField(blank=True, null=True)
+    primary_contact_telephone = models.TextField(blank=True, null=True)
+    primary_contact_cell_phone = models.TextField(blank=True, null=True)
+    primary_contact_email = models.TextField(blank=True, null=True)
+    secondary_contact_name = models.TextField(blank=True, null=True)
+    secondary_contact_title = models.TextField(blank=True, null=True)
+    secondary_contact_telephone = models.TextField(blank=True, null=True)
+    secondary_contact_cell_phone = models.TextField(blank=True, null=True)
+    secondary_contact_email = models.TextField(blank=True, null=True)
+    tertiary_contact_name = models.TextField(blank=True, null=True)
+    tertiary_contact_title = models.TextField(blank=True, null=True)
+    tertiary_contact_telephone = models.TextField(blank=True, null=True)
+    tertiary_contact_cell_phone = models.TextField(blank=True, null=True)
+    tertiary_contact_email = models.TextField(blank=True, null=True)
+    ucmr5_required = models.TextField(blank=True, null=True)
+    pfas_required_state = models.TextField(blank=True, null=True)
+    connections_15 = models.TextField(blank=True, null=True)
+    residents_25 = models.TextField(blank=True, null=True)
+    pop_fewer_3300_062223 = models.TextField(blank=True, null=True)
+    pop_fewer_3300_063023 = models.TextField(blank=True, null=True)
+    pop_fewer_3300_051524 = models.TextField(blank=True, null=True)
+    pws_in_usa = models.TextField(blank=True, null=True)
+    pws_owned_state_fed = models.TextField(blank=True, null=True)
+    sdwis_owner_code = models.TextField(blank=True, null=True)
+    sdwis_facility_code = models.TextField(blank=True, null=True)
+    sdwis_activity_code = models.TextField(blank=True, null=True)
+    pfas_detected_06222023 = models.TextField(blank=True, null=True)
+    pfas_detected_06302023 = models.TextField(blank=True, null=True)
+    pfas_detected_05152024 = models.TextField(blank=True, null=True)
+    comments = models.TextField(blank=True, null=True)
+    timestamp = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'phase2_pws_info'
+
+
+class phase2SourceInfo(models.Model):
+    id = models.AutoField(primary_key=True, null=False, blank=False)
+    pwsid = models.TextField(blank=True)
+    pws_name = models.TextField(blank=True)
+    source_name = models.TextField(blank=True)
+    source_type = models.TextField(blank=True)
+    source_type_other = models.TextField(blank=True)
+    pws_owns_source = models.TextField(blank=True)
+    source_co_owned = models.TextField(blank=True)
+    co_owner_pwsid = models.TextField(blank=True)
+    co_owner_explained = models.TextField(blank=True)
+    pws_operates_source = models.TextField(blank=True)
+    pws_purchased = models.TextField(blank=True)
+    pws_drinking_water = models.TextField(blank=True)
+    is_part_of_idws = models.TextField(blank=True)
+    idws_explanation = models.TextField(blank=True)
+    pfas_ever_tested = models.TextField(blank=True)
+    pfas_detected = models.TextField(blank=True)
+    detected_b4_jun2223 = models.TextField(blank=True)
+    detected_after_jun2223 = models.TextField(blank=True)
+    detected_b4_jun3023 = models.TextField(blank=True)
+    detected_after_jun3023 = models.TextField(blank=True)
+    timestamp = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'phase2_source_info'
+
+
+class phase2MaxFlow(models.Model):
+    id = models.AutoField(primary_key=True, null=False, blank=False)
+    pwsid = models.TextField(blank=True)
+    pws_name = models.TextField(blank=True)
+    source_name = models.TextField(blank=True)
+    flow_rate = models.FloatField(blank=True, null=True)
+    units = models.TextField(blank=True)
+    flow_determination = models.TextField(blank=True)
+    file_name = models.TextField(blank=True, null=True)
+    comments = models.TextField(blank=True)
+    timestamp = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'phase2_max_flow'
+
+
+class phase2AnnualFlow(models.Model):
+
+    id = models.AutoField(primary_key=True, null=False, blank=False)
+    pwsid = models.TextField(blank=True)
+    pws_name = models.TextField(blank=True)
+    source_name = models.TextField(blank=True)
+    year = models.IntegerField(blank=True, choices=years)
+    flow_rate = models.FloatField(blank=True)
+    flow_rate_reduced = models.TextField(blank=True)
+    did_not_exist = models.TextField(blank=True)
+    units = models.TextField(blank=True)
+    file_name = models.TextField(blank=True)
+    comments = models.TextField(blank=True)
+    timestamp = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'phase2_annual_flow'
+
+
+class phase2PfasResults(models.Model):
+    id = models.AutoField(primary_key=True, null=False, blank=False)
+    pwsid = models.TextField(blank=True)
+    pws_name = models.TextField(blank=True)
+    source_name = models.TextField(blank=True)
+    analyte = models.TextField(blank=True, null=True)
+    result = models.FloatField(blank=True, null=True)
+    units = models.TextField(blank=True, null=True)
+    sample_date = models.DateField(blank=True, null=True)
+    file_name = models.TextField(blank=True)
+    comments = models.TextField(blank=True)
+    timestamp = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'phase2_pfas_results'

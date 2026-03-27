@@ -156,6 +156,13 @@ button, .btn {
     box-shadow: none;
 }
 
+
+.form-group {
+
+    padding: 10px;
+
+}
+
 /* Table styling */
 table {
     width: 100%;
@@ -252,7 +259,7 @@ td::before {
 .no-click {
 
     pointer-events: none;
-    background-color:#e6e1e1;
+    background-color:#e9ecef;
     border: none;
     color: black;
     cursor: not-allowed;
@@ -381,4 +388,77 @@ td::before {
 
     border-top: 0px;
 
+}
+
+.tf-label {
+
+    display:block;
+    margin: auto 0px;
+    width: 60%;
+
+}
+
+.tf-select{
+
+    width:20% !important;
+
+}
+
+.tf-select2{
+
+    width:30%;
+
+}
+
+.grey-bottom {
+
+    border-bottom: 2px solid rgba(210, 210, 210, 0.5)
+
+}
+
+.unfilled-value {
+
+    border: 2px solid #fa6969 !important;
+
+}
+
+.hidden {
+
+    display: none;
+
+}
+
+.show-block {
+
+    display: block;
+
+}
+
+.flex-center{
+
+    display:flex;
+    justify-content:space-between;
+
+}
+
+.td-no-border {
+
+    border :none;
+
+}
+
+.add-form {
+    border-color:#50a34b !important;
+    background-color:#50a34b !important;
+}
+
+.mt30{
+    margin-top:30px;
+}
+
+.custom-invalid{
+    width:100%;
+    margin: 10px;
+    font-size:0.88rem;
+    color:red;
 }

@@ -1,0 +1,583 @@
+{% extends 'base_generic_alt.html' %}
+{% load static %}
+
+
+{% block content %}
+<div>
+    <form id="sourceForm" action="{% if true%}{{action}}{% endif %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!--Source Name-->
+        <div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
+            <h3>Source Name</h3>
+            <div class="form-group">
+                <label for="source_name">Please enter the source name:</label>
+                <input required id="source_name" name="source_name" type="text" class="form-control" value="{{formConstants.source_name.value|default_if_none:''}}">
+            </div>
+        </div>
+
+        <!--Source Type-->
+        <div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
+            <h3>Source Type</h3>
+            <div class="form-group">
+                <label for="source_type">Please provide the source type:</label>
+                <select required id="source_type" name="source_type" type="text" class="form-select">
+                    <option disabled {% if not phase2SourceInfoForm.source_type_other.value %} selected {% endif %} value=""></option>
+                    {% for option in sourceTypeOptions %}
+                        <option {% if phase2SourceInfoForm.source_type.value == option.0 %} selected {% endif %} value="{{option.0}}">{{option.1}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div id="sourceTypeOther" class="form-group hidden">
+                <label for="source_type_other">Please describe the source type:</label>
+                <input required id="source_type_other" name="source_type_other" type="text" class="form-control" value="{{phase2SourceInfoForm.source_type_other.value|default_if_none:''}}">
+            </div>
+        </div>
+
+    <!--- Yes/No Questions -->
+        <div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
+            <h3>General Yes/No Questions</h3>
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between; border-bottom: 2px solid rgba(210, 210, 210, 0.5);">
+                <label for="pws_owns_source" class="tf-label">Does the PWS own this Water Source?</label>
+                <select required id="pws_owns_source" name="pws_owns_source" class="form-select tf-select" style>
+                    <option disabled {% if not phase2SourceInfoForm.pws_owns_source.value %} selected {% endif %} value=""></option>
+                    {% for option in yesNo %}
+                        <option {% if phase2SourceInfoForm.pws_owns_source.value == option %} selected {% endif %} value="{{option}}">{{option}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between;">
+                <label for="source_co_owned" class="tf-label">Are there any co-owners to this water source?</label>
+                <select required id="source_co_owned" name="source_co_owned" class="form-select tf-select">
+                    <option disabled {% if not phase2SourceInfoForm.source_co_owned.value %} selected {% endif %} value=""></option>
+                    {% for option in yesNo %}
+                        <option {% if phase2SourceInfoForm.source_co_owned.value == option %} selected {% endif %} value="{{option}}">{{option}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between;">
+                <label for="pws_operates_source" class="tf-label">Does the PWS operate this Water Source?</label>
+                <select required id="pws_operates_source" name="pws_operates_source" class="form-select tf-select">
+                    <option disabled {% if not phase2SourceInfoForm.pws_operates_source.value %} selected {% endif %} value=""></option>
+                    {% for option in yesNo %}
+                        <option {% if phase2SourceInfoForm.pws_operates_source.value == option %} selected {% endif %} value="{{option}}">{{option}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between;">
+                <label for="pws_purchased" class="tf-label">Is this Water Source a purchased water connection?</label>
+                <select required id="pws_purchased" name="pws_purchased" class="form-select tf-select">
+                    <option disabled {% if not phase2SourceInfoForm.pws_purchased.value %} selected {% endif %} value=""></option>
+                    {% for option in yesNo %}
+                        <option {% if phase2SourceInfoForm.pws_purchased.value == option %} selected {% endif %} value="{{option}}">{{option}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between;">
+                <label for="pws_drinking_water" class="tf-label">Has the water form this Water Source ever been used as Drinking Water?</label>
+                <select required id="pws_drinking_water" name="pws_drinking_water" class="form-select tf-select">
+                    <option disabled {% if not phase2SourceInfoForm.pws_drinking_water.value %} selected {% endif %} value=""></option>
+                    {% for option in yesNo %}
+                        <option {% if phase2SourceInfoForm.pws_drinking_water.value == option %} selected {% endif %} value="{{option}}">{{option}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between;">
+                <label for="is_part_of_idws" class="tf-label">Is this Water Source part of an Interrelated Drinking Water System (IDWS)?</label>
+                <select required id="is_part_of_idws" name="is_part_of_idws" class="form-select tf-select">
+                    <option disabled {% if not phase2SourceInfoForm.is_part_of_idws.value %} selected {% endif %} value=""></option>
+                    {% for option in yesNo %}
+                        <option {% if phase2SourceInfoForm.is_part_of_idws.value == option %} selected {% endif %} value="{{option}}">{{option}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <!--Hidden divs but will appear based on yes/no responses-->
+
+        <div id="coOwnerInfo" class="card-alt hidden" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
+            <h3>Source Co-Owner Information</h3>
+            <div class="form-group">
+                <label for="co_owner_pwsid">Co-owner PWSID:</label>
+                <input id="co_owner_pwsid" name="co_owner_pwsid" type="text" class="form-control" value="{{phase2SourceInfoForm.co_owner_pwsid.value|default_if_none:''}}">
+            </div>
+            <div class="form-group">
+                <label for="co_owner_explained">Please describe the PWS's relationship with the co-owner:</label>
+                <textarea id="co_owner_explained" name="co_owner_explained" class="form-control">{{phase2SourceInfoForm.co_owner_explained.value|default_if_none:''}}</textarea>
+            </div>
+        </div>
+
+        <div id="idwsExplanation" class="card-alt hidden" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
+            <h3>IDWS Information</h3>
+            <div class="form-group">
+                <label for="idws_explanation">Please explain the relationship between the PWS and the IDWS:</label>
+                <textarea id="idws_explanation" name="idws_explanation" class="form-control">{{phase2SourceInfoForm.idws_explanation.value|default_if_none:''}}</textarea>
+            </div>
+        </div>
+
+        <!--________________________ Max Flow Rate Section ______________________-->
+
+        <div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
+            <h3>Maximum Flow Rate</h3>
+            <div class="alert alert-primary" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:100%; margin:20px auto;">
+                <div  style="display:flex; align-items:stretch;">
+                    <i class="bi bi-info-circle h5" style="padding-right:10px; color:blue; width:5%">
+                    </i>
+                    <p style="margin-bottom:0px;">
+                        This section is about gathering information about the maximum flow rate of the source.
+                        The maximum flow rate is typically documented by pump test records or pump design specifications.
+                        Regardless, please provide the <span style="font-weight:bold; font-style:italic">highest</span> documented maximum flow rate.
+                    </p>
+                </div>
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+                <div class="form-group" style="width:50%;">
+                    <label for="maxflow-flow_rate">Verified maximum flow rate of the Water Source:</label>
+                    <input required id="maxflow-flow_rate" name="maxflow-flow_rate" type="number" class="form-control" value="{{phase2MaxFlowForm.flow_rate.value|default_if_none:''}}">
+                </div>
+                <div class="form-group" style="width:50%;">
+                    <label for="maxflow-units">Units of Provided Flow Rate:</label>
+                    <select required id="maxflow-units" name="maxflow-units" class="form-select">
+                        <option disabled {% if not phase2MaxFlowForm.units.value %} selected {% endif %} value=""></option>
+                        {% for option in unitOptions %}
+                            <option {% if phase2MaxFlowForm.units.value == option.0 %} selected {% endif %} value="{{option.0}}">{{option.1}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="maxflow-flow_determination">How was the verified maximum flow rate determined?</label>
+                <input required id="maxflow-flow_determination" name="maxflow-flow_determination" type="text" class="form-control" value="{{phase2MaxFlowForm.flow_determination.value|default_if_none:''}}">
+            </div>
+
+            <div class="form-group hidden">
+                <input type="text" class="form-control" id="maxflow-file_name" name="maxflow-file_name" value="{{phase2MaxFlowForm.file_name.value|default_if_none:''}}">
+            </div>
+
+            <div class="form-group">
+                <label for="maxFlowFile" class="form-label">Please upload the file that supports the maximum flow rate information entered above.</label>
+                <input {% if action == "/source-form-create/"%}required{% endif %} type="file" class="form-control" id="maxFlowFile" name="maxFlowFile" accept=".pdf, .jpg, .jpeg, .png, .csv, .xlsx">
+            </div>
+
+            <div id="maxFlowErrorDiv" class="custom-invalid hidden">
+                For the highlighted files listed above, please make sure the correct file type ('pdf', 'csv', 'xlsx', 'jpg', 'jpeg', 'png')
+                is being used and that the file is less than 25 MB in size.
+            </div>
+
+            <div class="form-group">
+                <label for="maxflow-comments">Comments</label>
+                <textarea id="maxflow-comments" name="maxflow-comments" class="form-control">{{phase2MaxFlowForm.comments.value|default_if_none:''}}</textarea>
+            </div>
+
+            {% if action != "/source-form-create/" %}
+                <div style="display:flex; justify-content: center; height:60px; align-items:center;">
+                    <a href="{{ dropboxLink }}" class="btn btn-primary" style="width:40%; text-align:center; background-color:#7ca8e9; border: #545359 2px solid;" target="_blank">
+
+                        <i class="bi bi-folder-fill">  View Files Previously Uploaded</i>
+
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!--___________________________________Annual Flow Rates_________________________________-->
+        <div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
+            <h3>Annual Production</h3>
+            <div class="alert alert-primary" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:100%; margin:20px auto;">
+                <div  style="display:flex; align-items:stretch;">
+                    <i class="bi bi-info-circle h5" style="padding-right:10px; color:blue; width:5%">
+                    </i>
+                    <p style="margin-bottom:0px;">
+                        Please provide annual production data of the source from 2013 through 2025. If the source
+                        did not exist during a given year, or if the source's flow rate was
+                        reduced due to PFAS contamination, please make this indication.
+                        <br>
+                        <br>
+                        At the bottom of this section, you will upload files that prove the annual production numbers
+                        you enter into the table below. Once the files are uploaded, the file names will generate in
+                        the "File Name" column; for each year's production data, please select the correct file name that
+                        proves said production data.
+                    </p>
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="text-center">Year</th>
+                        <th class="text-center">Flow Rate</th>
+                        <th class="text-center">Units</th>
+                        <th class="text-center">Flow Rate Reduced?</th>
+                        <th class="text-center">Existed?</th>
+                        <th class="text-center">File Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{phase2AnnualFlowForm.management_form}}
+                    {% for form in phase2AnnualFlowForm %}
+                        {{ form.id }}
+                    <tr>
+                        <td class="label-center" style="width:15%">
+                            <input disabled id="{{form.year.html_name}}" name="{{form.year.html_name}}" type="number" class="form-control label-center" value="{{form.year.value|floatformat:'0'|default_if_none:''}}">
+                        </td>
+                        <td class="label-center" style="width:15%">
+                            <input id="{{form.flow_rate.html_name}}" name="{{form.flow_rate.html_name}}" type="number" class="form-control label-center" value="{{form.flow_rate.value|default_if_none:''}}">
+                        </td>
+                        <td class="label-center" style="width:15%">
+                            <select required id="{{form.units.html_name}}" name="{{form.units.html_name}}" class="form-select">
+                                <option disabled {% if not form.units.value %} selected {% endif %} value=""></option>
+                                    {% for option in unitOptions %}
+                                        <option {% if form.units.value == option.0 %} selected {% endif %} value="{{option.0}}">{{option.1}}</option>
+                                    {% endfor %}
+                            </select>
+                        </td>
+                        <td class="label-center" style="width:15%">
+                            <select requried id="{{form.flow_rate_reduced.html_name}}" name="{{form.flow_rate_reduced.html_name}}" class="form-select">
+                                <option disabled {% if not form.flow_rate_reduced.value %} selected {% endif %} value=""></option>
+                                {% for option in yesNo %}
+                                    <option {% if form.flow_rate_reduced.value == option %} selected {% endif %} value="{{option}}">{{option}}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td class="label-center" style="width:15%">
+                            <select required id="{{form.did_not_exist.html_name}}" name="{{form.did_not_exist.html_name}}" class="form-select">
+                                <option disabled {% if not form.did_not_exist.value %} selected {% endif %} value=""></option>
+                                {% for option in yesNo %}
+                                    <option {% if form.did_not_exist.value == option %} selected {% endif %} value="{{option}}">{{option}}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td class="label-center">
+                            <select required id="{{form.file_name.html_name}}" name="{{form.file_name.html_name}}"class="form-select">
+                                <option value="">Select a file</option>
+                                {% if form.file_name.value %}
+                                    <option value="{{form.file_name.value}}" selected>{{form.file_name.value}}</option>
+                                {% endif %}
+                            </select>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="form-group">
+                <label for="comments_annual_flow">Comments</label>
+                <textarea id="comments_annual_flow" name="comments_annual_flow" class="form-control">{{formConstants.comments_annual_flow.value|default_if_none:''}}</textarea>
+            </div>
+
+            <div class="form-group">
+                {% for field in annualFilesForm %}
+                    <label for="{{field.html_name}}" class="form-label {% if 'annualFile1' == field.html_name %} {% else %} hidden {% endif %}">
+                        Please upload the files that support the annual production data entered above. Once uploaded,
+                        the file name will populate under the "File Name" selection boxes in the table above.
+                    </label>
+                    <div class="{% if 'annualFile1' == field.html_name %}d-flex{% else %}hidden{% endif %}" id="{{'div_'|add:field.html_name}}">
+                        <input style="width:80%;" type="file" class="form-control form-label" id="{{field.html_name}}" name="{{field.html_name}}" accept=".pdf, .jpg, .jpeg, .png, .csv, .xlsx">
+                        {% if 'annualFile1' != field.html_name %}
+                            <button style="width:10%; height:50%;" type="button" class="delete-button btn btn-danger" data-target="{{field.html_name}}">Delete</button>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            <div id="annualErrorDiv" class="custom-invalid hidden">
+                For the highlighted files listed above, please make sure the correct file type ('pdf', 'csv', 'xlsx', 'jpg', 'jpeg', 'png') is being used and that
+                the file is less than 25 MB in size.
+            </div>
+            <div style="display:flex; justify-content:flex-end;">
+                <button id='annualAddFileButton' type="button" class="btn btn-primary">Add another file</button>
+            </div>
+
+            {% if action != "/source-form-create/" %}
+                <div style="display:flex; justify-content: center; height:60px; align-items:center;">
+                    <a href="{{ dropboxLink }}" class="btn btn-primary" style="width:40%; text-align:center; background-color:#7ca8e9; border: #545359 2px solid;" target="_blank">
+
+                        <i class="bi bi-folder-fill">  View Files Previously Uploaded</i>
+
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+
+        <!--___________________________________PFAS Information_________________________________-->
+        <div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
+            <h3>PFAS Yes/No Questions</h3>
+
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between; border-bottom: 2px solid rgba(210, 210, 210, 0.5);">
+                <label for="pfas_ever_tested" class="tf-label">Has this Water Source ever been tested or otherwise analyzed for PFAS?</label>
+                <select required id="pfas_ever_tested" name="pfas_ever_tested" class="form-select tf-select">
+                    <option disabled {% if not phase2SourceInfoForm.pfas_ever_tested.value %} selected {% endif %} value=""></option>
+                    {% for option in yesNo %}
+                        <option {% if phase2SourceInfoForm.pfas_ever_tested.value == option %} selected {% endif %} value="{{option}}">{{option}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between; border-bottom: 2px solid rgba(210, 210, 210, 0.5);">
+                <label for="pfas_detected" class="tf-label">For any testing of PFAS that has been conducted for this Water Source, has there ever been any Measureable Concentrations (detections) of PFAS?</label>
+                <select required id="pfas_detected" name="pfas_detected" class="form-select tf-select">
+                    <option disabled {% if not phase2SourceInfoForm.pfas_detected.value %} selected {% endif %} value=""></option>
+                    {% for option in yesNo %}
+                        <option {% if phase2SourceInfoForm.pfas_detected.value == option %} selected {% endif %} value="{{option}}">{{option}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between; border-bottom: 2px solid rgba(210, 210, 210, 0.5);">
+                <label for="detected_b4_jun2223" class="tf-label">Was this Water Source tested or otherwise analyzed for PFAS and found to contain any Measurable Concentration of PFAS on or before June 22, 2023?</label>
+                <select required id="detected_b4_jun2223" name="detected_b4_jun2223" class="form-select tf-select">
+                    <option disabled {% if not phase2SourceInfoForm.detected_b4_jun2223.value %} selected {% endif %} value=""></option>
+                    {% for option in yesNo %}
+                        <option {% if phase2SourceInfoForm.detected_b4_jun2223.value == option %} selected {% endif %} value="{{option}}">{{option}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between; border-bottom: 2px solid rgba(210, 210, 210, 0.5);">
+                <label for="detected_after_jun2223" class="tf-label">Was this Water Source tested or otherwise analyzed for PFAS and found to contain any Measurable Concentration of PFAS on or before June 22, 2023?</label>
+                <select required id="detected_after_jun2223" name="detected_after_jun2223" class="form-select tf-select">
+                    <option disabled {% if not phase2SourceInfoForm.detected_after_jun2223.value %} selected {% endif %} value=""></option>
+                    {% for option in yesNo %}
+                        <option {% if phase2SourceInfoForm.detected_after_jun2223.value == option %} selected {% endif %} value="{{option}}">{{option}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between; border-bottom: 2px solid rgba(210, 210, 210, 0.5);">
+                <label for="detected_b4_jun3023" class="tf-label">Was this Water Source tested or otherwise analyzed for PFAS and found to contain any Measurable Concentration of PFAS on or before June 22, 2023?</label>
+                <select required id="detected_b4_jun3023" name="detected_b4_jun3023" class="form-select tf-select">
+                    <option disabled {% if not phase2SourceInfoForm.detected_b4_jun3023.value %} selected {% endif %} value=""></option>
+                    {% for option in yesNo %}
+                        <option {% if phase2SourceInfoForm.detected_b4_jun3023.value == option %} selected {% endif %} value="{{option}}">{{option}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between; border-bottom: 2px solid rgba(210, 210, 210, 0.5);">
+                <label for="detected_after_jun3023" class="tf-label">Was this Water Source tested or otherwise analyzed for PFAS and found to contain any Measurable Concentration of PFAS on or before June 22, 2023?</label>
+                <select required id="detected_after_jun3023" name="detected_after_jun3023" class="form-select tf-select">
+                    <option disabled {% if not phase2SourceInfoForm.detected_after_jun3023.value %} selected {% endif %} value=""></option>
+                    {% for option in yesNo %}
+                        <option {% if phase2SourceInfoForm.detected_after_jun3023.value == option %} selected {% endif %} value="{{option}}">{{option}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+
+        <!--___________________________________PFAS Results_________________________________-->
+        <div id="pfasResultsDiv" class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
+            <h3>PFAS Results</h3>
+            <p>
+                Below you will provide all relevant information about PFAS detections within this source. You will
+                be asked if the source has had any detections of PFOA, PFOS, PFHxS, GenX, PFNA, or PFBS, since these
+                are the six analytes that are part of the "Proposed Federal MCLs" referenced in the 3M/DuPont and Tyco/BASF
+                settlements. You will also be asked to provide the highest other PFAS analyte concentration recorded for this
+                source, in addition to any PFAS concentration that is above your state's MCL (if applicable).
+                <br>
+                <br>
+                <b>
+                    Please upload lab reports at the bottom of this section that correspond to the PFAS results entered
+                    into the tables below.
+                </b>
+            </p>
+            <h4>Proposed Federal MCL Analytes</h4>
+            <div class="alert alert-primary" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:100%; margin:20px auto;">
+                <div  style="display:flex; align-items:stretch;">
+                    <i class="bi bi-info-circle h5" style="padding-right:5px; color:blue; width:5%">
+                    </i>
+                    <p style="margin-bottom:0px;">
+                        Please provide the <span style="font-weight:bold; font-style:italic">highest</span>
+                        concentrations of each analyte. If there are no detections of a given analyte, or if the
+                        analyte has not been analyzed for, please report a result of zero (0).
+                        <br>
+                        <br>
+                        Results must be in units of nanograms per liter (ng/L). 1 ng/L = 1ppt.
+                    </p>
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="text-center">Analyte</th>
+                        <th class="text-center">Maximum Result</th>
+                        <th class="text-center">Units</th>
+                        <th class="text-center">Sampling Date</th>
+                        <th class="text-center">File Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{phase2PfasResultsForm.management_form}}
+                    {% for form in phase2PfasResultsForm|slice:"0:6" %}
+                        {{ form.id }}
+                    <tr>
+                        <td style="width:15%;">
+                            <input id="{{form.analyte.html_name}}" name="{{form.analyte.html_name}}" type="text" class="form-control label-center no-click" value="{{form.analyte.value|default_if_none:''}}">
+                        </td>
+                        <td style="width:20%;">
+                            <input required id="{{form.result.html_name}}" name="{{form.result.html_name}}" type="number" class="form-control label-center" value="{{form.result.value|default_if_none:''}}">
+                        </td>
+                        <td style="width:15%;">
+                             <input id="{{form.units.html_name}}" name="{{form.units.html_name}}" type="text" class="form-control label-center no-click" value="ng/L (ppt)">
+                            {% comment %}<select required id="{{form.units.html_name}}" name="{{form.units.html_name}}" type="text" class="form-select">
+                                <option disabled {% if not form.units.value %} selected {% endif %} value=""></option>
+                            {% for option in pfasUnits %}
+                                <option {% if form.units.value == option.0 %} selected {% endif %} value="{{option.0}}">{{option.1}}</option>
+                            {% endfor %}
+                            </select>{% endcomment %}
+                        </td>
+                        <td style="width:20%;">
+                            <input required id="{{form.sample_date.html_name}}" name="{{form.sample_date.html_name}}" type="date" class="form-control" value="{% if form.sample_date.value %}{{form.sample_date.value|stringformat:'s'}}{% endif %}">
+                        </td>
+                        <td class="label-center" style="width:30%;">
+                            <select required id="{{form.file_name.html_name}}" name="{{form.file_name.html_name}}" class="form-select">
+                                <option value="">Select a file</option>
+                                {% if form.file_name.value %}
+                                <option value="{{form.file_name.value}}" selected>{{form.file_name.value}}</option>
+                                {% endif %}
+                            </select>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <h4>Highest Other PFAS Results</h4>
+            <div class="alert alert-primary" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:100%; margin:20px auto;">
+                <div  style="display:flex; align-items:stretch;">
+                    <i class="bi bi-info-circle h5" style="padding-right:5px; margin-right:5px; color:blue; width:5%">
+                    </i>
+                    <p style="margin-bottom:0px;">
+                        If this source has exhibited a detection of a different PFAS analyte
+                        <span style="font-weight:bold; font-style:italic">AND</span> has a higher concentration
+                        compared to all of the six analytes shown above, please fill out the form fields below.
+                        <br>
+                        <br>
+                        Results must be in units of nanograms per liter (ng/L). 1 ng/L = 1ppt.
+                    </p>
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="text-center">Analyte</th>
+                        <th class="text-center">Maximum Result</th>
+                        <th class="text-center">Units</th>
+                        <th class="text-center">Sampling Date</th>
+                        <th class="text-center">File Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for form in phase2PfasResultsForm|slice:"-1:" %}
+                        {{ form.id }}
+                    <tr>
+                        <td style="width:15%;">
+                            <select id="{{form.analyte.html_name}}" name="{{form.analyte.html_name}}" type="text" class="form-select">
+                                <option disabled {% if not form.analyte.value %} selected {% endif %} value="" class="label-center">Choose Analyte</option>
+                                {% for option in otherAnalytes %}
+                                    <option {% if form.analyte.value == option %} selected {% endif %} value="{{option}}" class="label-center">{{option}}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td style="width:20%;">
+                            <input id="{{form.result.html_name}}" name="{{form.result.html_name}}" type="number" class="form-control label-center" value="{{form.result.value|default_if_none:''}}">
+                        </td>
+                        <td style="width:15%;">
+                            <input id="{{form.units.html_name}}" name="{{form.units.html_name}}" type="text" class="form-control label-center no-click" value="ng/L (ppt)">
+                            {% comment %}<select id="{{form.units.html_name}}" name="{{form.units.html_name}}" type="text" class="form-select">
+                                <option disabled {% if not form.units.value %} selected {% endif %} value=""></option>
+                            {% for option in pfasUnits %}
+                                <option {% if form.units.value == option.0 %} selected {% endif %} value="{{option.0}}">{{option.1}}</option>
+                            {% endfor %}
+                            </select>{% endcomment %}
+                        </td>
+                        <td style="width:20%;">
+                            <input id="{{form.sample_date.html_name}}" name="{{form.sample_date.html_name}}" type="date" class="form-control" value="{% if form.sample_date.value %}{{form.sample_date.value|stringformat:'s'}}{% endif %}">
+                        </td>
+                        <td class="label-center" style="width:30%;">
+                            <select id="{{form.file_name.html_name}}" name="{{form.file_name.html_name}}" class="form-select">
+                                <option value="">Select a file</option>
+                                {% if form.file_name.value %}
+                                <option value="{{form.file_name.value}}" selected>{{form.file_name.value}}</option>
+                                {% endif %}
+                            </select>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div id="otherPFASErrorDiv" class="custom-invalid hidden">
+                The concentration entered above must be <span style="font-weight:bold; font-style:italic">higher</span>
+                than the PFOA, PFOS, PFHxS, GenX, PFNA, and PFBS concentrations in the table above.
+            </div>
+
+            <h4>PFAS File Uploads</h4>
+            <div class="form-group">
+                {% for field in pfasFilesForm %}
+                    <label for="{{field.html_name}}" class="form-label {% if 'pfasFile1' == field.html_name %} {% else %} hidden {% endif %}">
+                        Please upload all relevant lab reports. Once uploaded, the file name will populate within the tables above. </label>
+                    <div class="{% if 'pfasFile1' == field.html_name %}d-flex{% else %}hidden{% endif %}" id="{{'div_'|add:field.html_name}}">
+                        <input style="width:80%;" type="file" class="form-control form-label" id="{{field.html_name}}" name="{{field.html_name}}" accept=".pdf, .jpg, .jpeg, .png">
+                        {% if 'pfasFile1' != field.html_name %}
+                            <button style="width:10%; height:50%;" type="button" class="delete-button btn btn-danger" data-target="{{field.html_name}}">Delete</button>
+                        {% endif %}
+                    </div>
+                    <div class="custom-invalid hidden"></div>
+                {% endfor %}
+            </div>
+
+            <div id="pfasErrorDiv" class="custom-invalid hidden">
+                For the highlighted files listed above, please make sure the correct file type ('pdf', 'jpg', 'jpeg', 'png') is being used and that
+                the file is less than 25 MB in size.
+            </div>
+
+            <div style="display:flex; justify-content:flex-end;">
+                <button id='pfasAddFileButton' type="button" class="btn btn-primary">Add another file</button>
+            </div>
+
+            {% if action != "/source-form-create/" %}
+                <div style="display:flex; justify-content: center; height:60px; align-items:center;">
+                    <a href="{{ dropboxLink }}" class="btn btn-primary" style="width:40%; text-align:center; background-color:#7ca8e9; border: #545359 2px solid;" target="_blank">
+
+                        <i class="bi bi-folder-fill">  View Files Previously Uploaded</i>
+
+                    </a>
+                </div>
+            {% endif %}
+
+        </div>
+
+
+        <div id="pfasCommentsDiv" class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
+            <h3>PFAS Comments</h3>
+            <div class="form-group">
+                <label for="comments_pfas">Comments</label>
+                <textarea id="comments_pfas" name="comments_pfas" class="form-control">{{formConstants.comments_pfas.value|default_if_none:''}}</textarea>
+            </div>
+        </div>
+
+        <!--Submit Button-->
+        <div class="card-alt" style="background:none; width:75%; height:200%; margin:20px auto; display:flex; justify-content:center;">
+            <input id="submit" type="submit" value="Submit" class="btn btn-primary" style="width:20%; font-size:1.5em;">
+        </div>
+
+        <div id="loader-container">
+            <div id="loader"></div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+
+    <script src="{% static 'js/sourceForm.js' %}"></script>
+
+{% endblock %}

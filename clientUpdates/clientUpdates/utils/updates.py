@@ -1,6 +1,7 @@
 from .calculations import calc_pfas_score_and_method, calc_afr_and_note, calc_gfes, calc_base_score
 from .tables_utils import get_latest_entries, get_combined_results, get_max_results_by_analyte, get_max_annuals_by_year, get_max_entry
-from clientUpdates.models import Pws, Source, PfasResult, FlowRate, ClaimSource, ClaimPfasResult, ClaimFlowRate
+#from ..models import Pws, Source, PfasResult, FlowRate, ClaimSource, ClaimPfasResult, ClaimFlowRate
+#from clientUpdates import modePws, Source, PfasResult, FlowRate, ClaimSource, ClaimPfasResult, ClaimFlowRate
 from django.db.models import Sum
 from django.utils import timezone
 
