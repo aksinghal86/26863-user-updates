@@ -933,7 +933,7 @@ def sourceFormCreate(request):
 
 
 # ------------------------------------------------------------------------------------------------------------------
-
+@login_required
 @never_cache
 def sourceFormEdit(request, pwsid, source_name):
     try:

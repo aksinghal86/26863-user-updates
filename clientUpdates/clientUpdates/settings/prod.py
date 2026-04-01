@@ -8,6 +8,8 @@ CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 SECURE_SSL_REDIRECT = False
 
+ADMINS = [('Joe', 'jfontaine@eheinc.com')]
+
 ## OLD: DO blocked SMTP ports 465, 587 on Oct, 2025, so this does not work anymore
 EMAIL_BACKEND = 'clientUpdates.custom_smtp_backend.CustomEmailBackend'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -47,6 +49,11 @@ LOGGING = {
             'filename': os.path.join(LOG_DIR, 'production.log'),
             'formatter': 'verbose'
         },
+        'mail_admins': {
+                'level': 'ERROR',
+                'class': 'django.utils.log.AdminEmailHandler',
+                'include_html': False,
+        },
         'disallowedHost': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
@@ -64,6 +71,11 @@ LOGGING = {
             'handlers': ['console', 'file'],
             'level': 'INFO',
             'propagate': False,
+        },
+        "django.request": {
+            'handlers': ['file', 'console', 'mail_admins'],
+            "level": "ERROR",
+            "propagate": False,
         },
         'django.security.DisallowedHost': {
             'handlers': ['disallowedHost'],
