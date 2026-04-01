@@ -936,148 +936,151 @@ def sourceFormCreate(request):
 
 @never_cache
 def sourceFormEdit(request, pwsid, source_name):
-    phase2SourceInfoInstance = get_object_or_404(phase2SourceInfo, pwsid=pwsid, source_name=source_name)
-    phase2MaxFlowInstance = get_object_or_404(phase2MaxFlow, pwsid=pwsid, source_name=source_name)
+    try:
+        phase2SourceInfoInstance = get_object_or_404(phase2SourceInfo, pwsid=pwsid, source_name=source_name)
+        phase2MaxFlowInstance = get_object_or_404(phase2MaxFlow, pwsid=pwsid, source_name=source_name)
 
-    annualFlowFactory = modelformset_factory(phase2AnnualFlow, form=phase2AnnualFlowForm, extra=0)
+        annualFlowFactory = modelformset_factory(phase2AnnualFlow, form=phase2AnnualFlowForm, extra=0)
 
-    pfasFactory = modelformset_factory(phase2PfasResults, form=phase2PfasResultsForm, extra=0)
+        pfasFactory = modelformset_factory(phase2PfasResults, form=phase2PfasResultsForm, extra=0)
 
-    pws_name = get_object_or_404(pwsCreds, pwsid=pwsid).pws_name
+        pws_name = get_object_or_404(pwsCreds, pwsid=pwsid).pws_name
 
-    if request.method == "POST":
+        if request.method == "POST":
 
-        form1 = phase2SourceInfoForm(request.POST, instance=phase2SourceInfoInstance)
-        form2 = phase2MaxFlowForm(request.POST, request.FILES, prefix="maxflow", instance=phase2MaxFlowInstance)
+            form1 = phase2SourceInfoForm(request.POST, instance=phase2SourceInfoInstance)
+            form2 = phase2MaxFlowForm(request.POST, request.FILES, prefix="maxflow", instance=phase2MaxFlowInstance)
 
-        form3 = annualFlowFactory(request.POST,
-                                  queryset=phase2AnnualFlow.objects.filter(pwsid=pwsid, source_name=source_name),
-                                  prefix="annualflow")
+            form3 = annualFlowFactory(request.POST,
+                                      queryset=phase2AnnualFlow.objects.filter(pwsid=pwsid, source_name=source_name),
+                                      prefix="annualflow")
 
-        form4 = pfasFactory(request.POST,
-                            queryset=phase2PfasResults.objects.filter(pwsid=pwsid, source_name=source_name),
-                            prefix="pfas")
+            form4 = pfasFactory(request.POST,
+                                queryset=phase2PfasResults.objects.filter(pwsid=pwsid, source_name=source_name),
+                                prefix="pfas")
 
-        form5 = formConstants(request.POST)
+            form5 = formConstants(request.POST)
 
-        form6 = annualFiles(request.POST, request.FILES)
+            form6 = annualFiles(request.POST, request.FILES)
 
-        form7 = pfasFiles(request.POST, request.FILES)
+            form7 = pfasFiles(request.POST, request.FILES)
 
-        form8 = maxFlowFile(request.POST, request.FILES)
+            form8 = maxFlowFile(request.POST, request.FILES)
 
-        try:
+            try:
 
-            # transaction.atomic makes sure that either all instances save or all instances fail
-            with transaction.atomic():
-                if form1.is_valid() and form2.is_valid() and form3.is_valid() and form4.is_valid() and form5.is_valid() and form6.is_valid() and form7.is_valid() and form8.is_valid():
+                # transaction.atomic makes sure that either all instances save or all instances fail
+                with transaction.atomic():
+                    if form1.is_valid() and form2.is_valid() and form3.is_valid() and form4.is_valid() and form5.is_valid() and form6.is_valid() and form7.is_valid() and form8.is_valid():
 
-                    # extract one-time / constant variables
-                    source_name = form5.cleaned_data['source_name']
-                    comments_annual_flow = form5.cleaned_data['comments_annual_flow']
-                    comments_pfas = form5.cleaned_data['comments_pfas']
-                    dt = timezone.now()
+                        # extract one-time / constant variables
+                        source_name = form5.cleaned_data['source_name']
+                        comments_annual_flow = form5.cleaned_data['comments_annual_flow']
+                        comments_pfas = form5.cleaned_data['comments_pfas']
+                        dt = timezone.now()
 
-                    # modify and save sourceinfo form
-                    form1 = form1.save(commit=False)
-                    form1.source_name = source_name
-                    form1.timestamp = dt
-                    form1.save()
+                        # modify and save sourceinfo form
+                        form1 = form1.save(commit=False)
+                        form1.source_name = source_name
+                        form1.timestamp = dt
+                        form1.save()
 
-                    # modify and save max flow form
-                    form2 = form2.save(commit=False)
-                    form2.source_name = source_name
-                    form2.timestamp = dt
-                    form2.save()
+                        # modify and save max flow form
+                        form2 = form2.save(commit=False)
+                        form2.source_name = source_name
+                        form2.timestamp = dt
+                        form2.save()
 
-                    # modify and save annual flow form
-                    for form, year in zip(form3, years):
-                        instance = form.save(commit=False)
-                        instance.source_name = source_name
-                        instance.year = year
-                        instance.comments = comments_annual_flow
-                        instance.timestamp = dt
-                        instance.save()
+                        # modify and save annual flow form
+                        for form, year in zip(form3, years):
+                            instance = form.save(commit=False)
+                            instance.source_name = source_name
+                            instance.year = year
+                            instance.comments = comments_annual_flow
+                            instance.timestamp = dt
+                            instance.save()
 
-                    # modify and save pfas form
-                    counter = 0
-                    for form in form4:
-                        instance = form.save(commit=False)
-                        instance.source_name = source_name
-                        instance.comments = comments_pfas
-                        instance.timestamp = dt
-                        # iterate over pre-defined pfas analytes that aren't
-                        # submitted in POST request (since they are disabled fields)
-                        # if instance.analyte == '' or None:
-                        #     instance.analyte = pfasAnalytes[counter]
-                        #     counter = counter + 1
-                        instance.save()
+                        # modify and save pfas form
+                        counter = 0
+                        for form in form4:
+                            instance = form.save(commit=False)
+                            instance.source_name = source_name
+                            instance.comments = comments_pfas
+                            instance.timestamp = dt
+                            # iterate over pre-defined pfas analytes that aren't
+                            # submitted in POST request (since they are disabled fields)
+                            # if instance.analyte == '' or None:
+                            #     instance.analyte = pfasAnalytes[counter]
+                            #     counter = counter + 1
+                            instance.save()
 
-                    for file in request.FILES:
-                        if "annualFile" in file:
-                            upload_to_dropbox(file=request.FILES[file], filetype="Phase2/Annual-Flow", pwsid=pwsid)
-                        elif "pfasFile" in file:
-                            upload_to_dropbox(file=request.FILES[file], filetype="Phase2/PFAS", pwsid=pwsid)
-                        elif "maxFlow" in file:
-                            upload_to_dropbox(file=request.FILES[file], filetype="Phase2/Max-Flow", pwsid=pwsid)
+                        for file in request.FILES:
+                            if "annualFile" in file:
+                                upload_to_dropbox(file=request.FILES[file], filetype="Phase2/Annual-Flow", pwsid=pwsid)
+                            elif "pfasFile" in file:
+                                upload_to_dropbox(file=request.FILES[file], filetype="Phase2/PFAS", pwsid=pwsid)
+                            elif "maxFlow" in file:
+                                upload_to_dropbox(file=request.FILES[file], filetype="Phase2/Max-Flow", pwsid=pwsid)
 
-                    logger.info(
-                        f"{pwsid} | {source_name} | Source information, PFAS Data, Max Flow Data, and Annual Production Data edited.")
+                        logger.info(
+                            f"{pwsid} | {source_name} | Source information, PFAS Data, Max Flow Data, and Annual Production Data edited.")
 
-                    return render(request, 'form_success.html')
+                        return render(request, 'form_success.html')
 
-        except Exception as e:
-            print(e)
+            except Exception as e:
+                print(e)
 
-    else:
+        else:
 
-        phase2AnnualFlowInstances = annualFlowFactory(
-            queryset=phase2AnnualFlow.objects.filter(pwsid=pwsid, source_name=source_name), prefix="annualflow")
+            phase2AnnualFlowInstances = annualFlowFactory(
+                queryset=phase2AnnualFlow.objects.filter(pwsid=pwsid, source_name=source_name), prefix="annualflow")
 
-        phase2PfasInstances = pfasFactory(
-            queryset=phase2PfasResults.objects.filter(pwsid=pwsid, source_name=source_name), prefix="pfas")
+            phase2PfasInstances = pfasFactory(
+                queryset=phase2PfasResults.objects.filter(pwsid=pwsid, source_name=source_name), prefix="pfas")
 
-        form1 = phase2SourceInfoForm(instance=phase2SourceInfoInstance)
-        form2 = phase2MaxFlowForm(instance=phase2MaxFlowInstance, prefix="maxflow")
-        form3 = phase2AnnualFlowInstances
-        form4 = phase2PfasInstances
+            form1 = phase2SourceInfoForm(instance=phase2SourceInfoInstance)
+            form2 = phase2MaxFlowForm(instance=phase2MaxFlowInstance, prefix="maxflow")
+            form3 = phase2AnnualFlowInstances
+            form4 = phase2PfasInstances
 
-        form5 = formConstants(
-            data={
-                "comments_annual_flow": phase2AnnualFlow.objects.filter(pwsid=pwsid, source_name=source_name)[
-                    0].comments,
-                "comments_pfas": phase2PfasResults.objects.filter(pwsid=pwsid, source_name=source_name)[0].comments,
-                "source_name": form1.initial['source_name']
+            form5 = formConstants(
+                data={
+                    "comments_annual_flow": phase2AnnualFlow.objects.filter(pwsid=pwsid, source_name=source_name)[
+                        0].comments,
+                    "comments_pfas": phase2PfasResults.objects.filter(pwsid=pwsid, source_name=source_name)[0].comments,
+                    "source_name": form1.initial['source_name']
+                }
+            )
+
+            form6 = annualFiles()
+
+            form7 = pfasFiles()
+
+            form8 = maxFlowFile()
+
+            context = {
+
+                "phase2SourceInfoForm": form1,
+                "phase2MaxFlowForm": form2,
+                "phase2AnnualFlowForm": form3,
+                "phase2PfasResultsForm": form4,
+                "formConstants": form5,
+                "annualFilesForm": form6,
+                "pfasFilesForm": form7,
+                "maxFlowFile": form8,
+                "yesNo": yesNo,
+                "sourceTypeOptions": sourceTypeOptions,
+                "unitOptions": unitOptions,
+                "years": years,
+                "otherAnalytes": otherAnalytes,
+                "action": f"url source-form-edit {pwsid} {source_name}",
+                "dropboxLink": dropboxLink(pwsid)
+
             }
-        )
 
-        form6 = annualFiles()
-
-        form7 = pfasFiles()
-
-        form8 = maxFlowFile()
-
-        context = {
-
-            "phase2SourceInfoForm": form1,
-            "phase2MaxFlowForm": form2,
-            "phase2AnnualFlowForm": form3,
-            "phase2PfasResultsForm": form4,
-            "formConstants": form5,
-            "annualFilesForm": form6,
-            "pfasFilesForm": form7,
-            "maxFlowFile": form8,
-            "yesNo": yesNo,
-            "sourceTypeOptions": sourceTypeOptions,
-            "unitOptions": unitOptions,
-            "years": years,
-            "otherAnalytes": otherAnalytes,
-            "action": f"url source-form-edit {pwsid} {source_name}",
-            "dropboxLink": dropboxLink(pwsid)
-
-        }
-
-        return render(request, 'source_form.html', context=context)
+            return render(request, 'source_form.html', context=context)
+    except Exception as e:
+        logger.error(e)
 
 def sourceInfoDelete(request, pwsid, source_name):
     if request.method == "POST":
