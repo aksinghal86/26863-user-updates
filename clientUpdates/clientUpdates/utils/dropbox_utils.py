@@ -8,7 +8,7 @@ from django.conf import settings
 from django.core.files.storage import default_storage
 from django.http import JsonResponse
 from ..utils.file_upload_utils import upload_to_local
-from dropbox.exceptions import ApiError
+from dropbox.exceptions import ApiError, AuthError
 from dropbox.sharing import SharedLinkSettings
 
 logger = logging.getLogger('clientUpdates')
@@ -50,7 +50,7 @@ def dropboxLink(pwsid):
     if not dropbox_access_token:
         dropbox_access_token = refresh_dropbox_access_token()
         if not dropbox_access_token:
-            return JsonResponse({'error': 'Failed to refresh Dropbox token'}, status=401)
+            logging.error("Failed to refresh access token")
 
     folderPath = f"/uploads/{pwsid}"
 
@@ -59,10 +59,26 @@ def dropboxLink(pwsid):
         # Initialize Dropbox client
         dbx = dropbox.Dropbox(dropbox_access_token)
         linkMetaData = dbx.sharing_create_shared_link_with_settings(folderPath)
-        dropboxLink = linkMetaData.url
-        return dropboxLink
+        dropboxURL = linkMetaData.url
+        return dropboxURL
 
-
+    except AuthError as e:
+        try:
+            dropbox_access_token = refresh_dropbox_access_token()
+            logger.info(f"Encountered Auth error: {e}. Dropbox access token should be refreshed.")
+            dbx = dropbox.Dropbox(dropbox_access_token)
+            linkMetaData = dbx.sharing_create_shared_link_with_settings(folderPath)
+            dropboxLink = linkMetaData.url
+            return dropboxLink
+        except ApiError as e:
+            # error was thrown because a shared link already exists. Get the most recent one:
+            ## the direct only parameter is to only provide access to the folderPath, no Parent folders above it
+            existingLink = dbx.sharing_list_shared_links(path=folderPath, direct_only=True)
+            # extract the url of the link
+            url = existingLink.links[-1].url
+            # ensure there is no expiration
+            dbx.sharing_modify_shared_link_settings(url, settings=SharedLinkSettings(), remove_expiration=True)
+            return url
     except ApiError as e:
         # error was thrown because a shared link already exists. Get the most recent one:
         ## the direct only parameter is to only provide access to the folderPath, no Parent folders above it
