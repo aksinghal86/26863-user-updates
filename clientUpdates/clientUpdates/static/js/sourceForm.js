@@ -4,6 +4,7 @@ const annualDeleteButtons = document.querySelectorAll('[data-target^="annualFile
 const annualFileDivs = document.querySelectorAll('[id^="div_annualFile"]');
 const annualFiles = document.querySelectorAll('[id^="annualFile"]');
 const annualAddFileButton = document.getElementById('annualAddFileButton');
+const annualFlowRates = document.querySelectorAll('[id^="annualflow-"][id$="-flow_rate"]');
 let annualFileNameList = [];
 
 const pfasFileSelectors = document.querySelectorAll('[id^="pfas-"][id$="-file_name"]');
@@ -21,7 +22,7 @@ const pfasDetected = document.getElementById('pfas_detected')
 const pfasResults = document.querySelectorAll('[id^="pfas-"][id$="-result"]');
 const maxFlowFile = document.getElementById('maxFlowFile');
 
-const submitButton = document.getElementById('submit');
+const submitButton = document.getElementById('final-submit');
 const loaderContainer = document.getElementById('loader-container');
 const loader = document.getElementById('loader');
 const pfasFormElem = Array.from(document.getElementById('pfasResultsDiv').querySelectorAll('[id$="analyte"], [id$="units"], [id$="result"], [id$="units"], [id$="sample_date"], [id$="file_name"]')).filter(el => !el.id.startsWith("pfas-6"));
@@ -36,7 +37,9 @@ const otherResultErrorDiv = document.getElementById('otherPFASErrorDiv');
 
 const maxFlowFileName = document.getElementById('maxflow-file_name');
 
-const sourceForm = document.getElementById('sourceForm')
+const sourceForm = document.getElementById('sourceForm');
+
+const draft_complete = document.getElementById('draft_complete');
 
 let initPfasFileNames = []
 let initAnnualFileNames = []
@@ -160,6 +163,33 @@ function zeroPfasResults(elem){
     }
 }
 
+function zeroAnnualFlowRates(elem){
+
+    // get closest row
+    let row = elem.closest('tr')
+    // get input and select tags, exclude all "result" fields, pfas-[0-5]-analyte fields, and pfas-[0-5]-units fields
+    let inputsSelects =
+        Array.
+        from(row.querySelectorAll('input, select')).
+            filter(elem => elem.name.endsWith("file_name") || elem.name.endsWith("units"))
+        //filter(elem => !elem.name.endsWith("flow_rate") && !/annualflow-([0-9]|1[0-2])-year$/.test(elem.id) && !elem.nam);
+
+    console.log(inputsSelects);
+
+    // if the value is zero, disable fields
+    if (elem.value !== "" && Number(elem.value) === 0){
+        inputsSelects.forEach(e => e.disabled = true)
+    } else {
+        inputsSelects.forEach(e => e.disabled = false)
+    }
+}
+
+
+
+
+
+
+
 // clear values
 function clearValues(el){
     if (el.tagName === "SELECT") {
@@ -247,6 +277,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // when page first loads, determine whether form fields should be disabled
     // based on whether they have a zero result value
     pfasResults.forEach(elem => zeroPfasResults(elem));
+    annualFlowRates.forEach(elem => zeroAnnualFlowRates(elem));
 
     // when page first loads, determine whether form field is required based on
     // whether a non zero result was entered
@@ -307,7 +338,7 @@ pfasEverTested.addEventListener("change", function (e) {
         pfasCommentsDiv.classList.add('hidden');
         allPfasFormElem.forEach(elem => elem.required = false);
         allPfasFormElem.forEach(el => {
-            if (!/pfas-[0-5]-analyte$/.test(el.id)) {
+            if (!/pfas-[0-5]-(analyte)$/.test(el.id) || el.endsWith("units")) {
                 clearValues(el);
             }
         });
@@ -329,7 +360,7 @@ pfasDetected.addEventListener("change", function (e) {
         pfasCommentsDiv.classList.add('hidden');
         allPfasFormElem.forEach(elem => elem.required = false);
         allPfasFormElem.forEach(el => {
-            if (!/pfas-[0-5]-analyte$/.test(el.id)) {
+            if (!/pfas-[0-5]-(analyte)$/.test(el.id) || el.endsWith("units")) {
                 clearValues(el);
             }
         });
@@ -344,6 +375,11 @@ pfasDetected.addEventListener("change", function (e) {
 // attach zeroPfasResults function to pfasResults on change
 pfasResults.forEach(elem => addEventListener("change", function () {
     zeroPfasResults(elem);
+}))
+
+// attach zeroAnnualFlowRates function to annualFlowRates on change
+annualFlowRates.forEach(elem => addEventListener("change", function () {
+    zeroAnnualFlowRates(elem);
 }))
 
 
@@ -369,7 +405,8 @@ pfasFiles.forEach(el => addEventListener("change", function(){
 
 // --------- Do stuff with file validation --------------------------
 
-sourceForm.addEventListener('submit', function(event) {
+
+function validation(){
 
     const clearValidationErrors = () => {
         annualErrorDiv.classList.add('hidden');
@@ -440,6 +477,11 @@ sourceForm.addEventListener('submit', function(event) {
             maxFlowValid = false;
         }
     }
+    // on submit (not save), ensure a filename has been assigned
+    else if(maxFlowFile.files.length===0 && maxFlowFileName.value === "" && draft_complete.value === "complete"){
+            maxFlowValid = false;
+            showValidationError(maxFlowFile, maxFlowErrorDiv);
+    }
 
     // if a non-zero value was entered for the 'other' pfas result, make sure that it is higher
     // than the other six pfas results
@@ -449,6 +491,19 @@ sourceForm.addEventListener('submit', function(event) {
     }
 
     if (!annualValid || !pfasValid || !maxFlowValid || !checkOther) {
+        return false;
+    } else {
+        return true;
+    }
+
+
+
+}
+
+sourceForm.addEventListener('submit', function(event) {
+
+    let is_valid = validation();
+    if (!is_valid) {
         event.preventDefault();
         alert("Please fix validation errors that exist in the form.")
     } else {
@@ -466,7 +521,27 @@ sourceForm.addEventListener('submit', function(event) {
 
 otherResult.addEventListener("change", () => checkNonZero(otherResult));
 
+// when the "Save as Draft" button is clicked, remove required attribute from all fields, assign a
+// value of "draft" to the draft_complete field, and submit the form
+document.getElementById('save_draft').addEventListener("click", function (event){
 
+
+    let is_valid = validation();
+    if (!is_valid){
+        event.preventDefault();
+        alert("Please fix validation errors that exist in the form.")
+    } else{
+
+        document.querySelectorAll('[required]').
+        forEach(el => el.required = false);
+        draft_complete.value = "draft";
+
+        loaderContainer.style.display = 'flex';
+        loader.style.display = 'block';
+        sourceForm.submit();
+    }
+
+})
 
 
 

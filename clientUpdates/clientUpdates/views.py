@@ -726,12 +726,17 @@ def pwsInfoCreate(request):
 
     if request.method == "POST":
         form = pwsInfoForm(request.POST)
+
+        # determine whether the form was submitted as a draft or not
+        draft_complete = request.POST.get('draft_complete')
+
         if form.is_valid():
             try:
                 instance = form.save(commit=False)
                 instance.pwsid = pwsid
                 instance.pws_name = pws_name
                 instance.timestamp = timezone.now()
+                instance.draft_complete = draft_complete
                 instance.save()
                 logger.info(
                     f"{pwsid} | PWS Information created.")
@@ -748,19 +753,24 @@ def pwsInfoCreate(request):
                                                   "sdwisActivityCodes": sdwisActivityCodes,
                                                   "action": "/pws-info-create/"})
 
-
+@login_required
 @never_cache
 def pwsInfoEdit(request, pwsid):
     pwsInfoInstance = get_object_or_404(phase2PwsInfo, pwsid=pwsid)
     pws_name = get_object_or_404(pwsCreds, pwsid=pwsid).pws_name
     if request.method == "POST":
         form = pwsInfoForm(request.POST, instance=pwsInfoInstance)
+
+        # determine whether the form was submitted as a draft or not
+        draft_complete = request.POST.get('draft_complete')
+
         if form.is_valid():
             try:
                 instance = form.save(commit=False)
                 instance.pwsid = pwsid
                 instance.pws_name = pws_name
                 instance.timestamp = timezone.now()
+                instance.draft_complete = draft_complete
                 instance.save()
                 logger.info(
                     f"{pwsid} | PWS Information edited.")
@@ -777,7 +787,7 @@ def pwsInfoEdit(request, pwsid):
                                                   "sdwisActivityCodes": sdwisActivityCodes,
                                                   "action": f"url pws-info-edit {pwsid}"})
 
-
+@login_required
 def pwsInfoDelete(request, pwsid):
     if request.method == "POST":
         try:
@@ -805,6 +815,9 @@ def sourceFormCreate(request):
         pwsid = request.user.username
         pws_name = get_object_or_404(pwsCreds, pwsid=pwsid).pws_name
 
+        # determine whether the form was submitted as a draft or not
+        draft_complete = request.POST.get('draft_complete')
+
         form1 = phase2SourceInfoForm(request.POST)
         form2 = phase2MaxFlowForm(request.POST, request.FILES, prefix="maxflow")
 
@@ -821,6 +834,15 @@ def sourceFormCreate(request):
         form7 = pfasFiles(request.POST, request.FILES)
 
         form8 = maxFlowFile(request.POST, request.FILES)
+
+        # form1.is_valid()
+        # form2.is_valid()
+        # form3.is_valid()
+        # form4.is_valid()
+        # form5.is_valid()
+        # form6.is_valid()
+        # form7.is_valid()
+        # form8.is_valid()
 
         try:
 
@@ -840,6 +862,7 @@ def sourceFormCreate(request):
                     form1.pws_name = pws_name
                     form1.source_name = source_name
                     form1.timestamp = dt
+                    form1.draft_complete = draft_complete
                     form1.save()
 
                     # modify and save max flow form
@@ -848,6 +871,7 @@ def sourceFormCreate(request):
                     form2.pws_name = pws_name
                     form2.source_name = source_name
                     form2.timestamp = dt
+                    form2.draft_complete = draft_complete
                     form2.save()
 
                     # modify and save annual flow form
@@ -859,6 +883,7 @@ def sourceFormCreate(request):
                         instance.comments = comments_annual_flow
                         instance.year = year
                         instance.timestamp = dt
+                        instance.draft_complete = draft_complete
                         instance.save()
 
                     # modify and save pfas form
@@ -870,6 +895,7 @@ def sourceFormCreate(request):
                         instance.source_name = source_name
                         instance.comments = comments_pfas
                         instance.timestamp = dt
+                        instance.draft_complete = draft_complete
                         # iterate over pre-defined pfas analytes that aren't
                         # submitted in POST request (since they are disabled fields)
                         # while ((instance.analyte == '' or instance.analyte is None) and counter < 6):
@@ -948,6 +974,9 @@ def sourceFormEdit(request, pwsid, source_name):
 
         if request.method == "POST":
 
+            # determine whether the form was submitted as a draft or not
+            draft_complete = request.POST.get('draft_complete')
+
             form1 = phase2SourceInfoForm(request.POST, instance=phase2SourceInfoInstance)
             form2 = phase2MaxFlowForm(request.POST, request.FILES, prefix="maxflow", instance=phase2MaxFlowInstance)
 
@@ -983,12 +1012,14 @@ def sourceFormEdit(request, pwsid, source_name):
                         form1 = form1.save(commit=False)
                         form1.source_name = source_name
                         form1.timestamp = dt
+                        form1.draft_complete = draft_complete
                         form1.save()
 
                         # modify and save max flow form
                         form2 = form2.save(commit=False)
                         form2.source_name = source_name
                         form2.timestamp = dt
+                        form2.draft_complete = draft_complete
                         form2.save()
 
                         # modify and save annual flow form
@@ -998,6 +1029,7 @@ def sourceFormEdit(request, pwsid, source_name):
                             instance.year = year
                             instance.comments = comments_annual_flow
                             instance.timestamp = dt
+                            instance.draft_complete = draft_complete
                             instance.save()
 
                         # modify and save pfas form
@@ -1007,6 +1039,7 @@ def sourceFormEdit(request, pwsid, source_name):
                             instance.source_name = source_name
                             instance.comments = comments_pfas
                             instance.timestamp = dt
+                            instance.draft_complete = draft_complete
                             # iterate over pre-defined pfas analytes that aren't
                             # submitted in POST request (since they are disabled fields)
                             # if instance.analyte == '' or None:
@@ -1082,6 +1115,7 @@ def sourceFormEdit(request, pwsid, source_name):
     except Exception as e:
         logger.error(e)
 
+@login_required
 def sourceInfoDelete(request, pwsid, source_name):
     if request.method == "POST":
         try:
@@ -1103,5 +1137,6 @@ def sourceInfoDelete(request, pwsid, source_name):
             logger.exception(f"Error deleting data related to this source: {e}")
             raise
 
+@login_required
 def phase2HelpInfo(request):
     return render(request, template_name='phase2_helpful_info.html')

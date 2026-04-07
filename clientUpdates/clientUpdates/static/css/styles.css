@@ -447,9 +447,14 @@ td::before {
 
 }
 
-.add-form {
+.green-button {
     border-color:#50a34b !important;
     background-color:#50a34b !important;
+}
+
+.yellow-button {
+    border-color:#ffc107 !important;
+    background-color:#ffc107 !important;
 }
 
 .mt30{

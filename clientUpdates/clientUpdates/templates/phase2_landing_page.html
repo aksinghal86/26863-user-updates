@@ -38,6 +38,7 @@
             <tr>
                 <th class="text-center">PWSID</th>
                 <th class="text-center">Last Modified</th>
+                <th class="text-center">Status</th>
                 <th class="text-center"></th>
                 <th class="text-center"></th>
             </tr>
@@ -52,6 +53,13 @@
                     {{record.timestamp}}
                 </td>
                 <td class="text-center td-no-border">
+                    {% if record.draft_complete == "draft" %}
+                        <span style="color:darkred; font-style: italic; font-weight: bold;">{{ record.draft_complete|capfirst }}</span>
+                    {% elif record.draft_complete == "complete" %}
+                        <span style="color:green; font-style: italic; font-weight: bold;">{{ record.draft_complete|capfirst }}</span>
+                    {% endif %}
+                </td>
+                <td class="text-center td-no-border">
                     <a type="button" class="btn btn-warning" href="{% url 'pws-info-edit' pwsid=record.pwsid %}">
                         <b class="bi bi-pencil">
                             View or Edit Form
@@ -62,7 +70,7 @@
                     <form action="{% url 'pws-info-delete' pwsid=record.pwsid %}" method="post">
                         {% csrf_token %}
                         <button type="submit" value="submit" class="btn btn-danger">
-                            <b class="bi bi-trash" style="color:#e3d8d8;">  Delete Form</b>
+                            <b class="bi bi-trash">  Delete Form</b>
                         </button>
                     </form>
                 </td>
@@ -71,7 +79,7 @@
         </tbody>
     </table>
     <div style="display:flex; justify-content:flex-end;">
-        <a id="addPWSForm" type="button" class="btn btn-primary mt30 {% if pwsGenInfo %}no-click{% else %}add-form{% endif %}" href="{% url 'pws-info-create' %}">
+        <a id="addPWSForm" type="button" class="btn btn-primary mt30 {% if pwsGenInfo %}no-click{% else %}green-button{% endif %}" href="{% url 'pws-info-create' %}">
             <p class="bi bi-plus-circle" style="margin:0;">  Add Form</p>
         </a>
     </div>
@@ -108,6 +116,7 @@
             <tr>
                 <th class="text-center">Source Name</th>
                 <th class="text-center">Last Modified</th>
+                <th class="text-center">Status</th>
                 <th class="text-center"></th>
                 <th class="text-center"></th>
             </tr>
@@ -120,6 +129,13 @@
                 </td>
                 <td class="text-center td-no-border">{{record.timestamp}}</td>
                 <td class="text-center td-no-border">
+                    {% if record.draft_complete == "draft" %}
+                        <span style="color:darkred; font-style: italic; font-weight: bold;">{{ record.draft_complete|capfirst }}</span>
+                    {% elif record.draft_complete == "complete" %}
+                        <span style="color:green; font-style: italic; font-weight: bold;">{{ record.draft_complete|capfirst }}</span>
+                    {% endif %}
+                </td>
+                <td class="text-center td-no-border">
                     <a type="button" class="btn btn-warning" href="{% url 'source-form-edit' pwsid=record.pwsid source_name=record.source_name %}">
                         <b class="bi bi-pencil">
                             View or Edit Form
@@ -130,7 +146,7 @@
                     <form action="{% url 'source-info-delete' pwsid=record.pwsid source_name=record.source_name %}" method="post">
                         {% csrf_token %}
                         <button type="submit" value="submit" class="btn btn-danger">
-                            <b class="bi bi-trash" style="color:#e3d8d8;">  Delete Form</b>
+                            <b class="bi bi-trash">  Delete Form</b>
                         </button>
                     </form>
                 </td>
@@ -139,7 +155,7 @@
         </tbody>
     </table>
     <div style="display:flex; justify-content:flex-end;">
-        <a id="addSourceForm" type="button" class="btn btn-primary add-form mt30" href="{% url 'source-form-create' %}">
+        <a id="addSourceForm" type="button" class="btn btn-primary green-button mt30" href="{% url 'source-form-create' %}">
             <p class="bi bi-plus-circle" style="margin:0;">  Add Form</p>
         </a>
     </div>
