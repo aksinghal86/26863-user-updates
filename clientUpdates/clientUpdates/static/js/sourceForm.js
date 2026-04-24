@@ -169,7 +169,7 @@ function zeroAnnualFlowRates(elem){
 
     // get closest row
     let row = elem.closest('tr')
-    // get input and select tags, exclude all "result" fields, pfas-[0-5]-analyte fields, and pfas-[0-5]-units fields
+    // get input and select tags
     let inputsSelects =
         Array.
         from(row.querySelectorAll('input, select')).
