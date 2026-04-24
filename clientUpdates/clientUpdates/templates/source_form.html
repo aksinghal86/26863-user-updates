@@ -103,6 +103,23 @@
 
         <!--Hidden divs but will appear based on yes/no responses-->
 
+        <div class="card-alt hidden" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
+            <h3>Operator Clarification</h3>
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between; border-bottom: 2px solid rgba(210, 210, 210, 0.5);">
+                <label for="other_operates_source" class="tf-label">Who operates the source?</label>
+                <input id="other_operates_source" name="other_operates_source" class="form-control" type="text" value="{{phase2SourceInfoForm.other_operates_source.value|default_if_none:''}}">
+            </div>
+        </div>
+
+        <div class="card-alt hidden" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
+            <h3>Purchased Water Information</h3>
+            <div class="form-group grey-bottom" style="display:flex; justify-content:space-between; border-bottom: 2px solid rgba(210, 210, 210, 0.5);">
+                <label for="purchased_water_from" class="tf-label">What PWS was water purchased from relative to this source?</label>
+                <input id="purchased_water_from" name="purchased_water_from" class="form-control" style="width:20%" type="text" value="{{phase2SourceInfoForm.purchased_water_from.value|default_if_none:''}}">
+            </div>
+        </div>
+
+
         <div id="coOwnerInfo" class="card-alt hidden" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
             <h3>Source Co-Owner Information</h3>
             <div class="form-group">
@@ -132,7 +149,7 @@
                     <i class="bi bi-info-circle h5" style="padding-right:10px; color:blue; width:5%">
                     </i>
                     <p style="margin-bottom:0px;">
-                        This section is about gathering information about the maximum flow rate of the source.
+                        This section is about gathering information relative to the maximum flow rate of the source.
                         The maximum flow rate is typically documented by pump test records or pump design specifications.
                         Regardless, please provide the <span style="font-weight:bold; font-style:italic">highest</span> documented maximum flow rate.
                     </p>
@@ -141,7 +158,7 @@
             <div style="display:flex; justify-content:space-between;">
                 <div class="form-group" style="width:50%;">
                     <label for="maxflow-flow_rate">Verified maximum flow rate of the Water Source:</label>
-                    <input required id="maxflow-flow_rate" name="maxflow-flow_rate" type="number" class="form-control" value="{{phase2MaxFlowForm.flow_rate.value|default_if_none:''}}">
+                    <input required id="maxflow-flow_rate" name="maxflow-flow_rate" type="number" min="0" step="0.01" class="form-control" value="{{phase2MaxFlowForm.flow_rate.value|default_if_none:''}}">
                 </div>
                 <div class="form-group" style="width:50%;">
                     <label for="maxflow-units">Units of Provided Flow Rate:</label>
@@ -196,9 +213,10 @@
                     <i class="bi bi-info-circle h5" style="padding-right:10px; color:blue; width:5%">
                     </i>
                     <p style="margin-bottom:0px;">
-                        Please provide annual production data of the source from 2013 through 2025. If the source
-                        did not exist during a given year, or if the source's flow rate was
-                        reduced due to PFAS contamination, please make this indication.
+                        Please provide annual production data of the source from 2013 through 2025. For any given year,
+                        if the source's flow rate was reduced due to PFAS contamination, or if the source was taken offline due to PFAS contamination,
+                        please answer 'Yes' in the '<b>Flow Rate Reduced</b>' column. If the source did not exist (e.g., was not constructed)
+                        for a given year, please answer 'No' in the '<b>Existed</b>' column.
                         <br>
                         <br>
                         At the bottom of this section, you will upload files that prove the annual production numbers
@@ -226,15 +244,15 @@
                         {{ form.id }}
                     <tr>
                         <td class="label-center" style="width:15%">
-                            <input disabled id="{{form.year.html_name}}" name="{{form.year.html_name}}" type="number" class="form-control label-center" value="{{form.year.value|floatformat:'0'|default_if_none:''}}">
+                            <input disabled id="{{form.year.html_name}}" name="{{form.year.html_name}}" type="number" min="0" step="0.01" class="form-control label-center" value="{{form.year.value|floatformat:'0'|default_if_none:''}}">
                         </td>
                         <td class="label-center" style="width:15%">
-                            <input id="{{form.flow_rate.html_name}}" name="{{form.flow_rate.html_name}}" type="number" class="form-control label-center" value="{{form.flow_rate.value|default_if_none:''}}">
+                            <input id="{{form.flow_rate.html_name}}" name="{{form.flow_rate.html_name}}" type="number" min="0" step="0.01" class="form-control label-center" value="{{form.flow_rate.value|default_if_none:''}}">
                         </td>
                         <td class="label-center" style="width:15%">
                             <select required id="{{form.units.html_name}}" name="{{form.units.html_name}}" class="form-select">
                                 <option disabled {% if not form.units.value %} selected {% endif %} value=""></option>
-                                    {% for option in unitOptions %}
+                                    {% for option in annualUnitOptions %}
                                         <option {% if form.units.value == option.0 %} selected {% endif %} value="{{option.0}}">{{option.1}}</option>
                                     {% endfor %}
                             </select>
@@ -322,7 +340,7 @@
             </div>
 
             <div class="form-group grey-bottom" style="display:flex; justify-content:space-between; border-bottom: 2px solid rgba(210, 210, 210, 0.5);">
-                <label for="pfas_detected" class="tf-label">For any testing of PFAS that has been conducted for this Water Source, has there ever been any Measureable Concentrations (detections) of PFAS?</label>
+                <label for="pfas_detected" class="tf-label">For any testing of PFAS that has been conducted for this Water Source, has there ever been any Measurable Concentrations (detections) of PFAS?</label>
                 <select required id="pfas_detected" name="pfas_detected" class="form-select tf-select">
                     <option disabled {% if not phase2SourceInfoForm.pfas_detected.value %} selected {% endif %} value=""></option>
                     {% for option in yesNo %}
@@ -332,7 +350,7 @@
             </div>
 
             <div class="form-group grey-bottom" style="display:flex; justify-content:space-between; border-bottom: 2px solid rgba(210, 210, 210, 0.5);">
-                <label for="detected_b4_jun2223" class="tf-label">Was this Water Source tested or otherwise analyzed for PFAS and found to contain any Measurable Concentration of PFAS on or before June 22, 2023?</label>
+                <label for="detected_b4_jun2223" class="tf-label">Was this Water Source tested or otherwise analyzed for PFAS and found to contain any Measurable Concentration of PFAS <b>on or before</b> June 22, 2023?</label>
                 <select required id="detected_b4_jun2223" name="detected_b4_jun2223" class="form-select tf-select">
                     <option disabled {% if not phase2SourceInfoForm.detected_b4_jun2223.value %} selected {% endif %} value=""></option>
                     {% for option in yesNo %}
@@ -342,7 +360,7 @@
             </div>
 
             <div class="form-group grey-bottom" style="display:flex; justify-content:space-between; border-bottom: 2px solid rgba(210, 210, 210, 0.5);">
-                <label for="detected_after_jun2223" class="tf-label">Was this Water Source tested or otherwise analyzed for PFAS and found to contain any Measurable Concentration of PFAS on or before June 22, 2023?</label>
+                <label for="detected_after_jun2223" class="tf-label">Was this Water Source tested or otherwise analyzed for PFAS and found to contain any Measurable Concentration of PFAS <b>after</b> June 22, 2023?</label>
                 <select required id="detected_after_jun2223" name="detected_after_jun2223" class="form-select tf-select">
                     <option disabled {% if not phase2SourceInfoForm.detected_after_jun2223.value %} selected {% endif %} value=""></option>
                     {% for option in yesNo %}
@@ -352,7 +370,7 @@
             </div>
 
             <div class="form-group grey-bottom" style="display:flex; justify-content:space-between; border-bottom: 2px solid rgba(210, 210, 210, 0.5);">
-                <label for="detected_b4_jun3023" class="tf-label">Was this Water Source tested or otherwise analyzed for PFAS and found to contain any Measurable Concentration of PFAS on or before June 22, 2023?</label>
+                <label for="detected_b4_jun3023" class="tf-label">Was this Water Source tested or otherwise analyzed for PFAS and found to contain any Measurable Concentration of PFAS <b>on or before</b> June 30, 2023?</label>
                 <select required id="detected_b4_jun3023" name="detected_b4_jun3023" class="form-select tf-select">
                     <option disabled {% if not phase2SourceInfoForm.detected_b4_jun3023.value %} selected {% endif %} value=""></option>
                     {% for option in yesNo %}
@@ -362,7 +380,7 @@
             </div>
 
             <div class="form-group grey-bottom" style="display:flex; justify-content:space-between; border-bottom: 2px solid rgba(210, 210, 210, 0.5);">
-                <label for="detected_after_jun3023" class="tf-label">Was this Water Source tested or otherwise analyzed for PFAS and found to contain any Measurable Concentration of PFAS on or before June 22, 2023?</label>
+                <label for="detected_after_jun3023" class="tf-label">Was this Water Source tested or otherwise analyzed for PFAS and found to contain any Measurable Concentration of PFAS <b>after</b> June 30, 2023?</label>
                 <select required id="detected_after_jun3023" name="detected_after_jun3023" class="form-select tf-select">
                     <option disabled {% if not phase2SourceInfoForm.detected_after_jun3023.value %} selected {% endif %} value=""></option>
                     {% for option in yesNo %}
@@ -380,13 +398,14 @@
                 Below you will provide all relevant information about PFAS detections within this source. You will
                 be asked if the source has had any detections of PFOA, PFOS, PFHxS, GenX, PFNA, or PFBS, since these
                 are the six analytes that are part of the "Proposed Federal MCLs" referenced in the 3M/DuPont and Tyco/BASF
-                settlements. You will also be asked to provide the highest other PFAS analyte concentration recorded for this
-                source, in addition to any PFAS concentration that is above your state's MCL (if applicable).
+                settlements. If this source has exhibited a detection of a different PFAS analyte <b>AND</b> has a higher
+                concentration compared to all of the six analytes listed above, please indicate this in the 'Highest Other PFAS Results' section below.
                 <br>
                 <br>
                 <b>
                     Please upload lab reports at the bottom of this section that correspond to the PFAS results entered
-                    into the tables below.
+                    into the tables below. Once uploaded, the file name will populate in the 'File Name' column. Please
+                    select the file name that is associated with each PFAS detection.
                 </b>
             </p>
             <h4>Proposed Federal MCL Analytes</h4>
@@ -396,8 +415,8 @@
                     </i>
                     <p style="margin-bottom:0px;">
                         Please provide the <span style="font-weight:bold; font-style:italic">highest</span>
-                        concentrations of each analyte. If there are no detections of a given analyte, or if the
-                        analyte has not been analyzed for, please report a result of zero (0).
+                        concentrations of each analyte. If there are no detections of a given analyte, or <b>if the
+                        analyte has not been analyzed for, please report a result of zero (0).</b>
                         <br>
                         <br>
                         Results must be in units of nanograms per liter (ng/L). 1 ng/L = 1ppt.
@@ -423,7 +442,7 @@
                             <input id="{{form.analyte.html_name}}" name="{{form.analyte.html_name}}" type="text" class="form-control label-center no-click" value="{{form.analyte.value|default_if_none:''}}">
                         </td>
                         <td style="width:20%;">
-                            <input required id="{{form.result.html_name}}" name="{{form.result.html_name}}" type="number" class="form-control label-center" value="{{form.result.value|default_if_none:''}}">
+                            <input required id="{{form.result.html_name}}" name="{{form.result.html_name}}" type="number" min="0" step="0.01" class="form-control label-center" value="{{form.result.value|default_if_none:''}}">
                         </td>
                         <td style="width:15%;">
                              <input id="{{form.units.html_name}}" name="{{form.units.html_name}}" type="text" class="form-control label-center no-click" value="ng/L (ppt)">
@@ -459,6 +478,7 @@
                         If this source has exhibited a detection of a different PFAS analyte
                         <span style="font-weight:bold; font-style:italic">AND</span> has a higher concentration
                         compared to all of the six analytes shown above, please fill out the form fields below.
+                        <b>Otherwise, you can leave this section blank.</b>
                         <br>
                         <br>
                         Results must be in units of nanograms per liter (ng/L). 1 ng/L = 1ppt.
@@ -488,7 +508,7 @@
                             </select>
                         </td>
                         <td style="width:20%;">
-                            <input id="{{form.result.html_name}}" name="{{form.result.html_name}}" type="number" class="form-control label-center" value="{{form.result.value|default_if_none:''}}">
+                            <input id="{{form.result.html_name}}" name="{{form.result.html_name}}" type="number" min="0" step="0.01" class="form-control label-center" value="{{form.result.value|default_if_none:''}}">
                         </td>
                         <td style="width:15%;">
                             <input id="{{form.units.html_name}}" name="{{form.units.html_name}}" type="text" class="form-control label-center no-click" value="ng/L (ppt)">
@@ -518,7 +538,6 @@
                 The concentration entered above must be <span style="font-weight:bold; font-style:italic">higher</span>
                 than the PFOA, PFOS, PFHxS, GenX, PFNA, and PFBS concentrations in the table above.
             </div>
-
             <h4>PFAS File Uploads</h4>
             <div class="form-group">
                 {% for field in pfasFilesForm %}

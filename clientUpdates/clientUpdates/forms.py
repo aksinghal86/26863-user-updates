@@ -140,50 +140,13 @@ class pwsInfoForm(forms.ModelForm):
 
         model = phase2PwsInfo
 
-        fields = [
-            'pwsid',
-            'pws_name',
-            'ein',
-            'facility_address',
-            'facility_city',
-            'facility_state',
-            'facility_zip',
-            'mailing_address',
-            'mailing_city',
-            'mailing_state',
-            'mailing_zip',
-            'primary_contact_name',
-            'primary_contact_title',
-            'primary_contact_telephone',
-            'primary_contact_cell_phone',
-            'primary_contact_email',
-            'secondary_contact_name',
-            'secondary_contact_title',
-            'secondary_contact_telephone',
-            'secondary_contact_cell_phone',
-            'secondary_contact_email',
-            'tertiary_contact_name',
-            'tertiary_contact_title',
-            'tertiary_contact_telephone',
-            'tertiary_contact_cell_phone',
-            'tertiary_contact_email',
-            'ucmr5_required',
-            'pfas_required_state',
-            'connections_15',
-            'residents_25',
-            'pop_fewer_3300_062223',
-            'pop_fewer_3300_063023',
-            'pop_fewer_3300_051524',
-            'pws_in_usa',
-            'pws_owned_state_fed',
-            'sdwis_owner_code',
-            'sdwis_facility_code',
-            'sdwis_activity_code',
-            'pfas_detected_06222023',
-            'pfas_detected_06302023',
-            'pfas_detected_05152024',
-            'comments'
-        ]
+        fields = '__all__'
+
+    # def clean_ein(self):
+    #     value = self.cleaned_data['ein']
+    #     if value != "the":
+    #         raise forms.ValidationError("Format error")
+    #     return value
 
 class phase2SourceInfoForm(forms.ModelForm):
     class Meta:

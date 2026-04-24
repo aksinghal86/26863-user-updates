@@ -25,9 +25,9 @@ const maxFlowFile = document.getElementById('maxFlowFile');
 const submitButton = document.getElementById('final-submit');
 const loaderContainer = document.getElementById('loader-container');
 const loader = document.getElementById('loader');
-const pfasFormElem = Array.from(document.getElementById('pfasResultsDiv').querySelectorAll('[id$="analyte"], [id$="units"], [id$="result"], [id$="units"], [id$="sample_date"], [id$="file_name"]')).filter(el => !el.id.startsWith("pfas-6"));
+const pfasFormElem = Array.from(document.getElementById('pfasResultsDiv').querySelectorAll('[id$="analyte"], [id$="units"], [id$="result"], [id$="sample_date"], [id$="file_name"]')).filter(el => !el.id.startsWith("pfas-6"));
 
-const allPfasFormElem = document.getElementById('pfasResultsDiv').querySelectorAll('[id$="analyte"], [id$="units"], [id$="result"], [id$="units"], [id$="sample_date"], [id$="file_name"]');
+const allPfasFormElem = document.getElementById('pfasResultsDiv').querySelectorAll('[id$="analyte"], [id$="units"], [id$="result"], [id$="sample_date"], [id$="file_name"]');
 const otherResult = document.getElementById('pfas-6-result');
 
 const annualErrorDiv = document.getElementById('annualErrorDiv');
@@ -43,6 +43,8 @@ const draft_complete = document.getElementById('draft_complete');
 
 let initPfasFileNames = []
 let initAnnualFileNames = []
+
+const sourceName = document.getElementById('source_name');
 
 // Functions --------------------------------------------------------------------------------------------------------
 
@@ -174,8 +176,6 @@ function zeroAnnualFlowRates(elem){
             filter(elem => elem.name.endsWith("file_name") || elem.name.endsWith("units"))
         //filter(elem => !elem.name.endsWith("flow_rate") && !/annualflow-([0-9]|1[0-2])-year$/.test(elem.id) && !elem.nam);
 
-    console.log(inputsSelects);
-
     // if the value is zero, disable fields
     if (elem.value !== "" && Number(elem.value) === 0){
         inputsSelects.forEach(e => e.disabled = true)
@@ -228,6 +228,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const sourceTypeSelect = document.getElementById('source_type');
     const sourceTypeOtherDiv = document.getElementById('sourceTypeOther');
     const sourceTypeOther = document.getElementById('source_type_other');
+    const pwsOperator = document.getElementById('pws_operates_source');
+    const otherOperator = document.getElementById('other_operates_source');
     const sourceCoOwned = document.getElementById('source_co_owned');
     const coOwnerInfoDiv = document.getElementById('coOwnerInfo');
     const coOwnerPWSID = document.getElementById('co_owner_pwsid')
@@ -235,27 +237,44 @@ document.addEventListener("DOMContentLoaded", function () {
     const isPartOfIDWS = document.getElementById('is_part_of_idws')
     const idwsExplanationDiv = document.getElementById('idwsExplanation')
     const idwsExplanation = document.getElementById('idws_explanation')
+    const purchasedFrom = document.getElementById('purchased_water_from');
+    const pwsPurchased = document.getElementById('pws_purchased');
+
 
 
     // create function that toggles whether the 'hidden' class is applied
     function toggleHiddenRequired() {
-        console.log("here");
+
+        // define variables used more than once
+        let detectedDates = Array.from(pfasDetected.parentElement.parentElement.querySelectorAll("div.form-group.grey-bottom")).filter(el => el.querySelector("[id^='detected_b4'], [id^='detected_after']"));
 
         // True/False Statements
         tf1 = sourceTypeSelect.value === "Other";
-        tf2 = sourceCoOwned.value === "Yes"
-        tf3 = isPartOfIDWS.value === "Yes"
+        tf2 = sourceCoOwned.value === "Yes";
+        tf3 = isPartOfIDWS.value === "Yes";
+        tf4 = pwsOperator.value === "No";
+        tf5 = pwsPurchased.value === "Yes";
+        tf6 = pfasDetected.value === "Yes";
+        tf7 = pfasEverTested.value === "Yes";
 
         // toggle whether the elements are hidden or not
         sourceTypeOtherDiv.classList.toggle("hidden", !tf1);
         coOwnerInfoDiv.classList.toggle("hidden", !tf2);
         idwsExplanationDiv.classList.toggle("hidden", !tf3);
+        otherOperator.parentElement.parentElement.classList.toggle("hidden", !tf4);
+        purchasedFrom.parentElement.parentElement.classList.toggle("hidden", !tf5);
+        detectedDates.forEach(el => el.classList.toggle("hidden", !tf6));
+        pfasDetected.parentElement.classList.toggle("hidden", !tf7)
 
         // toggle whether they are required.
         sourceTypeOther.required = tf1;
         coOwnerPWSID.required = tf2;
         coOwnerExplained.required = tf2;
         idwsExplanation.required = tf3;
+        otherOperator.required = tf4;
+        purchasedFrom.required = tf5;
+        detectedDates.forEach(el => el.required = tf6)
+        pfasDetected.required = tf7;
 
     };
 
@@ -266,6 +285,10 @@ document.addEventListener("DOMContentLoaded", function () {
     sourceTypeSelect.addEventListener("change", toggleHiddenRequired);
     sourceCoOwned.addEventListener("change", toggleHiddenRequired);
     isPartOfIDWS.addEventListener("change", toggleHiddenRequired);
+    pwsOperator.addEventListener("change", toggleHiddenRequired);
+    pwsPurchased.addEventListener("change", toggleHiddenRequired);
+    pfasDetected.addEventListener("change", toggleHiddenRequired);
+    pfasEverTested.addEventListener("change", toggleHiddenRequired);
 
     // when page is first loaded, hide pfas section if necessary based on results
     if (pfasEverTested.value === "No" || pfasDetected.value === "No") {
@@ -318,13 +341,10 @@ document.addEventListener("DOMContentLoaded", function () {
     // when editing an existing form, make the fileList variable load file names that are
     // present in the selectors when page is first loaded. Populate the file list in the
     // selectors
-
     updateFileList(annualFiles, annualFileNameList, initAnnualFileNames);
     renderFileNames(annualFileSelectors, annualFileNameList);
     updateFileList(pfasFiles, pfasFileNameList, initPfasFileNames);
     renderFileNames(pfasFileSelectors, pfasFileNameList);
-
-
 
 
 });
@@ -336,9 +356,10 @@ pfasEverTested.addEventListener("change", function (e) {
     if(pfasEverTested.value === "No" || (pfasEverTested.value === "Yes" && pfasDetected.value === "No")){
         pfasResultsDiv.classList.add('hidden');
         pfasCommentsDiv.classList.add('hidden');
+        console.log(allPfasFormElem);
         allPfasFormElem.forEach(elem => elem.required = false);
         allPfasFormElem.forEach(el => {
-            if (!/pfas-[0-5]-(analyte)$/.test(el.id) || el.endsWith("units")) {
+            if (!/pfas-[0-5]-(analyte)$/.test(el.id) && !el.id.endsWith("units")) {
                 clearValues(el);
             }
         });
@@ -360,7 +381,7 @@ pfasDetected.addEventListener("change", function (e) {
         pfasCommentsDiv.classList.add('hidden');
         allPfasFormElem.forEach(elem => elem.required = false);
         allPfasFormElem.forEach(el => {
-            if (!/pfas-[0-5]-(analyte)$/.test(el.id) || el.endsWith("units")) {
+            if (!/pfas-[0-5]-(analyte)$/.test(el.id) && !el.id.endsWith("units")) {
                 clearValues(el);
             }
         });
@@ -406,7 +427,7 @@ pfasFiles.forEach(el => addEventListener("change", function(){
 // --------- Do stuff with file validation --------------------------
 
 
-function validation(){
+function validation(complete){
 
     const clearValidationErrors = () => {
         annualErrorDiv.classList.add('hidden');
@@ -420,6 +441,8 @@ function validation(){
 
         otherResultErrorDiv.classList.add('hidden');
         otherResult.classList.remove('is-invalid');
+
+        document.querySelectorAll("[id=sourceNameErrorDiv]").forEach(el => el.remove());
     };
 
     const showValidationError = (inputElement, errorElement) => {
@@ -453,6 +476,20 @@ function validation(){
 
     clearValidationErrors();
 
+    // ensure a source name is provided
+    const assertSourceName = () => {
+        if(sourceName.value === ""){
+            const errorDiv = document.createElement('div');
+            errorDiv.id = "sourceNameErrorDiv";
+            errorDiv.className = 'custom-invalid';
+            errorDiv.textContent = "Please provide a source name.";
+            sourceName.insertAdjacentElement("afterend", errorDiv);
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     let annualValid = true;
     annualFiles.forEach(elem => {
         if (elem.checkVisibility() && elem.files.length > 0){
@@ -478,7 +515,7 @@ function validation(){
         }
     }
     // on submit (not save), ensure a filename has been assigned
-    else if(maxFlowFile.files.length===0 && maxFlowFileName.value === "" && draft_complete.value === "complete"){
+    else if(maxFlowFile.files.length===0 && maxFlowFileName.value === "" && complete){
             maxFlowValid = false;
             showValidationError(maxFlowFile, maxFlowErrorDiv);
     }
@@ -490,7 +527,7 @@ function validation(){
         showValidationError(otherResult, otherResultErrorDiv)
     }
 
-    if (!annualValid || !pfasValid || !maxFlowValid || !checkOther) {
+    if (!annualValid || !pfasValid || !maxFlowValid || !checkOther || !assertSourceName()) {
         return false;
     } else {
         return true;
@@ -502,7 +539,7 @@ function validation(){
 
 sourceForm.addEventListener('submit', function(event) {
 
-    let is_valid = validation();
+    let is_valid = validation(true);
     if (!is_valid) {
         event.preventDefault();
         alert("Please fix validation errors that exist in the form.")
@@ -525,8 +562,7 @@ otherResult.addEventListener("change", () => checkNonZero(otherResult));
 // value of "draft" to the draft_complete field, and submit the form
 document.getElementById('save_draft').addEventListener("click", function (event){
 
-
-    let is_valid = validation();
+    let is_valid = validation(false);
     if (!is_valid){
         event.preventDefault();
         alert("Please fix validation errors that exist in the form.")

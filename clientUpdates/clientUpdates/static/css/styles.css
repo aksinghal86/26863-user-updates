@@ -424,7 +424,7 @@ td::before {
 
 .hidden {
 
-    display: none;
+    display: none !important;
 
 }
 

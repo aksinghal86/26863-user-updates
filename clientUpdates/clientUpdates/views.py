@@ -749,6 +749,8 @@ def pwsInfoCreate(request):
     return render(request, "pws_info_form.html", {"form": form,
                                                   "stateOptions": us_states.STATE_CHOICES,
                                                   "sdwisOwnerCodes": sdwisOwnerCodes,
+                                                  "sdwisPrivateTypes": sdwisPrivateTypes,
+                                                  "yesNo": yesNo,
                                                   "sdwisFacilityCodes": sdwisFacilityCodes,
                                                   "sdwisActivityCodes": sdwisActivityCodes,
                                                   "action": "/pws-info-create/"})
@@ -784,6 +786,8 @@ def pwsInfoEdit(request, pwsid):
                                                   "stateOptions": us_states.STATE_CHOICES,
                                                   "sdwisOwnerCodes": sdwisOwnerCodes,
                                                   "sdwisFacilityCodes": sdwisFacilityCodes,
+                                                  "sdwisPrivateTypes": sdwisPrivateTypes,
+                                                  "yesNo": yesNo,
                                                   "sdwisActivityCodes": sdwisActivityCodes,
                                                   "action": f"url pws-info-edit {pwsid}"})
 
@@ -949,6 +953,7 @@ def sourceFormCreate(request):
             "yesNo": yesNo,
             "sourceTypeOptions": sourceTypeOptions,
             "unitOptions": unitOptions,
+            "annualUnitOptions": annualUnitOptions,
             "years": years,
             "otherAnalytes": otherAnalytes,
             "action": "/source-form-create/"
@@ -1104,6 +1109,7 @@ def sourceFormEdit(request, pwsid, source_name):
                 "yesNo": yesNo,
                 "sourceTypeOptions": sourceTypeOptions,
                 "unitOptions": unitOptions,
+                "annualUnitOptions": annualUnitOptions,
                 "years": years,
                 "otherAnalytes": otherAnalytes,
                 "action": f"url source-form-edit {pwsid} {source_name}",

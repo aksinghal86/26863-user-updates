@@ -3,7 +3,7 @@
 
 {% block content %}
 <div>
-    <form id="pwsInfoForm" action="{% if true %}{{action}}{% endif %}" method="post" onSubmit="return confirm('Are you sure you would like to submit this form?')">
+    <form id="pwsInfoForm" action="{% if true %}{{action}}{% endif %}" method="post">
         {% csrf_token %}
 
         <!--Basic PWS Info and Facility Address-->
@@ -11,7 +11,7 @@
         <div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
             <h3>General PWS Information</h3>
             <div class="form-group">
-                <label for="ein">Employee Identification Number</label>
+                <label for="ein">Employer Identification Number</label>
                 <input required id="ein" name="ein" type="text" class="form-control" value="{{form.ein.value|default_if_none:''}}">
             </div>
             <div class="form-group">
@@ -95,7 +95,7 @@
 
                 <!--Secondary Contact-->
         <div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
-            <h3>Secondary Contact</h3>
+            <h3>Secondary Contact (Optional)</h3>
             <div class="form-group">
                 <label for="secondary_contact_name">Name</label>
                 <input id="secondary_contact_name" name="secondary_contact_name" type="text" class="form-control" value="{{form.secondary_contact_name.value|default_if_none:''}}">
@@ -120,7 +120,7 @@
 
                 <!--Tertiary Contact-->
         <div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
-            <h3>Tertiary Contact</h3>
+            <h3>Tertiary Contact (Optional)</h3>
             <div class="form-group">
                 <label for="tertiary_contact_name">Name</label>
                 <input id="tertiary_contact_name" name="tertiary_contact_name" type="text" class="form-control" value="{{form.tertiary_contact_name.value|default_if_none:''}}">
@@ -253,6 +253,24 @@
                     <option disabled {% if not form.sdwis_owner_code.value %} selected {% endif %} value=""></option>
                     {% for i in sdwisOwnerCodes %}
                         <option {% if form.sdwis_owner_code.value == i.0 %} selected {% endif %} value="{{i.0}}">{{i.1}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div hidden id="privateCodeDiv" class="form-group grey-bottom" style="display:flex; justify-content:space-between;">
+                <label for="sdwis_private_type" class="tf-label">If the PWS has an owner type code of "P-Private," what is the operation type of the PWS?</label>
+                <select id="sdwis_private_type" name="sdwis_private_type" class="form-select tf-select2">
+                    <option disabled {% if not form.sdwis_private_type.value %} selected {% endif %} value=""></option>
+                    {% for i in sdwisPrivateTypes %}
+                        <option {% if form.sdwis_private_type.value == i.0 %} selected {% endif %} value="{{i.0}}">{{i.1}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div hidden id="stateFedSueDiv" class="form-group grey-bottom" style="display:flex; justify-content:space-between;">
+                <label for="sdwis_statefed_sue" class="tf-label">If the PWS has an owner type code of either "S-State Government" or "F-Federal Government," does the PWS have the authority to sue or be sued in its own name?</label>
+                <select id="sdwis_statefed_sue" name="sdwis_statefed_sue" class="form-select tf-select2">
+                    <option disabled {% if not form.sdwis_statefed_sue.value %} selected {% endif %} value=""></option>
+                    {% for i in yesNo %}
+                        <option {% if form.sdwis_statefed_sue.value == i %} selected {% endif %} value="{{i}}">{{i}}</option>
                     {% endfor %}
                 </select>
             </div>
