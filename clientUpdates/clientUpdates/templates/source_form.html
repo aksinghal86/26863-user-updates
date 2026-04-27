@@ -181,11 +181,11 @@
 
             <div class="form-group">
                 <label for="maxFlowFile" class="form-label">Please upload the file that supports the maximum flow rate information entered above.</label>
-                <input {% if action == "/source-form-create/"%}required{% endif %} type="file" class="form-control" id="maxFlowFile" name="maxFlowFile" accept=".pdf, .jpg, .jpeg, .png, .csv, .xlsx">
+                <input {% if action == "/source-form-create/"%}required{% endif %} type="file" class="form-control" id="maxFlowFile" name="maxFlowFile" accept=".pdf, .jpg, .jpeg, .png, .csv, .xlsx, .xls">
             </div>
 
             <div id="maxFlowErrorDiv" class="custom-invalid hidden">
-                For the highlighted file input above, please make sure a file has been uploaded, the correct file type ('pdf', 'csv', 'xlsx', 'jpg', 'jpeg', 'png')
+                For the highlighted file input above, please make sure a file has been uploaded, the correct file type ('pdf', 'csv', 'xlsx', 'xls', 'jpg', 'jpeg', 'png')
                 is being used, and that the file is less than 25 MB in size.
             </div>
 
@@ -298,7 +298,7 @@
                         the file name will populate under the "File Name" selection boxes in the table above.
                     </label>
                     <div class="{% if 'annualFile1' == field.html_name %}d-flex{% else %}hidden{% endif %}" id="{{'div_'|add:field.html_name}}">
-                        <input style="width:80%;" type="file" class="form-control form-label" id="{{field.html_name}}" name="{{field.html_name}}" accept=".pdf, .jpg, .jpeg, .png, .csv, .xlsx">
+                        <input style="width:80%;" type="file" class="form-control form-label" id="{{field.html_name}}" name="{{field.html_name}}" accept=".pdf, .jpg, .jpeg, .png, .csv, .xlsx, .xls">
                         {% if 'annualFile1' != field.html_name %}
                             <button style="width:10%; height:50%;" type="button" class="delete-button btn btn-danger" data-target="{{field.html_name}}">Delete</button>
                         {% endif %}
@@ -306,7 +306,7 @@
                 {% endfor %}
             </div>
             <div id="annualErrorDiv" class="custom-invalid hidden">
-                For the highlighted files listed above, please make sure the correct file type ('pdf', 'csv', 'xlsx', 'jpg', 'jpeg', 'png') is being used and that
+                For the highlighted files listed above, please make sure the correct file type ('pdf', 'csv', 'xlsx', 'xls', jpg', 'jpeg', 'png') is being used and that
                 the file is less than 25 MB in size.
             </div>
             <div style="display:flex; justify-content:flex-end;">

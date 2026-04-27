@@ -456,7 +456,7 @@ function validation(complete){
         const maxFileSizeBytes = 25 * 1024 * 1024; // Max file size: 25 MB
         let allowedExtensions = []
         if (type === "annual" || type === "maxflow"){
-            allowedExtensions = ['pdf', 'csv', 'xlsx', 'jpg', 'jpeg', 'png']
+            allowedExtensions = ['pdf', 'csv', 'xlsx', 'xls', 'jpg', 'jpeg', 'png']
         } else if (type === "pfas") {
             allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png']
         }
