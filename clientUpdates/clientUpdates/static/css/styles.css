@@ -467,3 +467,8 @@ td::before {
     font-size:0.88rem;
     color:red;
 }
+
+.format-text{
+    font-size: 0.8rem;
+    font-style: italic;
+}

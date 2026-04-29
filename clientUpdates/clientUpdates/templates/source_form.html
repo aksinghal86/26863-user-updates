@@ -6,6 +6,16 @@
 <div>
     <form id="sourceForm" action="{% if true%}{{action}}{% endif %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
+        <div class="alert alert-primary" style="display:flex; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
+            <i class="bi bi-info-circle h5" style="padding-right:10px; color:blue; width:5%"></i>
+            <p style="margin: 0px;">
+                This form is aimed at collecting information related to a specific Water Source for the PWS, such as PFAS and production data.
+                Unless otherwise indicated, all shown form fields are required. Note that if you need to save
+                an incomplete version of your form, you can do so by clicking the "Save as Draft" button at
+                the bottom of this page. Please <a href="{% url 'contact_default' %}">contact</a> EH&E if you encounter
+                any issues.
+            </p>
+        </div>
         <!--Source Name-->
         <div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
             <h3>Source Name</h3>
@@ -190,7 +200,7 @@
             </div>
 
             <div class="form-group">
-                <label for="maxflow-comments">Comments</label>
+                <label for="maxflow-comments">Comments <span class="format-text">(optional)</span></label>
                 <textarea id="maxflow-comments" name="maxflow-comments" class="form-control">{{phase2MaxFlowForm.comments.value|default_if_none:''}}</textarea>
             </div>
 
@@ -287,7 +297,7 @@
             </table>
 
             <div class="form-group">
-                <label for="comments_annual_flow">Comments</label>
+                <label for="comments_annual_flow">Comments <span class="format-text">(optional)</span></label>
                 <textarea id="comments_annual_flow" name="comments_annual_flow" class="form-control">{{formConstants.comments_annual_flow.value|default_if_none:''}}</textarea>
             </div>
 
@@ -579,7 +589,7 @@
         <div id="pfasCommentsDiv" class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
             <h3>PFAS Comments</h3>
             <div class="form-group">
-                <label for="comments_pfas">Comments</label>
+                <label for="comments_pfas">Comments <span class="format-text">(optional)</span></label>
                 <textarea id="comments_pfas" name="comments_pfas" class="form-control">{{formConstants.comments_pfas.value|default_if_none:''}}</textarea>
             </div>
         </div>

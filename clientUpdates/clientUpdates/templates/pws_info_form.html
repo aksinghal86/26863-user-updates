@@ -7,11 +7,21 @@
         {% csrf_token %}
 
         <!--Basic PWS Info and Facility Address-->
+        <div class="alert alert-primary" style="display:flex; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
+            <i class="bi bi-info-circle h5" style="padding-right:10px; color:blue; width:5%"></i>
+            <p style="margin: 0px;">
+                This form is aimed at collecting information related to the Public Water System (PWS).
+                Unless otherwise indicated, all shown form fields are required. Note that if you need to save
+                an incomplete version of your form, you can do so by clicking the "Save as Draft" button at
+                the bottom of this page. Please <a href="{% url 'contact_default' %}">contact</a> EH&E if you encounter
+                any issues.
+            </p>
+        </div>
 
         <div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
             <h3>General PWS Information</h3>
             <div class="form-group">
-                <label for="ein">Employer Identification Number</label>
+                <label for="ein">Employer Identification Number <span style="font-size: 0.8rem; font-style: italic;">(XX-XXXXXXX)</label>
                 <input required id="ein" name="ein" type="text" class="form-control" value="{{form.ein.value|default_if_none:''}}">
             </div>
             <div class="form-group">
@@ -33,7 +43,7 @@
                     </select>
                 </div>
                 <div class="form-group" style="width:30%;">
-                    <label for="facility_zip">Facility Zip Code</label>
+                    <label for="facility_zip">Facility Zip Code <span class="format-text">(e.g., 00000)</span></label>
                     <input required id="facility_zip" name="facility_zip" type="text" class="form-control" value="{{form.facility_zip.value|default_if_none:''}}">
                 </div>
             </div>
@@ -62,7 +72,7 @@
                     </select>
                 </div>
                 <div class="form-group" style="width:30%;">
-                    <label for="mailing_zip">Zip Code</label>
+                    <label for="mailing_zip">Zip Code <span class="format-text">(e.g., 00000)</span></label>
                     <input required id="mailing_zip" name="mailing_zip" type="text" class="form-control" value="{{form.mailing_zip.value|default_if_none:''}}">
                 </div>
             </div>
@@ -80,11 +90,11 @@
                 <input required id="primary_contact_title" name="primary_contact_title" type="text" class="form-control" value="{{form.primary_contact_title.value|default_if_none:''}}">
             </div>
             <div class="form-group">
-                <label for="primary_contact_telephone">Telephone</label>
+                <label for="primary_contact_telephone">Telephone <span class="format-text">(format of 111-111-1111)</span></label>
                 <input required id="primary_contact_telephone" name="primary_contact_telephone" type="text" class="form-control" value="{{form.primary_contact_telephone.value|default_if_none:''}}">
             </div>
             <div class="form-group">
-                <label for="primary_contact_cell_phone">Mobile Phone</label>
+                <label for="primary_contact_cell_phone">Mobile Phone <span class="format-text">(format of 111-111-1111)</span></label>
                 <input required id="primary_contact_cell_phone" name="primary_contact_cell_phone" type="text" class="form-control" value="{{form.primary_contact_cell_phone.value|default_if_none:''}}">
             </div>
             <div class="form-group">
@@ -95,7 +105,14 @@
 
                 <!--Secondary Contact-->
         <div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
-            <h3>Secondary Contact (Optional)</h3>
+            <h3>Secondary Contact</h3>
+            <div class="alert alert-primary" style="display:flex;">
+                <i class="bi bi-info-circle h5" style="padding-right:10px; color:blue; width:5%"></i>
+                <p style="margin: 0px;">
+                    This section is <b>optional</b>. Note that it is recommended to submit contact information for at least two (2) representatives of the PWS, although
+                    only one (1) is technically required.
+                </p>
+            </div>
             <div class="form-group">
                 <label for="secondary_contact_name">Name</label>
                 <input id="secondary_contact_name" name="secondary_contact_name" type="text" class="form-control" value="{{form.secondary_contact_name.value|default_if_none:''}}">
@@ -105,11 +122,11 @@
                 <input id="secondary_contact_title" name="secondary_contact_title" type="text" class="form-control" value="{{form.secondary_contact_title.value|default_if_none:''}}">
             </div>
             <div class="form-group">
-                <label for="secondary_contact_telephone">Telephone</label>
+                <label for="secondary_contact_telephone">Telephone <span class="format-text">(format of 111-111-1111)</span></label>
                 <input id="secondary_contact_telephone" name="secondary_contact_telephone" type="text" class="form-control" value="{{form.secondary_contact_telephone.value|default_if_none:''}}">
             </div>
             <div class="form-group">
-                <label for="secondary_contact_cell_phone">Mobile Phone</label>
+                <label for="secondary_contact_cell_phone">Mobile Phone <span class="format-text">(format of 111-111-1111)</span></label>
                 <input id="secondary_contact_cell_phone" name="secondary_contact_cell_phone" type="text" class="form-control" value="{{form.secondary_contact_cell_phone.value|default_if_none:''}}">
             </div>
             <div class="form-group">
@@ -120,7 +137,14 @@
 
                 <!--Tertiary Contact-->
         <div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
-            <h3>Tertiary Contact (Optional)</h3>
+            <h3>Tertiary Contact</h3>
+            <div class="alert alert-primary" style="display:flex;">
+                <i class="bi bi-info-circle h5" style="padding-right:10px; color:blue; width:5%"></i>
+                <p style="margin: 0px;">
+                    This section is <b>optional</b>. Note that it is recommended to submit contact information for at least two (2) representatives of the PWS, although
+                    only one (1) is technically required.
+                </p>
+            </div>
             <div class="form-group">
                 <label for="tertiary_contact_name">Name</label>
                 <input id="tertiary_contact_name" name="tertiary_contact_name" type="text" class="form-control" value="{{form.tertiary_contact_name.value|default_if_none:''}}">
@@ -130,11 +154,11 @@
                 <input id="tertiary_contact_title" name="tertiary_contact_title" type="text" class="form-control" value="{{form.tertiary_contact_title.value|default_if_none:''}}">
             </div>
             <div class="form-group">
-                <label for="tertiary_contact_telephone">Telephone</label>
+                <label for="tertiary_contact_telephone">Telephone <span class="format-text">(format of 111-111-1111)</span></label>
                 <input id="tertiary_contact_telephone" name="tertiary_contact_telephone" type="text" class="form-control" value="{{form.tertiary_contact_telephone.value|default_if_none:''}}">
             </div>
             <div class="form-group">
-                <label for="tertiary_contact_cell_phone">Mobile Phone</label>
+                <label for="tertiary_contact_cell_phone">Mobile  <span class="format-text">(format of 111-111-1111)</span></label>
                 <input id="tertiary_contact_cell_phone" name="tertiary_contact_cell_phone" type="text" class="form-control" value="{{form.tertiary_contact_cell_phone.value|default_if_none:''}}">
             </div>
             <div class="form-group">
@@ -146,6 +170,11 @@
         <!--Yes/No Questions-->
         <div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
             <h3>Yes/No Questions</h3>
+            <div class="alert alert-primary" style="display:flex;">
+                <i class="bi bi-info-circle h5" style="padding-right:10px; color:blue; width:5%"></i>
+                <p style="margin: 0px;">The questions below will help determine if the PWS is eligible for 3M and/or DuPont Phase 2 Claims. Note that some of these questions may relate to information
+                contained in the Safe Drinking Water Information System (SDWIS) federal database. You can search information within the SDWIS <a href="https://sdwis.epa.gov/ords/sfdw_pub/r/sfdw/sdwis_fed_reports_public/200" target="_blank">here</a>.</p>
+            </div>
             <div class="form-group grey-bottom" style="display:flex; justify-content:space-between; border-bottom: 2px solid rgba(210, 210, 210, 0.5);">
                 <label for="ucmr5_required" class="tf-label">Is the PWS required to test under UCMR-5?</label>
                 <select required id="ucmr5_required" name="ucmr5_required" class="form-select tf-select">
@@ -247,6 +276,11 @@
 
         <div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
             <h3>SDWIS Codes</h3>
+            <div class="alert alert-primary" style="display:flex;">
+                <i class="bi bi-info-circle h5" style="padding-right:10px; color:blue; width:5%"></i>
+                <p style="margin: 0px;">The questions below relate to information
+                contained in the SDWIS federal database. You can search information within the SDWIS <a href="https://sdwis.epa.gov/ords/sfdw_pub/r/sfdw/sdwis_fed_reports_public/200" target="_blank">here</a>.</p>
+            </div>
             <div class="form-group grey-bottom" style="display:flex; justify-content:space-between;">
                 <label for="sdwis_owner_code" class="tf-label">What is the PWS Owner Type Code as listed in SDWIS?</label>
                 <select required id="sdwis_owner_code" name="sdwis_owner_code" class="form-select tf-select2">
@@ -295,7 +329,7 @@
         </div>
 
         <div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
-            <h3>Comments</h3>
+            <h3>Comments <span style="font-size: 1rem; font-style: italic;">(optional)</span></h3>
             <div class="form-group">
                 <label for="comments">If you have any questions or comments about your form submittal, please include
                 them below:</label>
