@@ -813,11 +813,11 @@ def formSuccess(request):
 @never_cache
 @login_required
 def sourceFormCreate(request):
-    if request.method == "POST":
+    # get pwsid and associated pws name
+    pwsid = request.user.username
+    pws_name = get_object_or_404(pwsCreds, pwsid=pwsid).pws_name
 
-        # get pwsid and associated pws name
-        pwsid = request.user.username
-        pws_name = get_object_or_404(pwsCreds, pwsid=pwsid).pws_name
+    if request.method == "POST":
 
         # determine whether the form was submitted as a draft or not
         draft_complete = request.POST.get('draft_complete')
@@ -891,7 +891,6 @@ def sourceFormCreate(request):
                         instance.save()
 
                     # modify and save pfas form
-                    counter = 0
                     for form in form4:
                         instance = form.save(commit=False)
                         instance.pwsid = pwsid
@@ -900,11 +899,6 @@ def sourceFormCreate(request):
                         instance.comments = comments_pfas
                         instance.timestamp = dt
                         instance.draft_complete = draft_complete
-                        # iterate over pre-defined pfas analytes that aren't
-                        # submitted in POST request (since they are disabled fields)
-                        # while ((instance.analyte == '' or instance.analyte is None) and counter < 6):
-                        #     instance.analyte = pfasAnalytes[counter]
-                        #     counter = counter + 1
                         instance.save()
 
                     for file in request.FILES:
@@ -940,6 +934,8 @@ def sourceFormCreate(request):
         form7 = pfasFiles()
         form8 = maxFlowFile()
 
+        existingSourceNames = phase2SourceInfo.objects.filter(pwsid=pwsid).values_list('source_name', flat=True).distinct();
+
         context = {
 
             "phase2SourceInfoForm": form1,
@@ -956,7 +952,8 @@ def sourceFormCreate(request):
             "annualUnitOptions": annualUnitOptions,
             "years": years,
             "otherAnalytes": otherAnalytes,
-            "action": "/source-form-create/"
+            "action": "/source-form-create/",
+            "existingSourceNames": existingSourceNames
 
         }
 
@@ -968,13 +965,11 @@ def sourceFormCreate(request):
 @never_cache
 def sourceFormEdit(request, pwsid, source_name):
     try:
+
         phase2SourceInfoInstance = get_object_or_404(phase2SourceInfo, pwsid=pwsid, source_name=source_name)
         phase2MaxFlowInstance = get_object_or_404(phase2MaxFlow, pwsid=pwsid, source_name=source_name)
-
         annualFlowFactory = modelformset_factory(phase2AnnualFlow, form=phase2AnnualFlowForm, extra=0)
-
         pfasFactory = modelformset_factory(phase2PfasResults, form=phase2PfasResultsForm, extra=0)
-
         pws_name = get_object_or_404(pwsCreds, pwsid=pwsid).pws_name
 
         if request.method == "POST":
@@ -994,11 +989,8 @@ def sourceFormEdit(request, pwsid, source_name):
                                 prefix="pfas")
 
             form5 = formConstants(request.POST)
-
             form6 = annualFiles(request.POST, request.FILES)
-
             form7 = pfasFiles(request.POST, request.FILES)
-
             form8 = maxFlowFile(request.POST, request.FILES)
 
             try:
@@ -1037,19 +1029,12 @@ def sourceFormEdit(request, pwsid, source_name):
                             instance.draft_complete = draft_complete
                             instance.save()
 
-                        # modify and save pfas form
-                        counter = 0
                         for form in form4:
                             instance = form.save(commit=False)
                             instance.source_name = source_name
                             instance.comments = comments_pfas
                             instance.timestamp = dt
                             instance.draft_complete = draft_complete
-                            # iterate over pre-defined pfas analytes that aren't
-                            # submitted in POST request (since they are disabled fields)
-                            # if instance.analyte == '' or None:
-                            #     instance.analyte = pfasAnalytes[counter]
-                            #     counter = counter + 1
                             instance.save()
 
                         for file in request.FILES:
@@ -1091,10 +1076,10 @@ def sourceFormEdit(request, pwsid, source_name):
             )
 
             form6 = annualFiles()
-
             form7 = pfasFiles()
-
             form8 = maxFlowFile()
+
+            existingSourceNames = phase2SourceInfo.objects.filter(pwsid=pwsid).values_list('source_name', flat=True).distinct()
 
             context = {
 
@@ -1113,7 +1098,8 @@ def sourceFormEdit(request, pwsid, source_name):
                 "years": years,
                 "otherAnalytes": otherAnalytes,
                 "action": f"url source-form-edit {pwsid} {source_name}",
-                "dropboxLink": dropboxLink(pwsid)
+                "dropboxLink": dropboxLink(pwsid),
+                "existingSourceNames": existingSourceNames
 
             }
 

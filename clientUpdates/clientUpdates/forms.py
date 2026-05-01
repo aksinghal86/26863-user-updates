@@ -200,6 +200,28 @@ class formConstants(forms.Form):
     comments_annual_flow = forms.CharField(widget=forms.Textarea, required=False)
     comments_pfas = forms.CharField(widget=forms.Textarea, required=False)
     source_name = forms.CharField(max_length=150)
+    #
+    # def __init__(self, *args, **kwargs):
+    #     self.pwsid = kwargs.pop('pwsid', None)
+    #     self.id = kwargs.pop('id', None)
+    #
+    #     # call the parent constructor
+    #     super(formConstants, self).__init__(*args, **kwargs)
+    #
+    # def clean_source_name(self):
+    #     source_name = self.cleaned_data.get('source_name')
+    #
+    #     qs = phase2SourceInfo.objects.filter(pwsid=self.pwsid, source_name=source_name)
+    #     if qs.exists():
+    #         id = qs[0].id == self.id
+    #         if not id:
+    #             raise forms.ValidationError("This source name already exits. Please ensure each source name is unique.")
+    #     return source_name
+
+        # if qs.exists():
+        #     raise forms.ValidationError("This source name already exits. Please ensure each source name is unique.")
+        # return source_name
+
 
 class annualFiles(forms.Form):
     annualFile1 = forms.FileField(required=False)

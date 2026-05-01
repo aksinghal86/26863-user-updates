@@ -345,7 +345,7 @@ td::before {
     opacity: 1;
 }
 
-#loader-container {
+#loader-container{
 
     display: none;
     position: fixed;

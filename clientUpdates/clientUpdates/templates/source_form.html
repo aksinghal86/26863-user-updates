@@ -4,6 +4,13 @@
 
 {% block content %}
 <div>
+<div style="display:none" id="source-names">
+    <ul>
+        {% for source in existingSourceNames %}
+            <li>{{ source }}</li>
+        {% endfor %}
+    </ul>
+</div>
     <form id="sourceForm" action="{% if true%}{{action}}{% endif %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="alert alert-primary" style="display:flex; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
@@ -24,7 +31,6 @@
                 <input required id="source_name" name="source_name" type="text" class="form-control" value="{{formConstants.source_name.value|default_if_none:''}}">
             </div>
         </div>
-
         <!--Source Type-->
         <div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
             <h3>Source Type</h3>
@@ -254,7 +260,7 @@
                         {{ form.id }}
                     <tr>
                         <td class="label-center" style="width:15%">
-                            <input disabled id="{{form.year.html_name}}" name="{{form.year.html_name}}" type="number" min="0" step="0.01" class="form-control label-center" value="{{form.year.value|floatformat:'0'|default_if_none:''}}">
+                            <input readonly id="{{form.year.html_name}}" name="{{form.year.html_name}}" type="number" min="0" step="0.01" class="form-control label-center" value="{{form.year.value|floatformat:'0'|default_if_none:''}}">
                         </td>
                         <td class="label-center" style="width:15%">
                             <input id="{{form.flow_rate.html_name}}" name="{{form.flow_rate.html_name}}" type="number" min="0" step="0.01" class="form-control label-center" value="{{form.flow_rate.value|default_if_none:''}}">
@@ -361,7 +367,7 @@
 
             <div class="form-group grey-bottom" style="display:flex; justify-content:space-between; border-bottom: 2px solid rgba(210, 210, 210, 0.5);">
                 <label for="detected_b4_jun2223" class="tf-label">Was this Water Source tested or otherwise analyzed for PFAS and found to contain any Measurable Concentration of PFAS <b>on or before</b> June 22, 2023?</label>
-                <select required id="detected_b4_jun2223" name="detected_b4_jun2223" class="form-select tf-select">
+                <select id="detected_b4_jun2223" name="detected_b4_jun2223" class="form-select tf-select">
                     <option disabled {% if not phase2SourceInfoForm.detected_b4_jun2223.value %} selected {% endif %} value=""></option>
                     {% for option in yesNo %}
                         <option {% if phase2SourceInfoForm.detected_b4_jun2223.value == option %} selected {% endif %} value="{{option}}">{{option}}</option>
@@ -371,7 +377,7 @@
 
             <div class="form-group grey-bottom" style="display:flex; justify-content:space-between; border-bottom: 2px solid rgba(210, 210, 210, 0.5);">
                 <label for="detected_after_jun2223" class="tf-label">Was this Water Source tested or otherwise analyzed for PFAS and found to contain any Measurable Concentration of PFAS <b>after</b> June 22, 2023?</label>
-                <select required id="detected_after_jun2223" name="detected_after_jun2223" class="form-select tf-select">
+                <select id="detected_after_jun2223" name="detected_after_jun2223" class="form-select tf-select">
                     <option disabled {% if not phase2SourceInfoForm.detected_after_jun2223.value %} selected {% endif %} value=""></option>
                     {% for option in yesNo %}
                         <option {% if phase2SourceInfoForm.detected_after_jun2223.value == option %} selected {% endif %} value="{{option}}">{{option}}</option>
@@ -381,7 +387,7 @@
 
             <div class="form-group grey-bottom" style="display:flex; justify-content:space-between; border-bottom: 2px solid rgba(210, 210, 210, 0.5);">
                 <label for="detected_b4_jun3023" class="tf-label">Was this Water Source tested or otherwise analyzed for PFAS and found to contain any Measurable Concentration of PFAS <b>on or before</b> June 30, 2023?</label>
-                <select required id="detected_b4_jun3023" name="detected_b4_jun3023" class="form-select tf-select">
+                <select id="detected_b4_jun3023" name="detected_b4_jun3023" class="form-select tf-select">
                     <option disabled {% if not phase2SourceInfoForm.detected_b4_jun3023.value %} selected {% endif %} value=""></option>
                     {% for option in yesNo %}
                         <option {% if phase2SourceInfoForm.detected_b4_jun3023.value == option %} selected {% endif %} value="{{option}}">{{option}}</option>
@@ -391,7 +397,7 @@
 
             <div class="form-group grey-bottom" style="display:flex; justify-content:space-between; border-bottom: 2px solid rgba(210, 210, 210, 0.5);">
                 <label for="detected_after_jun3023" class="tf-label">Was this Water Source tested or otherwise analyzed for PFAS and found to contain any Measurable Concentration of PFAS <b>after</b> June 30, 2023?</label>
-                <select required id="detected_after_jun3023" name="detected_after_jun3023" class="form-select tf-select">
+                <select id="detected_after_jun3023" name="detected_after_jun3023" class="form-select tf-select">
                     <option disabled {% if not phase2SourceInfoForm.detected_after_jun3023.value %} selected {% endif %} value=""></option>
                     {% for option in yesNo %}
                         <option {% if phase2SourceInfoForm.detected_after_jun3023.value == option %} selected {% endif %} value="{{option}}">{{option}}</option>

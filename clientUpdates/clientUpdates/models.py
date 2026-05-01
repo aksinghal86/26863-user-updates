@@ -4,7 +4,7 @@ from django.db import models
 from .utils.dropbox_utils import upload_to_dropbox
 from .utils.handler import file_upload
 
-years = [(y, y) for y in range(2013, 2024)]
+years = [(y, y) for y in range(2013, 2026)]
 
 ## DJANGO user ##
 class AuthGroup(models.Model):
