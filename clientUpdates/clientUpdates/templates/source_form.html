@@ -192,12 +192,19 @@
             </div>
 
             <div class="form-group hidden">
-                <input type="text" class="form-control" id="maxflow-file_name" name="maxflow-file_name" value="{{phase2MaxFlowForm.file_name.value|default_if_none:''}}">
+                <input readonly type="text" class="form-control" id="maxflow-file_name" name="maxflow-file_name" value="{{phase2MaxFlowForm.file_name.value|default_if_none:''}}">
             </div>
 
             <div class="form-group">
-                <label for="maxFlowFile" class="form-label">Please upload the file that supports the maximum flow rate information entered above.</label>
-                <input {% if action == "/source-form-create/"%}required{% endif %} type="file" class="form-control" id="maxFlowFile" name="maxFlowFile" accept=".pdf, .jpg, .jpeg, .png, .csv, .xlsx, .xls">
+                <label for="maxFlowFile" class="form-label">
+                    Please upload the file that supports the maximum flow rate information entered above.
+                    {% if action != "/source-form-create/" %}
+                        <b>Files that have already been uploaded can be viewed by clicking the 'View Files Previously
+                        Uploaded' button below.
+                        </b>
+                    {% endif %}
+                </label>
+                <input type="file" class="form-control" id="maxFlowFile" name="maxFlowFile" accept=".pdf, .jpg, .jpeg, .png, .csv, .xlsx, .xls">
             </div>
 
             <div id="maxFlowErrorDiv" class="custom-invalid hidden">
@@ -312,6 +319,11 @@
                     <label for="{{field.html_name}}" class="form-label {% if 'annualFile1' == field.html_name %} {% else %} hidden {% endif %}">
                         Please upload the files that support the annual production data entered above. Once uploaded,
                         the file name will populate under the "File Name" selection boxes in the table above.
+                    {% if action != "/source-form-create/" %}
+                        <b>Files that have already been uploaded can be viewed by clicking the 'View Files Previously
+                        Uploaded' button below.
+                        </b>
+                    {% endif %}
                     </label>
                     <div class="{% if 'annualFile1' == field.html_name %}d-flex{% else %}hidden{% endif %}" id="{{'div_'|add:field.html_name}}">
                         <input style="width:80%;" type="file" class="form-control form-label" id="{{field.html_name}}" name="{{field.html_name}}" accept=".pdf, .jpg, .jpeg, .png, .csv, .xlsx, .xls">
@@ -518,7 +530,7 @@
                     <tr>
                         <td style="width:15%;">
                             <select id="{{form.analyte.html_name}}" name="{{form.analyte.html_name}}" type="text" class="form-select" >
-                                <option disabled {% if not form.analyte.value %} selected {% endif %} value="" class="label-center">Analyte</option>
+                                <option {% if not form.analyte.value %} selected {% endif %} value="" class="label-center">Analyte</option>
                                 {% for option in otherAnalytes %}
                                     <option {% if form.analyte.value == option %} selected {% endif %} value="{{option}}" class="label-center">{{option}}</option>
                                 {% endfor %}
@@ -559,7 +571,13 @@
             <div class="form-group">
                 {% for field in pfasFilesForm %}
                     <label for="{{field.html_name}}" class="form-label {% if 'pfasFile1' == field.html_name %} {% else %} hidden {% endif %}">
-                        Please upload all relevant lab reports. Once uploaded, the file name will populate within the tables above. </label>
+                        Please upload all relevant lab reports. Once uploaded, the file name will populate within the tables above.
+                        {% if action != "/source-form-create/" %}
+                            <b>Files that have already been uploaded can be viewed by clicking the 'View Files Previously
+                            Uploaded' button below.
+                            </b>
+                        {% endif %}
+                    </label>
                     <div class="{% if 'pfasFile1' == field.html_name %}d-flex{% else %}hidden{% endif %}" id="{{'div_'|add:field.html_name}}">
                         <input style="width:80%;" type="file" class="form-control form-label" id="{{field.html_name}}" name="{{field.html_name}}" accept=".pdf, .jpg, .jpeg, .png">
                         {% if 'pfasFile1' != field.html_name %}
