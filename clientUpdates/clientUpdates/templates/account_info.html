@@ -1,2 +1,11 @@
 {% extends 'base_generic.html' %}
 
+
+{% block content %}
+
+{% for record in contacts %}
+    <p>{{ record.first_name }}</p>
+
+{% endfor %}
+
+{% endblock %}

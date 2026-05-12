@@ -976,3 +976,25 @@ class phase2PfasResults(models.Model):
     class Meta:
         managed = True
         db_table = 'phase2_pfas_results'
+
+
+class contactSheet(models.Model):
+    id = models.AutoField(primary_key=True, null=False, blank=False)
+    pws_group = models.TextField(blank=True, null=True)
+    pws_name = models.TextField(blank=True, null=True)
+    pwsid = models.TextField(blank=True, null=True)
+    prefix = models.TextField(blank=True, null=True)
+    first_name = models.TextField(blank=True, null=True)
+    last_name = models.TextField(blank=True, null=True)
+    suffix = models.TextField(blank=True, null=True)
+    email = models.TextField(blank=True, null=True)
+    phone_number = models.TextField(blank=True, null=True)
+    role_title = models.TextField(blank=True, null=True)
+    change_date = models.DateTimeField(blank=True, null=True)
+    archived = models.BooleanField(blank=True, null=True)
+    client_sort_helper = models.TextField(blank=True, null=True)
+    firm = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'contacts_sheet'
