@@ -3,9 +3,17 @@
 
 {% block content %}
 
+<div class="card-alt" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); width:75%; margin:20px auto;">
 {% for record in contacts %}
-    <p>{{ record.first_name }}</p>
-
+    <div class="form-group">
+        <label for="first_name">First Name</label>
+        <input name="first_name" type="text" class="form-control" value="{{ record.first_name }}">
+    </div>
+    <div class="form-group">
+        <label for="last_name">Last Name</label>
+        <input name="last_name" type="text" class="form-control" value="{{ record.last_name }}">
+    </div>
 {% endfor %}
+</div>
 
 {% endblock %}
