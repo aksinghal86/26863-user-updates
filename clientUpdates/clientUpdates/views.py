@@ -3,6 +3,7 @@ import os
 
 from django.contrib.auth import logout
 from django.db import transaction
+from django.db.models import OuterRef, Subquery
 from django.forms import formset_factory, modelformset_factory
 from django.core.files.storage import default_storage
 from django.views.decorators.cache import never_cache
@@ -107,7 +108,16 @@ def dashboard(request, claim, supplemental=0):
         claim_filter = "Tyco/BASF"
 
     sources = supplementalSourceTracker.objects.filter(pwsid=pws_record.pwsid, claim=claim_filter)
-    #sources = get_list_or_404(supplementalSourceTracker, pwsid=pws_record.pwsid, claim=claim_filter)
+
+    # New way to only select the most relevant claim for each source. I.e., if a source has already filed a
+    # supplemental fund claim but is eligible to file second, only the second record in the database will be used.
+
+    # latestSourceInstance = (supplementalSourceTracker.
+    #            objects.
+    #            filter(pwsid=OuterRef("pwsid"), claim=OuterRef("claim"), source_name=OuterRef("source_name")).
+    #            order_by("-instance"))
+    #
+    # sources = supplementalSourceTracker.objects.filter(id=Subquery(latestSourceInstance.values("id")[:1]), pwsid=pws_record.pwsid, claim=claim_filter)
 
     context = {
         'pws': pws_record,

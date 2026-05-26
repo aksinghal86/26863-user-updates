@@ -709,6 +709,7 @@ class TB_ClaimFlowRate(models.Model):
 class supplementalSourceTracker(models.Model):
     id = models.IntegerField(primary_key=True)
     claim = models.TextField(blank=True, null=True)
+    instance = models.IntegerField(blank=True, null=True)
     pwsid = models.TextField(blank=True, null=True)
     pws_name = models.TextField(blank=True, null=True)
     source_name = models.TextField(blank=True, null=True)
