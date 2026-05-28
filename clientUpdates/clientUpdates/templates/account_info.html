@@ -3,9 +3,62 @@
 
 {% block content %}
 
+<h1>Contact Information </h1>
+
 {% for record in contacts %}
-    <p>{{ record.first_name }}</p>
+
+    <div class="contact-card">
+        <h3>Contact {{forloop.counter}}</h3>
+        <form>
+            <label >First Name</label> <br>
+            <input
+                type = "Text"
+                name ="first_name"
+                value ="{{record.first_name}}"
+                >
+            <br> <br>
+            <label >Last Name</label> <br>
+            <input
+                type = "Text"
+                name ="last_name"
+                value ="{{record.last_name}}"
+                >
+                <br><br>
+
+            <label >Email</label><br>
+            <input
+                type = "email"
+                name ="email"
+                value ="{{record.email}}"
+                style = "width: 300px"
+                >
+                <br><br>
+
+            <label>Title</label><br>
+            <input
+                type = "text"
+                name ="text"
+                value ="{{record.title|default_if_none:''}}"
+                >
+                <br><br>
+
+             <label>Phone Number</label><br>
+            <input
+                type = "text"
+                name ="text"
+                value ="{{record.phone_number|default_if_none:''}}"
+                >
+                <br><br>
+
+            <button type="button">
+                Update Contact
+            </button>
+
+        </form>
+    </div>
+
 
 {% endfor %}
 
 {% endblock %}
+
