@@ -1135,8 +1135,7 @@ def phase2HelpInfo(request):
     return render(request, template_name='phase2_helpful_info.html')
 
 
-
-@login_required
+@never_cache
 def accountInfo(request):
     # get the pwsid from the username of the session
     pwsid = request.user.username
@@ -1144,4 +1143,5 @@ def accountInfo(request):
     # get the contacts associated with the pwsid
     contacts = contactSheet.objects.filter(pwsid=pwsid)
 
-    return render(request, template_name='account_info.html', context={'contacts': contacts})
+    return render(request, template_name='account_info.html', context={'contacts': contacts,
+                                                                       'pwsid': pwsid})
