@@ -3,6 +3,7 @@ import os
 
 from django.contrib.auth import logout
 from django.db import transaction
+from django.db.models import OuterRef, Subquery
 from django.forms import formset_factory, modelformset_factory
 from django.core.files.storage import default_storage
 from django.views.decorators.cache import never_cache
@@ -107,7 +108,6 @@ def dashboard(request, claim, supplemental=0):
         claim_filter = "Tyco/BASF"
 
     sources = supplementalSourceTracker.objects.filter(pwsid=pws_record.pwsid, claim=claim_filter)
-    #sources = get_list_or_404(supplementalSourceTracker, pwsid=pws_record.pwsid, claim=claim_filter)
 
     context = {
         'pws': pws_record,
@@ -507,7 +507,7 @@ def update_annual_production_view(request):
 
 
 @login_required
-def contact_view(request, claim=None, source_name=None, message=0):
+def contact_view(request, claim=None, source_name=None, instance=None, message=0):
     pwsid = request.user.username
     recipients = settings.EMAIL_RECIPIENTS
 
@@ -587,8 +587,18 @@ def contact_view(request, claim=None, source_name=None, message=0):
                 elif claim == "Tyco_BASF":
                     claim_filter = "Tyco/BASF"
 
+                # New way to only select the most relevant claim for each source. I.e., if a source has already filed a
+                # supplemental fund claim but is eligible to file second, only the second record in the database will be used.
+
+                # sources = (supplementalSourceTracker.
+                #            objects.
+                #            filter(pwsid=OuterRef("pwsid"), claim=OuterRef("claim"), source_name=OuterRef("source_name")).
+                #            order_by("-instance"))
+
+                #latestSourceInstance = supplementalSourceTracker.objects.filter(id=Subquery(sources.values("id")[:1]), pwsid=pwsid, claim=claim)
+
                 # update supplemental fund information for the source:
-                source = get_object_or_404(supplementalSourceTracker, pwsid=pwsid, source_name=source_name,
+                source = get_object_or_404(supplementalSourceTracker, pwsid=pwsid, source_name=source_name, instance=instance,
                                            claim=claim_filter)
 
                 source.sup_notif_sent = True

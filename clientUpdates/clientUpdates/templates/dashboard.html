@@ -15,32 +15,37 @@
 
             <h5 style="border-bottom: 2px solid rgba(8,66,152,0.25); margin-bottom:10px;">Please note the following:</h5>
 
-            <p>Use the "Submit Notification" button to notify EH&E staff once <strong>{{pws.pwsid}}</strong> is
-                ready to file a Supplemental Fund Claim for an eligible source. This would occur when:</p>
-                <ol style="margin:0px;">
-                    <li style="text-align:left;">A source was "unimpacted" (i.e., there was no measureable concentration
-                        of PFAS detected in the water source) at the time of filing the action fund claim but has since
-                        exhibited detections of PFAS; OR</li>
-
-                    <br>
-
-                    <li style="text-align:left;">A source exhibited PFAS detections <strong>below</strong> the Proposed Federal PFAS MCLs or applicable State PFAS MCLs at
-                            the time of filing the action fund claim, but have since had one or more PFAS detections <strong>above</strong> the Proposed Federal PFAS MCLs or applicable State PFAS MCLs.</li>
-                </ol>
+            <p>
+                Use the "Submit Notification" button to notify EH&E staff once <strong>{{pws.pwsid}}</strong> is
+                ready to file a Supplemental Fund Claim for a given source. This would occur when:
+            </p>
+            <ol style="margin:0px;">
+                <li style="text-align:left;">
+                    A source was "unimpacted" (i.e., there was no measureable concentration
+                    of PFAS detected in the water source) at the time of filing the action fund claim but has since
+                    exhibited detections of PFAS; OR
+                </li>
 
                 <br>
 
-<!--                <li>
-                    <p>Supplemental Fund Claims can be submitted at any time up to and including December 31, 2030.</p>
+                <li style="text-align:left;">
+                    A source exhibited PFAS detections <strong>below</strong> the Proposed Federal PFAS MCLs or applicable State PFAS MCLs at
+                        the time of filing the action fund claim, but have since had one or more PFAS detections <strong>above</strong> the Proposed
+                    Federal PFAS MCLs or applicable State PFAS MCLs.
                 </li>
 
-                <li>
-                    <p>A Supplemental Fund Claim can be submitted for each source a maximum of two times.</p>
-                </li>-->
+                <br>
             </ol>
 
-            <p>Please refer to our <a style="color:blue;" href="{% url 'supplemental_info' %}">Supplemental Fund Helpful Information</a> page for more details on the requirements
-            of the Supplemental Funds.</p>
+            <p>
+                Note that, based on the above, there are a maximum of two (2) opportunities for a PWS to submit a Supplemental Fund Claim for a source that was "unimpacted" at the
+                time of filing the original Action Fund claim. Please refer to our <a style="color:blue;" href="{% url 'supplemental_info' %}">Supplemental Fund Helpful Information</a> page for more
+                details on this, in addition to the general requirements of the Supplemental Claims process.
+            </p>
+
+            <p>
+
+            </p>
 
 
         </div>
@@ -48,50 +53,71 @@
     </div>
 
 
-    <p style="padding:0px 12px;">
-        The table below lists all the sources that were filed by <strong>{{pws.pwsid}}</strong> for the
-        {% if claim == "3M_DuPont" %} 3M/Dupont Phase I Action Fund Claim{% else %} Tyco/BASF Action Fund Claim{% endif %}.
-        Moreover, the table provides information on whether each source is eligible to file a Supplemental Fund Claim. If
-        a source is eligible for the Supplemental Fund Claim, the row in the table below will also
-        be highlighted in <span style="background-color: rgba(0, 153, 0, 0.25);">green</span>.
-    </p>
-
-
-
-
     <div class="container">
-        <h4>Sources</h4>
+        <h4>Table of PWS Sources:</h4>
+
+        <p style="padding:0px 12px;">
+        The table below lists all the sources that were filed by <strong>{{pws.pwsid}}</strong> for the
+        {% if claim == "3M_DuPont" %} 3M/Dupont Phase I Action Fund Claim{% else %} Tyco/BASF Action Fund Claim{% endif %},
+        and whether these sources can potentially file a Supplemental Fund Claim. If a source can potentially file a Supplemental Fund Claim,
+            the source will be highlighted in <span style="background-color: rgba(0, 153, 0, 0.25);">green</span>. The "Data Dictionary" section below further describes
+        what the information shown in the table.
+        </p>
+
 
         <table id="sourcesTable" class="table table-hover table-bordered">
             <thead class="table-light">
                 <tr>
-                    <th scope="col" class="text-center" style="width:20%;">Source Name</th>
+                    <th scope="col" class="text-center" style="width:30%;">Source Name</th>
+                    <th scope="col" class="text-center">Instance</th>
                     <!--<th scope="col" style="width:20%;">Source Type</th>-->
-                    <th scope="col" class="text-center">Source Eligibility</th>
-                    <th scope="col" class="text-center">Eligibility Reason</th>
+                    <th scope="col" class="text-center">Source Status</th>
+                    {% comment %}<th scope="col" class="text-center">Eligibility Reason</th>{% endcomment %}
                     <th scope="col" class="text-center">Submit Notification to Proceed</th>
-                    <th scope="col" class="text-center">Notification Sent</th>
-                    <th scope="col" class="text-center">Supplemental Status</th>
+                    <th scope="col" class="text-center">Claim Status</th>
                     <th scope="col" class="text-center">View Source Info</th>
                 </tr>
             </thead>
             <tbody>
                 {% for source in sources %}
-                <tr style="{% if not source.reg_bump %}background-color: rgba(0, 153, 0, 0.25);{% endif %}">
-                    <td class="{% if not source.reg_bump %}text-center{% else %}opacity-50 text-center{% endif %}">{{ source.source_name }}</td>
-                    <td class="{% if not source.reg_bump %}text-center{% else %}opacity-50 text-center{% endif %}">{% if not source.reg_bump %} Eligible {% else %} Not Eligible {% endif %}</td>
-                    <td class="{% if not source.reg_bump %}text-center{% else %}opacity-50 text-center{% endif %}">{% if source.reg_bump %} PFAS detections above applicable Federal/State MCLs
-                    {% elif not source.reg_bump and source.all_nds %} No PFAS detections {% else %} PFAS detections below applicable Federal/State MCLs {% endif %}</td>
-                    <td class="{% if source.reg_bump or source.sup_notif_sent or source.sup_status == "Claim Submitted" %}opacity-50 text-center{% else %}text-center{% endif %}">
-                        <a href="{% url 'contact_phase1' claim=claim source_name=source.source_name message=1 %}" class="btn btn-primary {%if source.reg_bump or source.sup_notif_sent or source.sup_status == "Claim Submitted" %}no-click{%endif%}">Submit Notification</a>
+                <tr style="{% if source.sup_status == "Claim Submitted" or source.reg_bump or source.sup_notif_sent %}
+                    opacity: 0.5;
+                    {% elif not source.reg_bump %} background-color: rgba(0, 153, 0, 0.25);
+                {% endif %}">
+                    <td class="text-center">
+                        {{ source.source_name }}
                     </td>
-                    <td class="{% if not source.reg_bump %}text-center{% else %}opacity-50 text-center{% endif %}">
-                        {% if source.sup_notif_sent %} Yes {% else %} No {% endif %}
+                    <td class="text-center">
+                        {% comment %}{% if source.sup_notif_sent %} Yes {% else %} No {% endif %}{% endcomment %}
+                        {% if source.reg_bump %} ---
+                        {% elif source.instance == 1 %} First Claim
+                        {% else %} Second Claim
+                        {% endif %}
                     </td>
-                    <td class="{% if not source.reg_bump %}text-center{% else %}opacity-50 text-center{% endif %}">
-                        {{source.sup_status}}
+                    <td class="text-center">
+                        {% if  source.sup_status == "Claim Submitted" %} Claim Submitted
+                        {% elif not source.reg_bump and source.all_nds %} Monitor PFAS results for any PFAS detection
+                        {% elif not source.reg_bump %} Monitor PFAS results for any PFAS detection above MCLs
+                        {% else %} Unable to File a Claim
+                        {% endif %}
                     </td>
-                    <td class="{% if not source.reg_bump %}text-center{% else %}opacity-50 text-center{% endif %}">
+{% comment %}                    <td class="{% if not source.reg_bump %}text-center{% else %}opacity-50 text-center{% endif %}">
+                        {% if source.reg_bump %} PFAS detections above applicable MCLs
+                        {% elif not source.reg_bump and source.all_nds %} No PFAS detections
+                        {% else %} PFAS detections below applicable MCLs
+                        {% endif %}
+                    </td>{% endcomment %}
+                    <td class="text-center">
+                        <a href="{% url 'contact_phase1' claim=claim source_name=source.source_name instance=source.instance message=1 %}" class="btn btn-primary {%if source.reg_bump or source.sup_notif_sent or source.sup_status == "Claim Submitted" %}no-click{%endif%}">Submit Notification</a>
+                    </td>
+                    <td class="text-center">
+                        {% if source.reg_bump %}
+                            ---
+                        {% else %}
+                            {{source.sup_status}}
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
                         <a href="{% url 'source-detail' claim=claim pwsid=source.pwsid source_name=source.source_name %}"
                             class="text-decoration-none"
                             style="color:inherit;">
@@ -103,6 +129,66 @@
             </tbody>
         </table>
     </div>
+
+    <div>
+        <h4 class="text-center">
+            Data Dictionary:
+        </h4>
+        <p>
+            <b>
+                Source Name:
+            </b>
+            The name of the source.
+        </p>
+        <p>
+            <b>
+                Instance:
+            </b>
+            A reference to whether the record is the first or second supplemental fund claim that can be filed for a given source.
+            This field takes a value of "---" if the source cannot file a claim at all, a value of "First Claim" if it's the first
+            claim that can be filed for a given source, and a value of "Second Claim" if a source had already filed it's first
+            supplemental claim and is eligible to file another.
+        </p>
+        <p>
+            <b>
+                Source Status:
+            </b>
+            What the status of the source is relative to the potential claim that can be filed. If a source cannot file a claim
+            at all, this field takes a value of "Unable to File a Claim". If a source has the potential to file a claim
+        </p>
+        <p>
+            <b>
+                Submit Notification to Proceed:
+            </b>
+            When the water provider has received PFAS results that either exhibits any PFAS detection or exhibits a PFAS detection above MCLs
+            (see "Source Status" field for what is applicable), click this button to start the process of notifying EH&E about preparing the Supplemental Claim.
+        </p>
+        <p>
+            <b>
+                Claim Status:
+            </b>
+            The status of the claim. This field takes the following values:
+            <ul>
+                <li>
+                    "Claim Submitted" if the claim has been submitted
+                </li>
+                <li>
+                    "Claim Under Review" if the PWS has initiated contact with EH&E about filing a Supplemental Claim for the source
+                </li>
+                <li>
+                    "Claim Not Filed" if a claim has not yet been filed for the source and the PWS has not initiated contact with EH&E about
+                    filing a claim (e.g., because PFAS results currently do not warrant a claim)
+                </li>
+                <li>
+                    "---" if the source cannot file a claim at all
+                </li>
+            </ul>
+
+        </p>
+
+
+    </div>
+
 </div>
 
 <script>
