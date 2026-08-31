@@ -1,0 +1,78 @@
+{% extends 'base_generic.html' %}
+
+{% load humanize %}
+
+{% load static %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'comb_data_3mdtb/css/styles.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-container">
+
+    <div class="dashboard-header">
+        <h1>Public Water System Dashboard</h1>
+        <p>Water quality and production information</p>
+    </div>
+
+    <div class="dashboard-table-card">
+        <div class="table-responsive">
+
+            <table class="dashboard-table">
+                <thead>
+                    <tr>
+                        <th>Source Name</th>
+                        <th>Impacted</th>
+                        <th>Max PFOA Result</th>
+                        <th>Max PFOS Result</th>
+                        <th>Max Other PFAS Result</th>
+                        <th>Average Annual Flow Rate</th>
+                        <th>Max Annual Flow Rate</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for row in data %}
+                    <tr>
+                        <td>{{ row.source_name }}</td>
+
+                        <td>
+                            {% if row.all_nds %}
+                                <span class="impacted-yes">Yes</span>
+                            {% else %}
+                                <span class="impacted-no">No</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="result-value">
+                            {{ row.max_pfoa|floatformat:1 }}
+                        </td>
+
+                        <td class="result-value">
+                            {{ row.max_pfos|floatformat:1 }}
+                        </td>
+
+                        <td class="result-value">
+                            {{ row.max_other_pfas|floatformat:1 }}
+                        </td>
+
+                        <td class="flow-value">
+                            {{ row.average_annual_production_gpy|floatformat:1|intcomma }} GPY
+                        </td>
+
+                        <td class="flow-value">
+                            {{ row.max_flow_gpm|floatformat:1|intcomma }} GPM
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
