@@ -980,7 +980,7 @@ class phase2PfasResults(models.Model):
 
 
 
-class Phase2_ClaimPfasResults(models.Model):
+class Phase2_ClaimPfasResult(models.Model):
     row_names = models.BigAutoField(primary_key=True)
     pwsid = models.TextField(blank=True, null=True)
     source_name = models.TextField(blank=True, null=True)
@@ -1008,7 +1008,7 @@ class Phase2_ClaimPfasResults(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'claim_3d_p2_pfas_rsult'
+        db_table = 'claim_3d_p2_pfas_result'
 
 
 class Phase2_ClaimFlowRate(models.Model):
@@ -1031,4 +1031,4 @@ class Phase2_ClaimFlowRate(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'claim_flow_rate'
+        db_table = 'claim_3d_p2_flow_rate'
