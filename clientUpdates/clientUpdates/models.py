@@ -977,3 +977,58 @@ class phase2PfasResults(models.Model):
     class Meta:
         managed = True
         db_table = 'phase2_pfas_results'
+
+
+
+class Phase2_ClaimPfasResults(models.Model):
+    row_names = models.BigAutoField(primary_key=True)
+    pwsid = models.TextField(blank=True, null=True)
+    source_name = models.TextField(blank=True, null=True)
+    claim_number = models.FloatField(blank=True, null=True)
+    water_source_id = models.TextField(blank=True, null=True)
+    analyte = models.TextField(blank=True, null=True)
+    result_ppt = models.FloatField(blank=True, null=True)
+    lab_sample_id = models.TextField(blank=True, null=True)
+    doc_reference = models.TextField(blank=True, null=True)
+    filename = models.TextField(blank=True, null=True)
+    result = models.TextField(blank=True, null=True)
+    unit = models.TextField(blank=True, null=True)
+    sampling_date = models.DateField(blank=True, null=True)
+    company_of_person_who_took_sample = models.TextField(blank=True, null=True)
+    analysis_date = models.DateField(blank=True, null=True)
+    analysis_method = models.TextField(blank=True, null=True)
+    lab = models.TextField(blank=True, null=True)
+    lab_street_address = models.TextField(blank=True, null=True)
+    lab_city = models.TextField(blank=True, null=True)
+    lab_state = models.TextField(blank=True, null=True)
+    lab_zip = models.TextField(blank=True, null=True)
+    timestamp = models.DateTimeField(blank=True, null=True)
+    data_origin = models.TextField(default="Claims Portal")
+    all_nds = models.BooleanField(blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'claim_3d_p2_pfas_rsult'
+
+
+class Phase2_ClaimFlowRate(models.Model):
+    row_names = models.BigAutoField(primary_key=True)
+    claim_number = models.FloatField(blank=True, null=True)
+    pwsid = models.TextField(blank=True, null=True)
+    source_name = models.TextField(blank=True, null=True)
+    water_source_id = models.FloatField(blank=True, null=True)
+    year = models.FloatField(blank=True, null=True)
+    flow_rate_reduced = models.BooleanField(blank=True, null=True)
+    did_not_exist = models.BooleanField(blank=True, null=True)
+    flow_rate = models.FloatField(blank=True, null=True)
+    unit = models.TextField(blank=True, null=True)
+    flow_rate_gpm = models.FloatField(blank=True, null=True)
+    filename = models.TextField(blank=True, null=True)
+    source_variable = models.TextField(blank=True, null=True)
+    max_flow_rate_explanation = models.TextField(blank=True, null=True)
+    timestamp = models.DateTimeField(blank=True, null=True)
+    data_origin = models.TextField(default="Claims Portal")
+
+    class Meta:
+        managed = True
+        db_table = 'claim_flow_rate'
