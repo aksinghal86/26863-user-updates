@@ -1,7 +1,7 @@
+```html
 {% extends 'base_generic.html' %}
 
 {% load humanize %}
-
 {% load static %}
 
 {% block extra_head %}
@@ -12,15 +12,19 @@
 
 <div class="dashboard-container">
 
+    <!-- Dashboard header -->
     <div class="dashboard-header">
         <h1>Public Water System Dashboard</h1>
         <p>Water quality and production information</p>
     </div>
 
+    <!-- Dashboard table -->
     <div class="dashboard-table-card">
         <div class="table-responsive">
 
             <table class="dashboard-table">
+
+                <!-- Table headers -->
                 <thead>
                     <tr>
                         <th>Source Name</th>
@@ -28,46 +32,108 @@
                         <th>Max PFOA Result</th>
                         <th>Max PFOS Result</th>
                         <th>Max Other PFAS Result</th>
-                        <th>Average Annual Flow Rate</th>
+                        <th>Average Annual Production</th>
                         <th>Max Annual Flow Rate</th>
                     </tr>
                 </thead>
 
+                <!-- Table data -->
                 <tbody>
                     {% for row in data %}
-                    <tr>
-                        <td>{{ row.source_name }}</td>
 
+                    <!-- Highlight row when future annual production information is needed -->
+                    <tr class="{% if not row.future_data_provided and not row.all_nds %}needs-info-row{% endif %}">
+
+                        <!-- Source name -->
+                        <td>
+                            {{ row.source_name }}
+                        </td>
+
+                        <!-- Impacted -->
                         <td>
                             {% if row.all_nds %}
-                                <span class="impacted-yes">Yes</span>
-                            {% else %}
                                 <span class="impacted-no">No</span>
+                            {% else %}
+                                <span class="impacted-yes">Yes</span>
                             {% endif %}
                         </td>
 
+                        <!-- Max PFOA -->
                         <td class="result-value">
-                            {{ row.max_pfoa|floatformat:1 }}
+                            <span class="editable-value">
+                                {{ row.max_pfoa|floatformat:1 }}
+
+                                <button type="button"
+                                        class="edit-button"
+                                        title="Edit PFOA">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                            </span>
                         </td>
 
+                        <!-- Max PFOS -->
                         <td class="result-value">
-                            {{ row.max_pfos|floatformat:1 }}
+                            <span class="editable-value">
+                                {{ row.max_pfos|floatformat:1 }}
+
+                                <button type="button"
+                                        class="edit-button"
+                                        title="Edit PFOS">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                            </span>
                         </td>
 
+                        <!-- Max Other PFAS -->
                         <td class="result-value">
-                            {{ row.max_other_pfas|floatformat:1 }}
+                            <span class="editable-value">
+                                {{ row.max_other_pfas|floatformat:1 }}
+
+                                <button type="button"
+                                        class="edit-button"
+                                        title="Edit Other PFAS">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                            </span>
                         </td>
 
+                        <!-- Average annual production -->
                         <td class="flow-value">
-                            {{ row.average_annual_production_gpy|floatformat:1|intcomma }} GPY
+
+                            {% if not row.future_data_provided and not row.all_nds %}
+
+                                <button type="button"
+                                        class="needs-info-button">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                    More Info Needed
+                                </button>
+
+                            {% else %}
+
+                                {{ row.average_annual_production_gpy|floatformat:1|intcomma }} GPY
+
+                            {% endif %}
+
                         </td>
 
+                        <!-- Maximum annual flow rate -->
                         <td class="flow-value">
-                            {{ row.max_flow_gpm|floatformat:1|intcomma }} GPM
+                            <span class="editable-value">
+                                {{ row.max_flow_gpm|floatformat:1|intcomma }} GPM
+
+                                <button type="button"
+                                        class="edit-button"
+                                        title="Edit maximum flow rate">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                            </span>
                         </td>
+
                     </tr>
+
                     {% endfor %}
                 </tbody>
+
             </table>
 
         </div>
@@ -76,3 +142,4 @@
 </div>
 
 {% endblock %}
+```

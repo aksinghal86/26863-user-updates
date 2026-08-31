@@ -1,6 +1,6 @@
-/* dashboard.css */
-
-/* ---------- Base ---------- */
+/* =========================================================
+   Dashboard
+   ========================================================= */
 
 body {
     background-color: #f4f7fb;
@@ -15,7 +15,9 @@ body {
     padding: 0 20px;
 }
 
-/* ---------- Header ---------- */
+/* =========================================================
+   Dashboard Header
+   ========================================================= */
 
 .dashboard-header {
     background: linear-gradient(135deg, #0d6efd, #0b7a75);
@@ -38,16 +40,24 @@ body {
     font-size: 1rem;
 }
 
-/* ---------- Table card ---------- */
+/* =========================================================
+   Table Container
+   ========================================================= */
 
 .dashboard-table-card {
-    background: white;
+    background-color: white;
     border-radius: 14px;
     box-shadow: 0 6px 18px rgba(33, 37, 41, 0.08);
     overflow: hidden;
 }
 
-/* ---------- Table ---------- */
+.dashboard-table-wrapper {
+    overflow-x: auto;
+}
+
+/* =========================================================
+   Dashboard Table
+   ========================================================= */
 
 .dashboard-table {
     width: 100%;
@@ -56,7 +66,7 @@ body {
     border-spacing: 0;
 }
 
-/* Header row */
+/* Table headers */
 .dashboard-table thead th {
     background-color: #0d6efd;
     color: white;
@@ -69,12 +79,11 @@ body {
     white-space: nowrap;
 }
 
-/* First column */
 .dashboard-table thead th:first-child {
     text-align: left;
 }
 
-/* Body cells */
+/* Table body cells */
 .dashboard-table tbody td {
     padding: 14px 12px;
     border-bottom: 1px solid #e9eef5;
@@ -95,17 +104,69 @@ body {
     background-color: #f8fafc;
 }
 
-/* Hover effect */
+/* Hover */
 .dashboard-table tbody tr:hover {
     background-color: #e8f3ff;
 }
 
-/* Remove bottom border from last row */
+/* Last row */
 .dashboard-table tbody tr:last-child td {
     border-bottom: none;
 }
 
-/* ---------- Impacted status ---------- */
+/* =========================================================
+   Editable Values
+   ========================================================= */
+
+.editable-value {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.edit-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 28px;
+    height: 28px;
+
+    border: none;
+    border-radius: 6px;
+
+    background-color: transparent;
+    color: #6c757d;
+
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease,
+        transform 0.15s ease;
+}
+
+.edit-button:hover {
+    background-color: #e7f1ff;
+    color: #0d6efd;
+}
+
+.edit-button:focus {
+    outline: 2px solid rgba(13, 110, 253, 0.25);
+    outline-offset: 1px;
+}
+
+.edit-button:active {
+    transform: scale(0.95);
+}
+
+.edit-button i {
+    font-size: 0.9rem;
+}
+
+/* =========================================================
+   Impacted Status
+   ========================================================= */
 
 .impacted-yes,
 .impacted-no {
@@ -127,26 +188,46 @@ body {
     color: #18794e;
 }
 
-/* ---------- Numeric values ---------- */
+/* =========================================================
+   Missing Annual Flow Information
+   ========================================================= */
 
-.result-value {
-    font-variant-numeric: tabular-nums;
+.needs-info {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 6px 10px;
+    border-radius: 6px;
+
+    background-color: #fff3cd;
+    color: #856404;
+
+    font-size: 0.8rem;
+    font-weight: 600;
+
+    white-space: nowrap;
 }
 
+.needs-info i {
+    font-size: 0.9rem;
+}
+
+/* =========================================================
+   Numeric Values
+   ========================================================= */
+
+.result-value,
 .flow-value {
-    font-weight: 500;
     font-variant-numeric: tabular-nums;
 }
 
-/* ---------- Responsive table ---------- */
+/* =========================================================
+   Responsive
+   ========================================================= */
 
-/*
-   Wrap the table in:
-   <div class="table-responsive">
-       ...
-   </div>
-*/
 @media (max-width: 992px) {
+
     .dashboard-container {
         margin: 25px auto;
         padding: 0 12px;
@@ -163,4 +244,60 @@ body {
     .dashboard-table {
         min-width: 950px;
     }
+}
+
+
+/* Missing annual flow information */
+.needs-info-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 6px 12px;
+    border: 1px solid #e0a800;
+    border-radius: 6px;
+
+    background-color: #fff3cd;
+    color: #856404;
+
+    font-size: 0.8rem;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: background-color 0.15s ease,
+                border-color 0.15s ease;
+}
+
+.needs-info-button:hover {
+    background-color: #ffe69c;
+    border-color: #d39e00;
+}
+
+.needs-info-button:focus {
+    outline: 2px solid rgba(224, 168, 0, 0.25);
+    outline-offset: 2px;
+}
+
+.needs-info-button i {
+    font-size: 0.9rem;
+}
+
+/* Highlight entire row when annual production information is missing */
+.dashboard-table tbody tr.needs-info-row {
+    background-color: #fff3cd;
+    box-shadow: inset 4px 0 0 #e0a800;
+}
+
+/* Keep the highlight when hovering */
+.dashboard-table tbody tr.needs-info-row:hover {
+    background-color: #ffedb5;
+}
+
+/* Make sure the highlighted row overrides alternating row colors */
+.dashboard-table tbody tr.needs-info-row:nth-child(even) {
+    background-color: #fff3cd;
+}
+
+.dashboard-table tbody tr.needs-info-row:nth-child(even):hover {
+    background-color: #ffedb5;
 }
