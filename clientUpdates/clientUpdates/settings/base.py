@@ -24,7 +24,8 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'anymail',
     'storages',
-    'clientUpdates'
+    'clientUpdates',
+    'comb_data_3mdtb'
 ]
 
 MIDDLEWARE = [
