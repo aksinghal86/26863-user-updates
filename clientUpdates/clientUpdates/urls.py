@@ -16,11 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.contrib.auth.views import LogoutView
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    path("all_data_dashboard/", include('comb_data_3mdtb.urls')),
     path('', views.root_redirect, name='root-redirect'),
     path('login/', views.CustomLoginView.as_view(), name='login'), 
     #path('logout/', LogoutView.as_view(template_name='login.html', next_page=None), name='logout'),
