@@ -7,9 +7,6 @@
 {% block extra_head %}
     <link rel="stylesheet"
           href="{% static 'comb_data_3mdtb/css/styles.css' %}">
-
-    <link rel="stylesheet"
-          href="{% static 'comb_data_3mdtb/css/pfas_update_modal.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -87,14 +84,13 @@
 
                                 {{ row.max_pfoa|floatformat:1 }}
 
-                                <button type="button"
-                                        class="edit-button pfas-edit-button"
-                                        title="Edit PFOA"
-                                        data-analyte="PFOA">
+                                <a href="{% url 'comb_data_3mdtb:pfas_update' %}?analyte=PFOA"
+                                   class="edit-button"
+                                   title="Edit PFOA">
 
                                     <i class="bi bi-pencil"></i>
 
-                                </button>
+                                </a>
 
                             </span>
 
@@ -108,14 +104,13 @@
 
                                 {{ row.max_pfos|floatformat:1 }}
 
-                                <button type="button"
-                                        class="edit-button pfas-edit-button"
-                                        title="Edit PFOS"
-                                        data-analyte="PFOS">
+                                <a href="{% url 'comb_data_3mdtb:pfas_update' %}?analyte=PFOS"
+                                   class="edit-button"
+                                   title="Edit PFOS">
 
                                     <i class="bi bi-pencil"></i>
 
-                                </button>
+                                </a>
 
                             </span>
 
@@ -129,14 +124,13 @@
 
                                 {{ row.max_other_pfas|floatformat:1 }}
 
-                                <button type="button"
-                                        class="edit-button pfas-edit-button"
-                                        title="Edit Other PFAS"
-                                        data-analyte="Other PFAS">
+                                <a href="{% url 'comb_data_3mdtb:pfas_update' %}?analyte=Other PFAS"
+                                   class="edit-button"
+                                   title="Edit Other PFAS">
 
                                     <i class="bi bi-pencil"></i>
 
-                                </button>
+                                </a>
 
                             </span>
 
@@ -204,8 +198,6 @@
      PFAS UPDATE MODAL
      ============================================================ -->
 
-{% include 'comb_data_3mdtb/pfas_update_modal.html' %}
-
 
 <!-- ============================================================
      DATA TABLE
@@ -224,19 +216,7 @@
 
 
 <!-- ============================================================
-     PFAS MODAL JAVASCRIPT
+     PFAS UPDATE JAVASCRIPT
      ============================================================ -->
-
-<script src="{% static 'comb_data_3mdtb/js/pfas_update_modal.js' %}"></script>
-
-{% if show_modal %}
-<script>
-    $(document).ready(function() {
-        document.getElementById('pfas-update-modal').style.display = 'flex';
-    });
-</script>
-{% endif %}
-
-
 {% endblock %}
 ```

@@ -29,16 +29,25 @@ def pfas_update(request):
             form.save()
             return redirect("comb_data_3mdtb:landing_page")
         else:
-            # Re-render landing page with form errors
-            pwsid = request.user.username
-            data = get_dashboard_data(pwsid)
+            # Re-render update page with form errors
+            analyte = request.POST.get('analyte', 'PFOA')
             return render(
                 request,
-                "comb_data_3mdtb/landing_page.html",
+                "comb_data_3mdtb/pfas_update.html",
                 {
-                    "data": data,
                     "form": form,
-                    "show_modal": True
+                    "analyte": analyte
                 }
             )
-    return redirect("comb_data_3mdtb:landing_page")
+    
+    # GET request
+    analyte = request.GET.get('analyte', 'PFOA')
+    form = PFASUpdateForm()
+    return render(
+        request,
+        "comb_data_3mdtb/pfas_update.html",
+        {
+            "form": form,
+            "analyte": analyte
+        }
+    )
