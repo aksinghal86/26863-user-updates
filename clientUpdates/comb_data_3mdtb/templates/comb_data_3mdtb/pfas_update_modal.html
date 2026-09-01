@@ -25,6 +25,14 @@
               enctype="multipart/form-data">
 
             {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="pfas-error-message" style="color: red; margin-bottom: 10px;">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
 
             <div class="pfas-update-modal-body">
 
@@ -36,7 +44,7 @@
                 <div class="pfas-form-row">
 
                     <!-- Analyte -->
-                    <div class="pfas-form-group col-md-4">
+                    <div class="pfas-form-group col-md-6">
 
                         <label for="pfas-analyte">
                             Analyte
@@ -82,11 +90,16 @@
                             <option value="PFTrDA">PFTrDA</option>
                         </select>
 
+                        {% if form.analyte.errors %}
+                            <div class="pfas-error-message" style="color: red;">
+                                {% for error in form.analyte.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
                     </div>
-
-
-                    <!-- Result -->
-                    <div class="pfas-form-group col-md-8">
+                    <div class="pfas-form-group col-md-6">
 
                         <label for="result">
                             Result (ppt or ng/L)
@@ -97,7 +110,16 @@
                                name="result"
                                class="pfas-form-control"
                                step="any"
-                               placeholder="Enter result">
+                               placeholder="Enter result"
+                               value="{{ form.result.value }}">
+
+                        {% if form.result.errors %}
+                            <div class="pfas-error-message" style="color: red;">
+                                {% for error in form.result.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
 
                     </div>
 
@@ -151,10 +173,15 @@
 
                         </select>
 
+                        {% if form.lab.errors %}
+                            <div class="pfas-error-message" style="color: red;">
+                                {% for error in form.lab.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
                     </div>
-
-
-                    <!-- Lab Sample ID -->
                     <div class="pfas-form-group col-md-6">
 
                         <label for="lab_sample_id">
@@ -165,7 +192,16 @@
                                id="lab_sample_id"
                                name="lab_sample_id"
                                class="pfas-form-control"
-                               placeholder="Enter lab sample ID">
+                               placeholder="Enter lab sample ID"
+                               value="{{ form.lab_sample_id.value }}">
+
+                        {% if form.lab_sample_id.errors %}
+                            <div class="pfas-error-message" style="color: red;">
+                                {% for error in form.lab_sample_id.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
 
                     </div>
 
@@ -173,66 +209,80 @@
 
 
                 <!-- ==================================================
-                     Company / Entity
+                     Sample Collector & Analysis Method
                      ================================================== -->
 
-                <div class="pfas-form-group">
+                <div class="pfas-form-row">
 
-                    <label for="sample_collector">
-                        Company/Entity That Collected Sample
-                    </label>
+                    <!-- Company / Entity -->
+                    <div class="pfas-form-group col-md-6">
 
-                    <input type="text"
-                           id="sample_collector"
-                           name="sample_collector"
-                           class="pfas-form-control"
-                           placeholder="Enter company or entity name">
+                        <label for="sample_collector">
+                            Sample Collected By
+                        </label>
+
+                        <input type="text"
+                               id="sample_collector"
+                               name="sample_collector"
+                               class="pfas-form-control"
+                               placeholder="Enter company or entity name"
+                               value="{{ form.sample_collector.value }}">
+
+                        {% if form.sample_collector.errors %}
+                            <div class="pfas-error-message" style="color: red;">
+                                {% for error in form.sample_collector.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- Analysis Method -->
+                    <div class="pfas-form-group col-md-6">
+
+                        <label for="analysis_method">
+                            Analysis Method
+                        </label>
+
+                        <select id="analysis_method"
+                                name="analysis_method"
+                                class="pfas-form-control">
+
+                            <option value="">
+                                Select analysis method
+                            </option>
+
+                            <option value="EPA 537.1">
+                                EPA 537.1
+                            </option>
+
+                            <option value="EPA 533">
+                                EPA 533
+                            </option>
+
+                            <option value="EPA 1633">
+                                EPA 1633
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
+                        </select>
+
+                        {% if form.analysis_method.errors %}
+                            <div class="pfas-error-message" style="color: red;">
+                                {% for error in form.analysis_method.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                    </div>
 
                 </div>
-
-
-                <!-- ==================================================
-                     Analysis Method
-                     ================================================== -->
-
-                <div class="pfas-form-group">
-
-                    <label for="analysis_method">
-                        Analysis Method
-                    </label>
-
-                    <select id="analysis_method"
-                            name="analysis_method"
-                            class="pfas-form-control">
-
-                        <option value="">
-                            Select analysis method
-                        </option>
-
-                        <option value="EPA 537.1">
-                            EPA 537.1
-                        </option>
-
-                        <option value="EPA 533">
-                            EPA 533
-                        </option>
-
-                        <option value="EPA 1633">
-                            EPA 1633
-                        </option>
-
-                        <option value="Other">
-                            Other
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <!-- ==================================================
-                     Dates Section
-                     ================================================== -->
 
                 <div class="pfas-form-row">
 
@@ -246,7 +296,16 @@
                         <input type="date"
                                id="sampling_date"
                                name="sampling_date"
-                               class="pfas-form-control">
+                               class="pfas-form-control"
+                               value="{{ form.sampling_date.value }}">
+
+                        {% if form.sampling_date.errors %}
+                            <div class="pfas-error-message" style="color: red;">
+                                {% for error in form.sampling_date.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
 
                     </div>
 
@@ -261,7 +320,16 @@
                         <input type="date"
                                id="analysis_date"
                                name="analysis_date"
-                               class="pfas-form-control">
+                               class="pfas-form-control"
+                               value="{{ form.analysis_date.value }}">
+
+                        {% if form.analysis_date.errors %}
+                            <div class="pfas-error-message" style="color: red;">
+                                {% for error in form.analysis_date.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
 
                     </div>
 
@@ -283,11 +351,26 @@
                            name="supporting_file"
                            class="pfas-form-control">
 
+                    {% if form.supporting_file.errors %}
+                        <div class="pfas-error-message" style="color: red;">
+                            {% for error in form.supporting_file.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
                     <small>
                         Upload one supporting document.
                     </small>
 
                 </div>
+
+
+                {% if form.errors %}
+                    <div class="pfas-general-error" style="color: red; margin-top: 15px; font-weight: bold; text-align: center;">
+                        Submission failure: please correct all validation errors.
+                    </div>
+                {% endif %}
 
 
             </div>

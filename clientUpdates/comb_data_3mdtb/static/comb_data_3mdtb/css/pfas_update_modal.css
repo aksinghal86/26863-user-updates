@@ -30,6 +30,10 @@
 
     width: 90%;
     max-width: 600px;
+    max-height: 90vh;
+
+    display: flex;
+    flex-direction: column;
 
     border-radius: 8px;
 
@@ -45,13 +49,14 @@
     justify-content: space-between;
     align-items: center;
 
-    padding: 20px;
+    padding: 15px 20px;
 
     border-bottom: 1px solid #ddd;
 }
 
 .pfas-update-modal-header h2 {
     margin: 0;
+    font-size: 1.25rem;
 }
 
 
@@ -71,9 +76,9 @@
 /* Modal body */
 
 .pfas-update-modal-body {
-    min-height: 150px;
-
-    padding: 20px;
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 20px;
 }
 
 
@@ -84,7 +89,7 @@
 
     justify-content: flex-end;
 
-    padding: 15px 20px;
+    padding: 10px 20px;
 
     border-top: 1px solid #ddd;
 }
@@ -115,13 +120,13 @@
     flex-wrap: wrap;
     margin-right: -10px;
     margin-left: -10px;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
 }
 
 .pfas-form-group {
     padding-right: 10px;
     padding-left: 10px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     flex: 1;
     min-width: 200px;
 }
@@ -180,6 +185,11 @@
 /* ============================================================
    PENCIL BUTTON
    ============================================================ */
+
+.pfas-error-message {
+    font-size: 12px;
+    margin-top: 2px;
+}
 
 .pfas-edit-button {
     cursor: pointer;

@@ -229,6 +229,14 @@
 
 <script src="{% static 'comb_data_3mdtb/js/pfas_update_modal.js' %}"></script>
 
+{% if show_modal %}
+<script>
+    $(document).ready(function() {
+        document.getElementById('pfas-update-modal').style.display = 'flex';
+    });
+</script>
+{% endif %}
+
 
 {% endblock %}
 ```
