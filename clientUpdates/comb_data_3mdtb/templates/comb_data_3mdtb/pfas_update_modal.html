@@ -8,78 +8,278 @@
 
         <div class="pfas-update-modal-header">
             <h2>Update PFAS Result</h2>
-            <button type="button" id="pfas-modal-close" class="pfas-modal-close" aria-label="Close">&times;</button>
+
+            <button type="button"
+                    id="pfas-modal-close"
+                    class="pfas-modal-close"
+                    aria-label="Close">
+                &times;
+            </button>
         </div>
 
-        <form id="pfas-update-form">
+
+        <!-- PFAS Update Form -->
+        <form id="pfas-update-form"
+              method="post"
+              enctype="multipart/form-data">
+
+            {% csrf_token %}
+
             <div class="pfas-update-modal-body">
 
-                <!-- Analyte & Result Section -->
+
+                <!-- ==================================================
+                     Analyte & Result Section
+                     ================================================== -->
+
                 <div class="pfas-form-row">
+
+                    <!-- Analyte -->
                     <div class="pfas-form-group col-md-4">
-                        <label for="pfas-analyte">Analyte</label>
-                        <input type="text" id="pfas-analyte" name="analyte" class="pfas-form-control" value="PFOA" readonly>
+
+                        <label for="analyte">
+                            Analyte
+                        </label>
+
+                        <input type="text"
+                               id="analyte"
+                               name="analyte"
+                               class="pfas-form-control"
+                               value="PFOA"
+                               readonly>
+
                     </div>
 
+
+                    <!-- Result -->
                     <div class="pfas-form-group col-md-8">
-                        <label for="pfas-result">Result (ppt or ng/L)</label>
-                        <input type="number" id="pfas-result" name="result" class="pfas-form-control" step="any" placeholder="Enter result">
+
+                        <label for="result">
+                            Result (ppt or ng/L)
+                        </label>
+
+                        <input type="number"
+                               id="result"
+                               name="result"
+                               class="pfas-form-control"
+                               step="any"
+                               placeholder="Enter result">
+
                     </div>
+
                 </div>
 
-                <!-- Laboratory Section -->
+
+                <!-- ==================================================
+                     Laboratory Section
+                     ================================================== -->
+
                 <div class="pfas-form-row">
+
+                    <!-- Lab Name -->
                     <div class="pfas-form-group col-md-6">
-                        <label for="pfas-lab-name">Lab Name</label>
-                        <select id="pfas-lab-name" name="lab_name" class="pfas-form-control">
-                            <option value="">Select laboratory</option>
-                            <option value="Eurofins">Eurofins</option>
-                            <option value="Pace Analytical">Pace Analytical</option>
-                            <option value="ALS">ALS</option>
-                            <option value="SGS">SGS</option>
-                            <option value="TestAmerica">TestAmerica</option>
-                            <option value="Other">Other</option>
+
+                        <label for="lab">
+                            Lab Name
+                        </label>
+
+                        <select id="lab"
+                                name="lab"
+                                class="pfas-form-control">
+
+                            <option value="">
+                                Select laboratory
+                            </option>
+
+                            <option value="Eurofins">
+                                Eurofins
+                            </option>
+
+                            <option value="Pace Analytical">
+                                Pace Analytical
+                            </option>
+
+                            <option value="ALS">
+                                ALS
+                            </option>
+
+                            <option value="SGS">
+                                SGS
+                            </option>
+
+                            <option value="TestAmerica">
+                                TestAmerica
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
                         </select>
+
                     </div>
 
+
+                    <!-- Lab Sample ID -->
                     <div class="pfas-form-group col-md-6">
-                        <label for="pfas-lab-sample-id">Lab Sample ID</label>
-                        <input type="text" id="pfas-lab-sample-id" name="lab_sample_id" class="pfas-form-control" placeholder="Enter lab sample ID">
+
+                        <label for="lab_sample_id">
+                            Lab Sample ID
+                        </label>
+
+                        <input type="text"
+                               id="lab_sample_id"
+                               name="lab_sample_id"
+                               class="pfas-form-control"
+                               placeholder="Enter lab sample ID">
+
                     </div>
+
                 </div>
 
-                <!-- Method Section -->
+
+                <!-- ==================================================
+                     Company / Entity
+                     ================================================== -->
+
                 <div class="pfas-form-group">
-                    <label for="pfas-analysis-method">Analysis Method</label>
-                    <select id="pfas-analysis-method" name="analysis_method" class="pfas-form-control">
-                        <option value="">Select analysis method</option>
-                        <option value="EPA 537.1">EPA 537.1</option>
-                        <option value="EPA 533">EPA 533</option>
-                        <option value="EPA 1633">EPA 1633</option>
-                        <option value="Other">Other</option>
+
+                    <label for="sample_collector">
+                        Company/Entity That Collected Sample
+                    </label>
+
+                    <input type="text"
+                           id="sample_collector"
+                           name="sample_collector"
+                           class="pfas-form-control"
+                           placeholder="Enter company or entity name">
+
+                </div>
+
+
+                <!-- ==================================================
+                     Analysis Method
+                     ================================================== -->
+
+                <div class="pfas-form-group">
+
+                    <label for="analysis_method">
+                        Analysis Method
+                    </label>
+
+                    <select id="analysis_method"
+                            name="analysis_method"
+                            class="pfas-form-control">
+
+                        <option value="">
+                            Select analysis method
+                        </option>
+
+                        <option value="EPA 537.1">
+                            EPA 537.1
+                        </option>
+
+                        <option value="EPA 533">
+                            EPA 533
+                        </option>
+
+                        <option value="EPA 1633">
+                            EPA 1633
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
                     </select>
+
                 </div>
 
-                <!-- Dates Section -->
+
+                <!-- ==================================================
+                     Dates Section
+                     ================================================== -->
+
                 <div class="pfas-form-row">
+
+                    <!-- Sampling Date -->
                     <div class="pfas-form-group col-md-6">
-                        <label for="pfas-sampling-date">Sampling Date</label>
-                        <input type="date" id="pfas-sampling-date" name="sampling_date" class="pfas-form-control">
+
+                        <label for="sampling_date">
+                            Sampling Date
+                        </label>
+
+                        <input type="date"
+                               id="sampling_date"
+                               name="sampling_date"
+                               class="pfas-form-control">
+
                     </div>
 
+
+                    <!-- Analysis Date -->
                     <div class="pfas-form-group col-md-6">
-                        <label for="pfas-analysis-date">Analysis Date</label>
-                        <input type="date" id="pfas-analysis-date" name="analysis_date" class="pfas-form-control">
+
+                        <label for="analysis_date">
+                            Analysis Date
+                        </label>
+
+                        <input type="date"
+                               id="analysis_date"
+                               name="analysis_date"
+                               class="pfas-form-control">
+
                     </div>
+
                 </div>
+
+
+                <!-- ==================================================
+                     File Upload
+                     ================================================== -->
+
+                <div class="pfas-form-group">
+
+                    <label for="supporting_file">
+                        Supporting Document
+                    </label>
+
+                    <input type="file"
+                           id="supporting_file"
+                           name="supporting_file"
+                           class="pfas-form-control">
+
+                    <small>
+                        Upload one supporting document.
+                    </small>
+
+                </div>
+
 
             </div>
+
+
+            <!-- ====================================================
+                 Modal Footer
+                 ==================================================== -->
 
             <div class="pfas-update-modal-footer">
-                <button type="button" id="pfas-modal-cancel" class="pfas-modal-cancel">Cancel</button>
-                <button type="submit" class="pfas-modal-save">Save</button>
+
+                <button type="button"
+                        id="pfas-modal-cancel"
+                        class="pfas-modal-cancel">
+                    Cancel
+                </button>
+
+                <button type="submit"
+                        class="pfas-modal-save">
+                    Save
+                </button>
+
             </div>
+
         </form>
+
     </div>
 </div>
 
