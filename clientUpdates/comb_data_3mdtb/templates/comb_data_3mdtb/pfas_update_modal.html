@@ -38,16 +38,49 @@
                     <!-- Analyte -->
                     <div class="pfas-form-group col-md-4">
 
-                        <label for="analyte">
+                        <label for="pfas-analyte">
                             Analyte
                         </label>
 
+                        <!-- For PFOA/PFOS -->
                         <input type="text"
-                               id="analyte"
+                               id="pfas-analyte-text"
                                name="analyte"
                                class="pfas-form-control"
                                value="PFOA"
                                readonly>
+
+                        <!-- For Other PFAS -->
+                        <select id="pfas-analyte-select"
+                                name="analyte"
+                                class="pfas-form-control"
+                                style="display: none;"
+                                disabled>
+                            <option value="">Select analyte</option>
+                            <option value="11Cl-PF3OUdS">11Cl-PF3OUdS</option>
+                            <option value="8:2FTS">8:2FTS</option>
+                            <option value="4:2FTS">4:2FTS</option>
+                            <option value="6:2FTS">6:2FTS</option>
+                            <option value="ADONA">ADONA</option>
+                            <option value="9Cl-PF3ONS">9Cl-PF3ONS</option>
+                            <option value="NFDHA">NFDHA</option>
+                            <option value="PFEESA">PFEESA</option>
+                            <option value="PFMPA">PFMPA</option>
+                            <option value="PFMBA">PFMBA</option>
+                            <option value="PFBA">PFBA</option>
+                            <option value="PFDA">PFDA</option>
+                            <option value="PFDoA">PFDoA</option>
+                            <option value="PFHpS">PFHpS</option>
+                            <option value="PFHpA">PFHpA</option>
+                            <option value="PFHxA">PFHxA</option>
+                            <option value="PFPeS">PFPeS</option>
+                            <option value="PFPeA">PFPeA</option>
+                            <option value="PFUnA">PFUnA</option>
+                            <option value="NEtFOSAA">NEtFOSAA</option>
+                            <option value="NMeFOSAA">NMeFOSAA</option>
+                            <option value="PFTA">PFTA</option>
+                            <option value="PFTrDA">PFTrDA</option>
+                        </select>
 
                     </div>
 

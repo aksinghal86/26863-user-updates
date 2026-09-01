@@ -26,6 +26,36 @@ document.addEventListener('DOMContentLoaded', function () {
     editButtons.forEach(function (button) {
 
         button.addEventListener('click', function () {
+            const analyte = button.getAttribute('data-analyte');
+
+            const analyteText = document.getElementById('pfas-analyte-text');
+            const analyteSelect = document.getElementById('pfas-analyte-select');
+
+            if (analyte === 'Other PFAS') {
+                // Switch to dropdown for Other PFAS
+                if (analyteText) {
+                    analyteText.readOnly = true;
+                    analyteText.style.display = 'none';
+                    analyteText.disabled = true;
+                }
+                if (analyteSelect) {
+                    analyteSelect.style.display = '';
+                    analyteSelect.disabled = false;
+                    analyteSelect.value = '';
+                }
+            } else {
+                // Ensure text input shows PFOA/PFOS and dropdown hidden
+                if (analyteText) {
+                    analyteText.value = analyte || '';
+                    analyteText.readOnly = true;
+                    analyteText.style.display = '';
+                    analyteText.disabled = false;
+                }
+                if (analyteSelect) {
+                    analyteSelect.style.display = 'none';
+                    analyteSelect.disabled = true;
+                }
+            }
 
             modal.style.display = 'flex';
 
