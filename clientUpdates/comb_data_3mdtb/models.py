@@ -3,3 +3,23 @@ from django.db import models
 from clientUpdates.models import ClaimPfasResult, TB_ClaimPfasResult, ClaimFlowRate, TB_ClaimFlowRate, Phase2_ClaimFlowRate, Phase2_ClaimPfasResult
 
 # Create your models here.
+class UpdatePfasResult(models.Model):
+    row_names = models.BigAutoField(primary_key=True)
+    pwsid = models.TextField(blank=True, null=True)
+    source_name = models.TextField(blank=True, null=True)
+    lab = models.TextField(blank=True, null=True)
+    lab_sample_id = models.TextField(blank=True, null=True)
+    analysis_method = models.TextField(blank=True, null=True)
+    sampling_date = models.DateField(blank=True, null=True)
+    analysis_date = models.DateField(blank=True, null=True)
+    analyte = models.TextField(blank=True, null=True)
+    result = models.FloatField(blank=True, null=True)
+    unit = models.TextField(blank=True, null=True)
+    filename = models.TextField(blank=True, null=True)
+    data_origin = models.TextField(default="EHE Portal")
+    timestamp = models.DateTimeField(blank=True, null=True)
+
+
+    class Meta:
+        managed = True
+        db_table = 'update_pfas_result'
