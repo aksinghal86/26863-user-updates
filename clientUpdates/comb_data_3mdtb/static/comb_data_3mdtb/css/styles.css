@@ -301,3 +301,13 @@ body {
 .dashboard-table tbody tr.needs-info-row:nth-child(even):hover {
     background-color: #ffedb5;
 }
+
+/* Add space around DataTables controls */
+.dashboard-table-card .dataTables_wrapper {
+    padding: 5px 10px 15px 10px;
+}
+
+/* Add a little more space below the search area */
+.dashboard-table-card .dataTables_filter {
+    margin-bottom: 12px;
+}

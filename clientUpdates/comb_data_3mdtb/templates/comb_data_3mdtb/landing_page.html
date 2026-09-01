@@ -22,7 +22,7 @@
     <div class="dashboard-table-card">
         <div class="table-responsive">
 
-            <table class="dashboard-table">
+            <table id="dashboard-table" class="dashboard-table">
 
                 <!-- Table headers -->
                 <thead>
@@ -140,6 +140,16 @@
     </div>
 
 </div>
+
+<!-- Initialize DataTables -->
+<script>
+    $(document).ready(function() {
+        $('#dashboard-table').DataTable({
+            pageLength: 10,
+            lengthChange: false
+        });
+    });
+</script>
 
 {% endblock %}
 ```
