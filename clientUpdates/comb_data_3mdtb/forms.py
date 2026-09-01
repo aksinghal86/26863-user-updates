@@ -5,6 +5,7 @@ from .models import UpdatePfasResult
 
 
 class PFASUpdateForm(forms.ModelForm):
+    supporting_file = forms.FileField(required=True, label="Supporting Document")
 
     class Meta:
         model = UpdatePfasResult
@@ -14,11 +15,16 @@ class PFASUpdateForm(forms.ModelForm):
             "result",
             "lab",
             "lab_sample_id",
-            #"sample_collector",
+#            "sample_collector",
             "analysis_method",
             "sampling_date",
             "analysis_date"
         ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.required = True
 
     def clean_result(self):
         result = self.cleaned_data.get("result")

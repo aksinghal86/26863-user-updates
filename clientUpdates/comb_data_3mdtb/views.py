@@ -25,8 +25,15 @@ def pfas_update(request):
     if request.method == "POST":
         form = PFASUpdateForm(request.POST, request.FILES)
         if form.is_valid():
-            # Handle valid form (save to database)
-            form.save()
+            # Save form instance without committing immediately
+            instance = form.save(commit=False)
+            
+            # Map the uploaded file name to the filename field in the model
+            supporting_file = request.FILES.get('supporting_file')
+            if supporting_file:
+                instance.filename = supporting_file.name
+            
+            instance.save()
             return redirect("comb_data_3mdtb:landing_page")
         else:
             # Re-render update page with form errors
