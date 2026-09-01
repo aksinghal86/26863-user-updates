@@ -1,0 +1,315 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'comb_data_3mdtb/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'comb_data_3mdtb/css/pfas_update_modal.css' %}">
+    <style>
+        .pfas-update-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .pfas-update-header {
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="pfas-update-container">
+        <div class="pfas-update-header">
+            <h2>Update PFAS Result</h2>
+        </div>
+
+        <!-- PFAS Update Form -->
+        <form id="pfas-update-form"
+              method="post"
+              action="{% url 'comb_data_3mdtb:pfas_update' %}"
+              enctype="multipart/form-data">
+
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="pfas-error-message" style="color: red; margin-bottom: 10px;">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="pfas-update-body">
+
+                <!-- Analyte & Result Section -->
+                <div class="pfas-form-row">
+                    <!-- Analyte -->
+                    <div class="pfas-form-group col-md-6">
+                        <label for="pfas-analyte">Analyte</label>
+                        <!-- For PFOA/PFOS -->
+                        <input type="text"
+                               id="pfas-analyte-text"
+                               name="analyte"
+                               class="pfas-form-control"
+                               value="{{ analyte|default:'PFOA' }}"
+                               readonly
+                               required>
+
+                        <!-- For Other PFAS -->
+                        <select id="pfas-analyte-select"
+                                name="analyte"
+                                class="pfas-form-control"
+                                style="display: none;"
+                                disabled
+                                required>
+                            <option value="">Select analyte</option>
+                            <option value="11Cl-PF3OUdS">11Cl-PF3OUdS</option>
+                            <option value="8:2FTS">8:2FTS</option>
+                            <option value="4:2FTS">4:2FTS</option>
+                            <option value="6:2FTS">6:2FTS</option>
+                            <option value="ADONA">ADONA</option>
+                            <option value="9Cl-PF3ONS">9Cl-PF3ONS</option>
+                            <option value="NFDHA">NFDHA</option>
+                            <option value="PFEESA">PFEESA</option>
+                            <option value="PFMPA">PFMPA</option>
+                            <option value="PFMBA">PFMBA</option>
+                            <option value="PFBA">PFBA</option>
+                            <option value="PFDA">PFDA</option>
+                            <option value="PFDoA">PFDoA</option>
+                            <option value="PFHpS">PFHpS</option>
+                            <option value="PFHpA">PFHpA</option>
+                            <option value="PFHxA">PFHxA</option>
+                            <option value="PFPeS">PFPeS</option>
+                            <option value="PFPeA">PFPeA</option>
+                            <option value="PFUnA">PFUnA</option>
+                            <option value="NEtFOSAA">NEtFOSAA</option>
+                            <option value="NMeFOSAA">NMeFOSAA</option>
+                            <option value="PFTA">PFTA</option>
+                            <option value="PFTrDA">PFTrDA</option>
+                        </select>
+
+                        {% if form.analyte.errors %}
+                            <div class="pfas-error-message" style="color: red;">
+                                {% for error in form.analyte.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="pfas-form-group col-md-6">
+                        <label for="result">Result (ppt or ng/L)</label>
+                        <input type="number"
+                               id="result"
+                               name="result"
+                               class="pfas-form-control"
+                               step="any"
+                               placeholder="Enter result"
+                               value="{{ form.result.value|default:'' }}"
+                               required>
+
+                        {% if form.result.errors %}
+                            <div class="pfas-error-message" style="color: red;">
+                                {% for error in form.result.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Laboratory Section -->
+                <div class="pfas-form-row">
+                    <div class="pfas-form-group col-md-6">
+                        <label for="lab">Lab Name</label>
+                        <select id="lab" name="lab" class="pfas-form-control" required>
+                            <option value="">Select laboratory</option>
+                            <option value="Eurofins" {% if form.lab.value == 'Eurofins' %}selected{% endif %}>Eurofins</option>
+                            <option value="Pace Analytical" {% if form.lab.value == 'Pace Analytical' %}selected{% endif %}>Pace Analytical</option>
+                            <option value="ALS" {% if form.lab.value == 'ALS' %}selected{% endif %}>ALS</option>
+                            <option value="SGS" {% if form.lab.value == 'SGS' %}selected{% endif %}>SGS</option>
+                            <option value="TestAmerica" {% if form.lab.value == 'TestAmerica' %}selected{% endif %}>TestAmerica</option>
+                            <option value="Other" {% if form.lab.value == 'Other' %}selected{% endif %}>Other</option>
+                        </select>
+
+                        {% if form.lab.errors %}
+                            <div class="pfas-error-message" style="color: red;">
+                                {% for error in form.lab.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="pfas-form-group col-md-6">
+                        <label for="lab_sample_id">Lab Sample ID</label>
+                        <input type="text"
+                               id="lab_sample_id"
+                               name="lab_sample_id"
+                               class="pfas-form-control"
+                               placeholder="Enter lab sample ID"
+                               value="{{ form.lab_sample_id.value|default:'' }}"
+                               required>
+
+                        {% if form.lab_sample_id.errors %}
+                            <div class="pfas-error-message" style="color: red;">
+                                {% for error in form.lab_sample_id.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Sample Collector & Analysis Method -->
+                <div class="pfas-form-row">
+                    <div class="pfas-form-group col-md-6">
+                        <label for="sample_collector">Sample Collected By</label>
+                        <input type="text"
+                               id="sample_collector"
+                               name="sample_collector"
+                               class="pfas-form-control"
+                               placeholder="Enter company or entity name"
+                               value="{{ form.sample_collector.value|default:'' }}"
+                               required>
+
+                        {% if form.sample_collector.errors %}
+                            <div class="pfas-error-message" style="color: red;">
+                                {% for error in form.sample_collector.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="pfas-form-group col-md-6">
+                        <label for="analysis_method">Analysis Method</label>
+                        <select id="analysis_method" name="analysis_method" class="pfas-form-control" required>
+                            <option value="">Select analysis method</option>
+                            <option value="EPA 537.1" {% if form.analysis_method.value == 'EPA 537.1' %}selected{% endif %}>EPA 537.1</option>
+                            <option value="EPA 533" {% if form.analysis_method.value == 'EPA 533' %}selected{% endif %}>EPA 533</option>
+                            <option value="EPA 1633" {% if form.analysis_method.value == 'EPA 1633' %}selected{% endif %}>EPA 1633</option>
+                            <option value="Other" {% if form.analysis_method.value == 'Other' %}selected{% endif %}>Other</option>
+                        </select>
+
+                        {% if form.analysis_method.errors %}
+                            <div class="pfas-error-message" style="color: red;">
+                                {% for error in form.analysis_method.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="pfas-form-row">
+                    <div class="pfas-form-group col-md-6">
+                        <label for="sampling_date">Sampling Date</label>
+                        <input type="date"
+                               id="sampling_date"
+                               name="sampling_date"
+                               class="pfas-form-control"
+                               value="{{ form.sampling_date.value|default:'' }}"
+                               required>
+
+                        {% if form.sampling_date.errors %}
+                            <div class="pfas-error-message" style="color: red;">
+                                {% for error in form.sampling_date.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="pfas-form-group col-md-6">
+                        <label for="analysis_date">Analysis Date</label>
+                        <input type="date"
+                               id="analysis_date"
+                               name="analysis_date"
+                               class="pfas-form-control"
+                               value="{{ form.analysis_date.value|default:'' }}"
+                               required>
+
+                        {% if form.analysis_date.errors %}
+                            <div class="pfas-error-message" style="color: red;">
+                                {% for error in form.analysis_date.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- File Upload -->
+                <div class="pfas-form-group">
+                    <label for="supporting_file">Supporting Document</label>
+                    <input type="file"
+                           id="supporting_file"
+                           name="supporting_file"
+                           class="pfas-form-control"
+                           required>
+
+                    {% if form.supporting_file.errors %}
+                        <div class="pfas-error-message" style="color: red;">
+                            {% for error in form.supporting_file.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <small>Upload one supporting document.</small>
+                </div>
+
+                {% if form.errors %}
+                    <div class="pfas-general-error" style="color: red; margin-top: 15px; font-weight: bold; text-align: center;">
+                        Submission failure: please correct all validation errors.
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="pfas-update-footer" style="margin-top: 20px; text-align: right;">
+                <a href="{% url 'comb_data_3mdtb:landing_page' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary pfas-modal-save">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const analyte = "{{ analyte|default:'PFOA' }}";
+        const analyteText = document.getElementById('pfas-analyte-text');
+        const analyteSelect = document.getElementById('pfas-analyte-select');
+
+        if (analyte === 'Other PFAS') {
+            if (analyteText) {
+                analyteText.style.display = 'none';
+                analyteText.disabled = true;
+            }
+            if (analyteSelect) {
+                analyteSelect.style.display = '';
+                analyteSelect.disabled = false;
+                // If there's a form error, the select should keep its value
+                const savedValue = "{{ form.analyte.value|default:'' }}";
+                if (savedValue && savedValue !== 'PFOA' && savedValue !== 'PFOS') {
+                    analyteSelect.value = savedValue;
+                }
+            }
+        } else {
+            if (analyteText) {
+                analyteText.value = analyte;
+                analyteText.style.display = '';
+                analyteText.disabled = false;
+            }
+            if (analyteSelect) {
+                analyteSelect.style.display = 'none';
+                analyteSelect.disabled = true;
+            }
+        }
+    });
+</script>
+{% endblock %}
