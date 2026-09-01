@@ -23,6 +23,7 @@ class PFASUpdateForm(forms.ModelForm):
         ]
 
     def __init__(self, *args, **kwargs):
+        self.min_result = kwargs.pop("min_result", None)
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.required = True
@@ -34,6 +35,12 @@ class PFASUpdateForm(forms.ModelForm):
             raise forms.ValidationError(
                 "Result cannot be negative."
             )
+
+        if result is not None and self.min_result is not None:
+            if result < float(self.min_result):
+                raise forms.ValidationError(
+                    f"New result cannot be less than the current value of {self.min_result} ng/L."
+                )
 
         return result
 

@@ -23,7 +23,8 @@ def landing_page(request):
 @never_cache
 def pfas_update(request):
     if request.method == "POST":
-        form = PFASUpdateForm(request.POST, request.FILES)
+        min_value = request.POST.get('min_value')
+        form = PFASUpdateForm(request.POST, request.FILES, min_result=min_value)
         if form.is_valid():
             # Save form instance without committing immediately
             instance = form.save(commit=False)
@@ -33,28 +34,45 @@ def pfas_update(request):
             if supporting_file:
                 instance.filename = supporting_file.name
             
+            # Ensure pwsid and source_name are saved from the form (which are hidden)
+            instance.pwsid = request.POST.get('pwsid')
+            instance.source_name = request.POST.get('source_name')
+            instance.unit = "ppt" # Standard unit for these updates
+            
             instance.save()
             return redirect("comb_data_3mdtb:landing_page")
         else:
             # Re-render update page with form errors
             analyte = request.POST.get('analyte', 'PFOA')
+            pwsid = request.POST.get('pwsid')
+            source_name = request.POST.get('source_name')
             return render(
                 request,
                 "comb_data_3mdtb/pfas_update.html",
                 {
                     "form": form,
-                    "analyte": analyte
+                    "analyte": analyte,
+                    "pwsid": pwsid,
+                    "source_name": source_name,
+                    "min_value": min_value
                 }
             )
     
     # GET request
     analyte = request.GET.get('analyte', 'PFOA')
+    pwsid = request.GET.get('pwsid')
+    source_name = request.GET.get('source_name')
+    min_value = request.GET.get('min_value')
+    
     form = PFASUpdateForm()
     return render(
         request,
         "comb_data_3mdtb/pfas_update.html",
         {
             "form": form,
-            "analyte": analyte
+            "analyte": analyte,
+            "pwsid": pwsid,
+            "source_name": source_name,
+            "min_value": min_value
         }
     )

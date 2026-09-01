@@ -84,7 +84,7 @@
 
                                 {{ row.max_pfoa|floatformat:1 }}
 
-                                <a href="{% url 'comb_data_3mdtb:pfas_update' %}?analyte=PFOA"
+                                <a href="{% url 'comb_data_3mdtb:pfas_update' %}?analyte=PFOA&pwsid={{ row.pwsid }}&source_name={{ row.source_name|urlencode }}&min_value={{ row.max_pfoa|default:0 }}"
                                    class="edit-button"
                                    title="Edit PFOA">
 
@@ -104,7 +104,7 @@
 
                                 {{ row.max_pfos|floatformat:1 }}
 
-                                <a href="{% url 'comb_data_3mdtb:pfas_update' %}?analyte=PFOS"
+                                <a href="{% url 'comb_data_3mdtb:pfas_update' %}?analyte=PFOS&pwsid={{ row.pwsid }}&source_name={{ row.source_name|urlencode }}&min_value={{ row.max_pfos|default:0 }}"
                                    class="edit-button"
                                    title="Edit PFOS">
 
@@ -124,7 +124,7 @@
 
                                 {{ row.max_other_pfas|floatformat:1 }}
 
-                                <a href="{% url 'comb_data_3mdtb:pfas_update' %}?analyte=Other PFAS"
+                                <a href="{% url 'comb_data_3mdtb:pfas_update' %}?analyte=Other PFAS&pwsid={{ row.pwsid }}&source_name={{ row.source_name|urlencode }}&min_value={{ row.max_other_pfas|default:0 }}"
                                    class="edit-button"
                                    title="Edit Other PFAS">
 

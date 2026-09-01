@@ -36,6 +36,11 @@
 
             {% csrf_token %}
             
+            <!-- Hidden context fields -->
+            <input type="hidden" name="pwsid" value="{{ pwsid|default:'' }}">
+            <input type="hidden" name="source_name" value="{{ source_name|default:'' }}">
+            <input type="hidden" name="min_value" value="{{ min_value|default:'' }}">
+            
             {% if form.non_field_errors %}
                 <div class="pfas-error-message" style="color: red; margin-bottom: 10px;">
                     {% for error in form.non_field_errors %}
@@ -111,7 +116,11 @@
                                step="any"
                                placeholder="Enter result"
                                value="{{ form.result.value|default:'' }}"
+                               {% if min_value %}min="{{ min_value }}"{% endif %}
                                required>
+                        {% if min_value %}
+                            <small class="form-text text-muted">Current maximum: {{ min_value }} ng/L. New value must be ≥ {{ min_value }} ng/L.</small>
+                        {% endif %}
 
                         {% if form.result.errors %}
                             <div class="pfas-error-message" style="color: red;">
