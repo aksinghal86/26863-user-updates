@@ -16,3 +16,9 @@ def landing_page(request):
     data = get_dashboard_data(pwsid)
 
     return render(request, "comb_data_3mdtb/landing_page.html", {"data": data})
+
+
+@login_required
+@never_cache
+def pfas_update(request):
+    return {}

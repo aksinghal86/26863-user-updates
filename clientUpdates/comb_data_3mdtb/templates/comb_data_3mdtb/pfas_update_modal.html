@@ -21,6 +21,7 @@
         <!-- PFAS Update Form -->
         <form id="pfas-update-form"
               method="post"
+              action="{% url 'comb_data_3mdtb:pfas_update' %}"
               enctype="multipart/form-data">
 
             {% csrf_token %}
