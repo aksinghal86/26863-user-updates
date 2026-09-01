@@ -5,7 +5,11 @@
 {% load static %}
 
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'comb_data_3mdtb/css/styles.css' %}">
+    <link rel="stylesheet"
+          href="{% static 'comb_data_3mdtb/css/styles.css' %}">
+
+    <link rel="stylesheet"
+          href="{% static 'comb_data_3mdtb/css/pfas_update_modal.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -18,11 +22,14 @@
         <p>Water quality and production information</p>
     </div>
 
+
     <!-- Dashboard table -->
     <div class="dashboard-table-card">
+
         <div class="table-responsive">
 
-            <table id="dashboard-table" class="dashboard-table">
+            <table id="dashboard-table"
+                   class="dashboard-table">
 
                 <!-- Table headers -->
                 <thead>
@@ -37,65 +44,104 @@
                     </tr>
                 </thead>
 
+
                 <!-- Table data -->
                 <tbody>
+
                     {% for row in data %}
 
                     <!-- Highlight row when future annual production information is needed -->
                     <tr class="{% if not row.future_data_provided and not row.all_nds %}needs-info-row{% endif %}">
+
 
                         <!-- Source name -->
                         <td>
                             {{ row.source_name }}
                         </td>
 
+
                         <!-- Impacted -->
                         <td>
+
                             {% if row.all_nds %}
-                                <span class="impacted-no">No</span>
+
+                                <span class="impacted-no">
+                                    No
+                                </span>
+
                             {% else %}
-                                <span class="impacted-yes">Yes</span>
+
+                                <span class="impacted-yes">
+                                    Yes
+                                </span>
+
                             {% endif %}
+
                         </td>
+
 
                         <!-- Max PFOA -->
                         <td class="result-value">
+
                             <span class="editable-value">
+
                                 {{ row.max_pfoa|floatformat:1 }}
 
                                 <button type="button"
-                                        class="edit-button"
-                                        title="Edit PFOA">
+                                        class="edit-button pfas-edit-button"
+                                        title="Edit PFOA"
+                                        data-analyte="PFOA">
+
                                     <i class="bi bi-pencil"></i>
+
                                 </button>
+
                             </span>
+
                         </td>
+
 
                         <!-- Max PFOS -->
                         <td class="result-value">
+
                             <span class="editable-value">
+
                                 {{ row.max_pfos|floatformat:1 }}
 
                                 <button type="button"
-                                        class="edit-button"
-                                        title="Edit PFOS">
+                                        class="edit-button pfas-edit-button"
+                                        title="Edit PFOS"
+                                        data-analyte="PFOS">
+
                                     <i class="bi bi-pencil"></i>
+
                                 </button>
+
                             </span>
+
                         </td>
+
 
                         <!-- Max Other PFAS -->
                         <td class="result-value">
+
                             <span class="editable-value">
+
                                 {{ row.max_other_pfas|floatformat:1 }}
 
                                 <button type="button"
-                                        class="edit-button"
-                                        title="Edit Other PFAS">
+                                        class="edit-button pfas-edit-button"
+                                        title="Edit Other PFAS"
+                                        data-analyte="Other PFAS">
+
                                     <i class="bi bi-pencil"></i>
+
                                 </button>
+
                             </span>
+
                         </td>
+
 
                         <!-- Average annual production -->
                         <td class="flow-value">
@@ -104,8 +150,11 @@
 
                                 <button type="button"
                                         class="needs-info-button">
+
                                     <i class="bi bi-exclamation-triangle"></i>
+
                                     More Info Needed
+
                                 </button>
 
                             {% else %}
@@ -116,40 +165,70 @@
 
                         </td>
 
+
                         <!-- Maximum annual flow rate -->
                         <td class="flow-value">
+
                             <span class="editable-value">
+
                                 {{ row.max_flow_gpm|floatformat:1|intcomma }} GPM
 
                                 <button type="button"
                                         class="edit-button"
                                         title="Edit maximum flow rate">
+
                                     <i class="bi bi-pencil"></i>
+
                                 </button>
+
                             </span>
+
                         </td>
 
                     </tr>
 
                     {% endfor %}
+
                 </tbody>
 
             </table>
 
         </div>
+
     </div>
 
 </div>
 
-<!-- Initialize DataTables -->
+
+<!-- ============================================================
+     PFAS UPDATE MODAL
+     ============================================================ -->
+
+{% include 'comb_data_3mdtb/pfas_update_modal.html' %}
+
+
+<!-- ============================================================
+     DATA TABLE
+     ============================================================ -->
+
 <script>
     $(document).ready(function() {
+
         $('#dashboard-table').DataTable({
             pageLength: 10,
             lengthChange: false
         });
+
     });
 </script>
+
+
+<!-- ============================================================
+     PFAS MODAL JAVASCRIPT
+     ============================================================ -->
+
+<script src="{% static 'comb_data_3mdtb/js/pfas_update_modal.js' %}"></script>
+
 
 {% endblock %}
 ```

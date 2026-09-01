@@ -1,0 +1,85 @@
+
+<!-- ============================================================
+     PFAS UPDATE MODAL
+     ============================================================ -->
+
+<div id="pfas-update-modal" class="pfas-update-modal">
+    <div class="pfas-update-modal-content">
+
+        <div class="pfas-update-modal-header">
+            <h2>Update PFAS Result</h2>
+            <button type="button" id="pfas-modal-close" class="pfas-modal-close" aria-label="Close">&times;</button>
+        </div>
+
+        <form id="pfas-update-form">
+            <div class="pfas-update-modal-body">
+
+                <!-- Analyte & Result Section -->
+                <div class="pfas-form-row">
+                    <div class="pfas-form-group col-md-4">
+                        <label for="pfas-analyte">Analyte</label>
+                        <input type="text" id="pfas-analyte" name="analyte" class="pfas-form-control" value="PFOA" readonly>
+                    </div>
+
+                    <div class="pfas-form-group col-md-8">
+                        <label for="pfas-result">Result (ppt or ng/L)</label>
+                        <input type="number" id="pfas-result" name="result" class="pfas-form-control" step="any" placeholder="Enter result">
+                    </div>
+                </div>
+
+                <!-- Laboratory Section -->
+                <div class="pfas-form-row">
+                    <div class="pfas-form-group col-md-6">
+                        <label for="pfas-lab-name">Lab Name</label>
+                        <select id="pfas-lab-name" name="lab_name" class="pfas-form-control">
+                            <option value="">Select laboratory</option>
+                            <option value="Eurofins">Eurofins</option>
+                            <option value="Pace Analytical">Pace Analytical</option>
+                            <option value="ALS">ALS</option>
+                            <option value="SGS">SGS</option>
+                            <option value="TestAmerica">TestAmerica</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="pfas-form-group col-md-6">
+                        <label for="pfas-lab-sample-id">Lab Sample ID</label>
+                        <input type="text" id="pfas-lab-sample-id" name="lab_sample_id" class="pfas-form-control" placeholder="Enter lab sample ID">
+                    </div>
+                </div>
+
+                <!-- Method Section -->
+                <div class="pfas-form-group">
+                    <label for="pfas-analysis-method">Analysis Method</label>
+                    <select id="pfas-analysis-method" name="analysis_method" class="pfas-form-control">
+                        <option value="">Select analysis method</option>
+                        <option value="EPA 537.1">EPA 537.1</option>
+                        <option value="EPA 533">EPA 533</option>
+                        <option value="EPA 1633">EPA 1633</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <!-- Dates Section -->
+                <div class="pfas-form-row">
+                    <div class="pfas-form-group col-md-6">
+                        <label for="pfas-sampling-date">Sampling Date</label>
+                        <input type="date" id="pfas-sampling-date" name="sampling_date" class="pfas-form-control">
+                    </div>
+
+                    <div class="pfas-form-group col-md-6">
+                        <label for="pfas-analysis-date">Analysis Date</label>
+                        <input type="date" id="pfas-analysis-date" name="analysis_date" class="pfas-form-control">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="pfas-update-modal-footer">
+                <button type="button" id="pfas-modal-cancel" class="pfas-modal-cancel">Cancel</button>
+                <button type="submit" class="pfas-modal-save">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
