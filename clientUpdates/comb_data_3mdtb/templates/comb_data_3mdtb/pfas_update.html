@@ -178,18 +178,18 @@
                 <!-- Sample Collector & Analysis Method -->
                 <div class="pfas-form-row">
                     <div class="pfas-form-group col-md-6">
-                        <label for="sample_collector">Sample Collected By</label>
+                        <label for="sample_collected_by">Sample Collected By</label>
                         <input type="text"
-                               id="sample_collector"
-                               name="sample_collector"
+                               id="sample_collected_by"
+                               name="sample_collected_by"
                                class="pfas-form-control"
                                placeholder="Enter company or entity name"
-                               value="{{ form.sample_collector.value|default:'' }}"
+                               value="{{ form.sample_collected_by.value|default:'' }}"
                                required>
 
-                        {% if form.sample_collector.errors %}
+                        {% if form.sample_collected_by.errors %}
                             <div class="pfas-error-message" style="color: red;">
-                                {% for error in form.sample_collector.errors %}
+                                {% for error in form.sample_collected_by.errors %}
                                     {{ error }}
                                 {% endfor %}
                             </div>

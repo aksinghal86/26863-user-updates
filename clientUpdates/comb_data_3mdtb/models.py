@@ -4,7 +4,7 @@ from clientUpdates.models import ClaimPfasResult, TB_ClaimPfasResult, ClaimFlowR
 
 # Create your models here.
 class UpdatePfasResult(models.Model):
-    row_names = models.BigAutoField(primary_key=True)
+    id = models.BigAutoField(primary_key=True)
     pwsid = models.TextField(blank=True, null=True)
     source_name = models.TextField(blank=True, null=True)
     lab = models.TextField(blank=True, null=True)
@@ -18,7 +18,7 @@ class UpdatePfasResult(models.Model):
     unit = models.TextField(blank=True, null=True)
     filename = models.TextField(blank=True, null=True)
     data_origin = models.TextField(default="EHE Portal")
-    timestamp = models.DateTimeField(blank=True, null=True)
+    submit_date = models.DateTimeField(auto_now=True)
 
 
 

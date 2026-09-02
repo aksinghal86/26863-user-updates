@@ -1,5 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+
+from clientUpdates.utils.dropbox_utils import upload_to_dropbox
 from .utils import process_pfas, process_annual_flow, get_dashboard_data, get_all_yearly_flows
 from .forms import PFASUpdateForm, AFUpdateForm, MFUpdateForm
 from clientUpdates.utils.calculations import calc_gpm_flow_rate
@@ -29,16 +31,17 @@ def pfas_update(request):
         if form.is_valid():
             # Save form instance without committing immediately
             instance = form.save(commit=False)
-            
-            # Map the uploaded file name to the filename field in the model
-            supporting_file = request.FILES.get('supporting_file')
-            if supporting_file:
-                instance.filename = supporting_file.name
-            
+
             # Ensure pwsid and source_name are saved from the form (which are hidden)
             instance.pwsid = request.POST.get('pwsid')
             instance.source_name = request.POST.get('source_name')
             instance.unit = "ppt" # Standard unit for these updates
+
+            # Map the uploaded file name to the filename field in the model
+            supporting_file = request.FILES.get('supporting_file')
+            if supporting_file:
+                instance.filename = supporting_file.name
+                upload_to_dropbox(file=supporting_file, filetype="New Claims/PFAS", pwsid=instance.pwsid)
             
             instance.save()
             return redirect("comb_data_3mdtb:landing_page")

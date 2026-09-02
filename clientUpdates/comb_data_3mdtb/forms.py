@@ -13,7 +13,6 @@ class PFASUpdateForm(forms.ModelForm):
         fields = [
             "analyte",
             "result",
-            "unit",
             "lab",
             "lab_sample_id",
             "sample_collected_by",
