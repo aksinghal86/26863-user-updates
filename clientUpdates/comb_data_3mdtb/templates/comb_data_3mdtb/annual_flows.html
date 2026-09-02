@@ -22,19 +22,20 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for year_info in source_data.highest_three_years %}
+                        {% for year_info in source_data %}
                             <tr>
                                 <td>{{ year_info.year }}</td>
-                                <td>{{ year_info.gpm | floatformat:1 }}</td>
+                                <td>
+                                    {% if year_info.flow_rate_gpm is not None %}
+                                        {{ year_info.flow_rate_gpm|floatformat:"1" }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-                
-                <div style="margin-top: 20px; padding: 15px;">
-                    <p><strong>Average Annual Production:</strong> {{ source_data.average_annual_production_gpy | floatformat:1 | intcomma }} GPY</p>
-                    <p><strong>Future Data Provided:</strong> {{ source_data.future_data_provided | yesno:"Yes,No" }}</p>
-                </div>
             {% else %}
                 <p style="padding: 20px;">No annual flow data found for this source.</p>
             {% endif %}

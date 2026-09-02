@@ -343,4 +343,77 @@ def get_dashboard_data(pwsid):
     return results
 
 
+def get_all_yearly_flows(pwsid, source_name):
 
+    # Fields we want from each annual flow model.
+    fields = [
+        "pwsid",
+        "source_name",
+        "year",
+        "flow_rate_gpm"
+    ]
+
+    # Get annual flow records from the first model.
+    data1 = ClaimFlowRate.objects.filter(
+        pwsid=pwsid,
+        source_name=source_name,
+        source_variable="AFR"
+    ).values(*fields)
+
+    # Get annual flow records from the second model.
+    data2 = TB_ClaimFlowRate.objects.filter(
+        pwsid=pwsid,
+        source_name=source_name,
+        source_variable="AFR"
+    ).values(*fields)
+
+    # Get annual flow records from the third model.
+    # Keep the same source_variable filter used in process_annual_flow().
+    data3 = Phase2_ClaimFlowRate.objects.filter(
+        pwsid=pwsid,
+        source_name=source_name,
+        source_variable="AFR"
+    ).values(*fields)
+
+    # Combine records from all three models.
+    data = list(data1) + list(data2) + list(data3)
+
+    # Dictionary to store the maximum flow for each year.
+    yearly_flows = {}
+
+    # Process each flow record.
+    for record in data:
+
+        year = record["year"]
+        flow = record["flow_rate_gpm"]
+
+        # Ignore missing flow values.
+        if flow is None:
+            continue
+
+        # If this is the first value for the year,
+        # store it as the maximum.
+        if year not in yearly_flows:
+            yearly_flows[year] = flow
+
+        # Otherwise, keep whichever flow value is higher.
+        else:
+            yearly_flows[year] = max(
+                yearly_flows[year],
+                flow
+            )
+
+    # Add 2024 and 2025 if they are not already present.
+    yearly_flows.setdefault(2024, None)
+    yearly_flows.setdefault(2025, None)
+
+    # Return the results sorted by year.
+    return [
+        {
+            "pwsid": pwsid,
+            "source_name": source_name,
+            "year": year,
+            "flow_rate_gpm": yearly_flows[year]
+        }
+        for year in sorted(yearly_flows)
+    ]

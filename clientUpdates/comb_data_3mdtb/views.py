@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from .utils import process_pfas, process_annual_flow, get_dashboard_data
+from .utils import process_pfas, process_annual_flow, get_dashboard_data, get_all_yearly_flows
 from .forms import PFASUpdateForm
 
 from django.views.decorators.cache import never_cache
@@ -89,10 +89,7 @@ def annual_flows(request):
     if not pwsid:
         pwsid = request.user.username
 
-    all_annual_flows = process_annual_flow(pwsid)
-    
-    # Find the specific source data
-    source_data = next((item for item in all_annual_flows if item["source_name"] == source_name), None)
+    yearly_flows = get_all_yearly_flows(pwsid, source_name)
 
     return render(
         request,
@@ -100,6 +97,6 @@ def annual_flows(request):
         {
             "pwsid": pwsid,
             "source_name": source_name,
-            "source_data": source_data,
+            "source_data": yearly_flows,
         }
     )
