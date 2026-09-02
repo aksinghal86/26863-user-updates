@@ -20,6 +20,7 @@
                             <th>Year</th>
                             <th>Flow Rate (GPM)</th>
                             <th>Gallons Per Year</th>
+                            <th>Million Gallons Per Day</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -36,6 +37,13 @@
                                 <td>
                                     {% if year_info.gallons_per_year is not None %}
                                         {{ year_info.gallons_per_year|floatformat:"1"|intcomma }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if year_info.mgd is not None %}
+                                        {{ year_info.mgd|floatformat:"3"|intcomma }}
                                     {% else %}
                                         -
                                     {% endif %}

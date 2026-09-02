@@ -414,7 +414,8 @@ def get_all_yearly_flows(pwsid, source_name):
             "source_name": source_name,
             "year": year,
             "flow_rate_gpm": yearly_flows[year],
-            "gallons_per_year": round(yearly_flows[year] * 60 * 24 * 365, 1) if yearly_flows[year] is not None else None
+            "gallons_per_year": round(yearly_flows[year] * 60 * 24 * 365, 1) if yearly_flows[year] is not None else None,
+            "mgd": round(((yearly_flows[year] * 60 * 24 * 365) / 365) / 1000000, 3) if yearly_flows[year] is not None else None
         }
         for year in sorted(yearly_flows)
     ]
