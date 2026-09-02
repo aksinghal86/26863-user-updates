@@ -82,9 +82,9 @@
 
                             <span class="editable-value">
 
-                                {{ row.max_pfoa|floatformat:1 }}
+                                {{ row.max_pfoa | floatformat:1 }}
 
-                                <a href="{% url 'comb_data_3mdtb:pfas_update' %}?analyte=PFOA&pwsid={{ row.pwsid }}&source_name={{ row.source_name|urlencode }}&min_value={{ row.max_pfoa|default:0 }}"
+                                <a href="{% url 'comb_data_3mdtb:pfas_update' %}?analyte=PFOA&pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&min_value={{ row.max_pfoa | default:0 }}"
                                    class="edit-button"
                                    title="Edit PFOA">
 
@@ -102,9 +102,9 @@
 
                             <span class="editable-value">
 
-                                {{ row.max_pfos|floatformat:1 }}
+                                {{ row.max_pfos | floatformat:1 }}
 
-                                <a href="{% url 'comb_data_3mdtb:pfas_update' %}?analyte=PFOS&pwsid={{ row.pwsid }}&source_name={{ row.source_name|urlencode }}&min_value={{ row.max_pfos|default:0 }}"
+                                <a href="{% url 'comb_data_3mdtb:pfas_update' %}?analyte=PFOS&pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&min_value={{ row.max_pfos | default:0 }}"
                                    class="edit-button"
                                    title="Edit PFOS">
 
@@ -122,9 +122,9 @@
 
                             <span class="editable-value">
 
-                                {{ row.max_other_pfas|floatformat:1 }}
+                                {{ row.max_other_pfas | floatformat:1 }}
 
-                                <a href="{% url 'comb_data_3mdtb:pfas_update' %}?analyte=Other PFAS&pwsid={{ row.pwsid }}&source_name={{ row.source_name|urlencode }}&min_value={{ row.max_other_pfas|default:0 }}&selected_analyte={{ row.max_other_pfas_analyte|urlencode }}"
+                                <a href="{% url 'comb_data_3mdtb:pfas_update' %}?analyte=Other PFAS&pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&min_value={{ row.max_other_pfas | default:0 }}&selected_analyte={{ row.max_other_pfas_analyte | urlencode }}"
                                    class="edit-button"
                                    title="Edit Other PFAS">
 
@@ -140,22 +140,34 @@
                         <!-- Average annual production -->
                         <td class="flow-value">
 
-                            {% if not row.future_data_provided and not row.all_nds %}
+                            <span class="editable-value">
 
-                                <button type="button"
-                                        class="needs-info-button">
+                                {% if not row.future_data_provided and not row.all_nds %}
 
-                                    <i class="bi bi-exclamation-triangle"></i>
+                                    <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}"
+                                       class="needs-info-button">
 
-                                    More Info Needed
+                                        <i class="bi bi-exclamation-triangle"></i>
 
-                                </button>
+                                        More Info Needed
 
-                            {% else %}
+                                    </a>
 
-                                {{ row.average_annual_production_gpy|floatformat:1|intcomma }} GPY
+                                {% else %}
 
-                            {% endif %}
+                                    {{ row.average_annual_production_gpy | floatformat:1 | intcomma }} GPY
+
+                                    <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}"
+                                       class="edit-button"
+                                       title="Edit annual production">
+
+                                        <i class="bi bi-pencil"></i>
+
+                                    </a>
+
+                                {% endif %}
+
+                            </span>
 
                         </td>
 
@@ -165,7 +177,7 @@
 
                             <span class="editable-value">
 
-                                {{ row.max_flow_gpm|floatformat:1|intcomma }} GPM
+                                {{ row.max_flow_gpm | floatformat:1 | intcomma }} GPM
 
                                 <button type="button"
                                         class="edit-button"

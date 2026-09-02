@@ -78,3 +78,28 @@ def pfas_update(request):
             "selected_analyte": selected_analyte
         }
     )
+
+
+@login_required
+@never_cache
+def annual_flows(request):
+    pwsid = request.GET.get('pwsid')
+    source_name = request.GET.get('source_name')
+
+    if not pwsid:
+        pwsid = request.user.username
+
+    all_annual_flows = process_annual_flow(pwsid)
+    
+    # Find the specific source data
+    source_data = next((item for item in all_annual_flows if item["source_name"] == source_name), None)
+
+    return render(
+        request,
+        "comb_data_3mdtb/annual_flows.html",
+        {
+            "pwsid": pwsid,
+            "source_name": source_name,
+            "source_data": source_data,
+        }
+    )

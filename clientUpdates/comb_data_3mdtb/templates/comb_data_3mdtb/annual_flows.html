@@ -1,0 +1,49 @@
+{% extends 'base_generic.html' %}
+
+{% load humanize %}
+
+{% block content %}
+
+
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>Annual Production Data</h1>
+        <p>Source: {{ source_name }} (PWSID: {{ pwsid }})</p>
+    </div>
+
+    <div class="dashboard-table-card">
+        <div class="table-responsive">
+            {% if source_data %}
+                <table class="dashboard-table">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Flow Rate (GPM)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for year_info in source_data.highest_three_years %}
+                            <tr>
+                                <td>{{ year_info.year }}</td>
+                                <td>{{ year_info.gpm | floatformat:1 }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+                <div style="margin-top: 20px; padding: 15px;">
+                    <p><strong>Average Annual Production:</strong> {{ source_data.average_annual_production_gpy | floatformat:1 | intcomma }} GPY</p>
+                    <p><strong>Future Data Provided:</strong> {{ source_data.future_data_provided | yesno:"Yes,No" }}</p>
+                </div>
+            {% else %}
+                <p style="padding: 20px;">No annual flow data found for this source.</p>
+            {% endif %}
+            
+            <div style="margin: 20px;">
+                <a href="{% url 'comb_data_3mdtb:landing_page' %}" class="btn btn-secondary">Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
