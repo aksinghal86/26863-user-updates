@@ -1,7 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from .utils import process_pfas, process_annual_flow, get_dashboard_data, get_all_yearly_flows
-from .forms import PFASUpdateForm
+from .forms import PFASUpdateForm, AFUpdateForm
+from clientUpdates.utils.calculations import calc_gpm_flow_rate
 
 from django.views.decorators.cache import never_cache
 
@@ -98,5 +99,58 @@ def annual_flows(request):
             "pwsid": pwsid,
             "source_name": source_name,
             "source_data": yearly_flows,
+        }
+    )
+
+
+@login_required
+@never_cache
+def af_update(request):
+    if request.method == "POST":
+        form = AFUpdateForm(request.POST, request.FILES)
+        pwsid = request.POST.get('pwsid')
+        source_name = request.POST.get('source_name')
+        year = request.POST.get('year')
+
+        if form.is_valid():
+            instance = form.save(commit=False)
+            
+            supporting_file = request.FILES.get('supporting_file')
+            if supporting_file:
+                instance.filename = supporting_file.name
+            
+            instance.pwsid = pwsid
+            instance.source_name = source_name
+            instance.year = year
+            instance.flow_rate_gpm = calc_gpm_flow_rate(instance.flow_rate, instance.unit)
+            
+            instance.save()
+            return redirect(f"/annual_flows/?pwsid={pwsid}&source_name={source_name}")
+        else:
+            return render(
+                request,
+                "comb_data_3mdtb/af_update.html",
+                {
+                    "form": form,
+                    "pwsid": pwsid,
+                    "source_name": source_name,
+                    "year": year,
+                }
+            )
+    
+    # GET request
+    pwsid = request.GET.get('pwsid')
+    source_name = request.GET.get('source_name')
+    year = request.GET.get('year')
+    
+    form = AFUpdateForm()
+    return render(
+        request,
+        "comb_data_3mdtb/af_update.html",
+        {
+            "form": form,
+            "pwsid": pwsid,
+            "source_name": source_name,
+            "year": year,
         }
     )

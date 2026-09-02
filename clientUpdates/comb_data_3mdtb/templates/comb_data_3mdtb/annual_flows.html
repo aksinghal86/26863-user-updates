@@ -21,6 +21,7 @@
                             <th>Flow Rate (GPM)</th>
                             <th>Gallons Per Year</th>
                             <th>Million Gallons Per Day</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -29,24 +30,30 @@
                                 <td>{{ year_info.year }}</td>
                                 <td>
                                     {% if year_info.flow_rate_gpm is not None %}
-                                        {{ year_info.flow_rate_gpm|floatformat:"1" }}
+                                        {{ year_info.flow_rate_gpm|floatformat }}
                                     {% else %}
                                         -
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if year_info.gallons_per_year is not None %}
-                                        {{ year_info.gallons_per_year|floatformat:"1"|intcomma }}
+                                        {{ year_info.gallons_per_year|intcomma }}
                                     {% else %}
                                         -
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if year_info.mgd is not None %}
-                                        {{ year_info.mgd|floatformat:"3"|intcomma }}
+                                        {{ year_info.mgd|floatformat }}
                                     {% else %}
                                         -
                                     {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'comb_data_3mdtb:af_update' %}?pwsid={{ pwsid }}&source_name={{ source_name }}&year={{ year_info.year }}" 
+                                       class="btn btn-sm btn-outline-primary" title="Update Flow Rate">
+                                        Update
+                                    </a>
                                 </td>
                             </tr>
                         {% endfor %}

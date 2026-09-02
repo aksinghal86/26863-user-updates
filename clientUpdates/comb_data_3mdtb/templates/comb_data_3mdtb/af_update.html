@@ -1,0 +1,89 @@
+{% extends 'base_generic.html' %}
+
+{% load humanize %}
+
+{% block content %}
+<div class="pfas-update-container">
+    <div class="pfas-update-header">
+        <h3>Update Annual Production (Flow Rate)</h3>
+        <p>Source: {{ source_name }} | Year: {{ year }} | PWSID: {{ pwsid }}</p>
+    </div>
+
+    <form method="POST" action="{% url 'comb_data_3mdtb:af_update' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <!-- Hidden context fields -->
+        <input type="hidden" name="pwsid" value="{{ pwsid }}">
+        <input type="hidden" name="source_name" value="{{ source_name }}">
+        <input type="hidden" name="year" value="{{ year }}">
+
+        {% if form.non_field_errors %}
+            <div class="pfas-general-error">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="pfas-form-row">
+            <div class="pfas-form-group col-md-6">
+                <label for="{{ form.flow_rate.id_for_label }}">Flow Rate (Required)</label>
+                <input type="number" step="any" name="flow_rate" id="{{ form.flow_rate.id_for_label }}" 
+                       class="pfas-form-control" value="{% if form.flow_rate.value %}{{ form.flow_rate.value }}{% endif %}" required>
+                {% if form.flow_rate.errors %}
+                    <div class="pfas-error-message">
+                        {% for error in form.flow_rate.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="pfas-form-group col-md-6">
+                <label for="{{ form.unit.id_for_label }}">Unit (Required)</label>
+                <select name="unit" id="{{ form.unit.id_for_label }}" class="pfas-form-control" required>
+                    <option value="">Select unit</option>
+                    <option value="GPM" {% if form.unit.value == "GPM" %}selected{% endif %}>GPM</option>
+                    <option value="GPD" {% if form.unit.value == "GPD" %}selected{% endif %}>GPD</option>
+                    <option value="GPY" {% if form.unit.value == "GPY" %}selected{% endif %}>GPY</option>
+                    <option value="MGD" {% if form.unit.value == "MGD" %}selected{% endif %}>MGD</option>
+                    <option value="CFS" {% if form.unit.value == "CFS" %}selected{% endif %}>CFS</option>
+                </select>
+                {% if form.unit.errors %}
+                    <div class="pfas-error-message">
+                        {% for error in form.unit.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="pfas-form-row">
+            <div class="pfas-form-group col-md-12">
+                <label for="{{ form.supporting_file.id_for_label }}">Supporting Document (Required)</label>
+                <input type="file" name="supporting_file" id="{{ form.supporting_file.id_for_label }}" 
+                       class="pfas-form-control" required>
+                {% if form.supporting_file.errors %}
+                    <div class="pfas-error-message">
+                        {% for error in form.supporting_file.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if form.errors %}
+            <div class="pfas-general-error" style="text-align: center; margin-top: 15px;">
+                <strong>Submission failure: please correct all validation errors.</strong>
+            </div>
+        {% endif %}
+
+        <div class="pfas-update-footer">
+            <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ pwsid }}&source_name={{ source_name }}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
