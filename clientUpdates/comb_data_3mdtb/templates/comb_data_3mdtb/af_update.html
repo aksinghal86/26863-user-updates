@@ -1,89 +1,128 @@
 {% extends 'base_generic.html' %}
+{% load static %}
 
-{% load humanize %}
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'comb_data_3mdtb/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'comb_data_3mdtb/css/pfas_update_modal.css' %}">
+    <style>
+        .pfas-update-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .pfas-update-header {
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+        }
+    </style>
+{% endblock %}
 
 {% block content %}
-<div class="pfas-update-container">
-    <div class="pfas-update-header">
-        <h3>Update Annual Production (Flow Rate)</h3>
-        <p>Source: {{ source_name }} | Year: {{ year }} | PWSID: {{ pwsid }}</p>
+<div class="container">
+    <div class="pfas-update-container">
+        <div class="pfas-update-header">
+            <h2>Update Annual Production (Flow Rate)</h2>
+            <p>Source: {{ source_name }} | Year: {{ year }} | PWSID: {{ pwsid }}</p>
+        </div>
+
+        <form id="af-update-form"
+              method="post"
+              action="{% url 'comb_data_3mdtb:af_update' %}"
+              enctype="multipart/form-data">
+
+            {% csrf_token %}
+            
+            <!-- Hidden context fields -->
+            <input type="hidden" name="pwsid" value="{{ pwsid|default:'' }}">
+            <input type="hidden" name="source_name" value="{{ source_name|default:'' }}">
+            <input type="hidden" name="year" value="{{ year|default:'' }}">
+
+            {% if form.non_field_errors %}
+                <div class="pfas-error-message" style="color: red; margin-bottom: 10px;">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="pfas-update-body">
+
+                <div class="pfas-form-row">
+                    <div class="pfas-form-group col-md-6">
+                        <label for="{{ form.flow_rate.id_for_label }}">Flow Rate</label>
+                        <input type="number"
+                               step="any"
+                               name="flow_rate"
+                               id="{{ form.flow_rate.id_for_label }}"
+                               class="pfas-form-control"
+                               placeholder="Enter flow rate"
+                               value="{{ form.flow_rate.value|default:'' }}"
+                               required>
+                        {% if form.flow_rate.errors %}
+                            <div class="pfas-error-message" style="color: red;">
+                                {% for error in form.flow_rate.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="pfas-form-group col-md-6">
+                        <label for="{{ form.unit.id_for_label }}">Unit</label>
+                        <select name="unit"
+                                id="{{ form.unit.id_for_label }}"
+                                class="pfas-form-control"
+                                required>
+                            <option value="">Select unit</option>
+                            <option value="GPM" {% if form.unit.value == "GPM" %}selected{% endif %}>GPM</option>
+                            <option value="GPD" {% if form.unit.value == "GPD" %}selected{% endif %}>GPD</option>
+                            <option value="GPY" {% if form.unit.value == "GPY" %}selected{% endif %}>GPY</option>
+                            <option value="MGD" {% if form.unit.value == "MGD" %}selected{% endif %}>MGD</option>
+                            <option value="CFS" {% if form.unit.value == "CFS" %}selected{% endif %}>CFS</option>
+                        </select>
+                        {% if form.unit.errors %}
+                            <div class="pfas-error-message" style="color: red;">
+                                {% for error in form.unit.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="pfas-form-group">
+                    <label for="{{ form.supporting_file.id_for_label }}">Supporting Document</label>
+                    <input type="file"
+                           name="supporting_file"
+                           id="{{ form.supporting_file.id_for_label }}"
+                           class="pfas-form-control"
+                           required>
+                    {% if form.supporting_file.errors %}
+                        <div class="pfas-error-message" style="color: red;">
+                            {% for error in form.supporting_file.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <small>Upload one supporting document.</small>
+                </div>
+
+                {% if form.errors %}
+                    <div class="pfas-general-error" style="color: red; margin-top: 15px; font-weight: bold; text-align: center;">
+                        Submission failure: please correct all validation errors.
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="pfas-update-footer" style="margin-top: 20px; text-align: right;">
+                <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ pwsid|default:'' }}&source_name={{ source_name|default:'' }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary pfas-modal-save">Save</button>
+            </div>
+        </form>
     </div>
-
-    <form method="POST" action="{% url 'comb_data_3mdtb:af_update' %}" enctype="multipart/form-data">
-        {% csrf_token %}
-        
-        <!-- Hidden context fields -->
-        <input type="hidden" name="pwsid" value="{{ pwsid }}">
-        <input type="hidden" name="source_name" value="{{ source_name }}">
-        <input type="hidden" name="year" value="{{ year }}">
-
-        {% if form.non_field_errors %}
-            <div class="pfas-general-error">
-                {% for error in form.non_field_errors %}
-                    <p>{{ error }}</p>
-                {% endfor %}
-            </div>
-        {% endif %}
-
-        <div class="pfas-form-row">
-            <div class="pfas-form-group col-md-6">
-                <label for="{{ form.flow_rate.id_for_label }}">Flow Rate (Required)</label>
-                <input type="number" step="any" name="flow_rate" id="{{ form.flow_rate.id_for_label }}" 
-                       class="pfas-form-control" value="{% if form.flow_rate.value %}{{ form.flow_rate.value }}{% endif %}" required>
-                {% if form.flow_rate.errors %}
-                    <div class="pfas-error-message">
-                        {% for error in form.flow_rate.errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-
-            <div class="pfas-form-group col-md-6">
-                <label for="{{ form.unit.id_for_label }}">Unit (Required)</label>
-                <select name="unit" id="{{ form.unit.id_for_label }}" class="pfas-form-control" required>
-                    <option value="">Select unit</option>
-                    <option value="GPM" {% if form.unit.value == "GPM" %}selected{% endif %}>GPM</option>
-                    <option value="GPD" {% if form.unit.value == "GPD" %}selected{% endif %}>GPD</option>
-                    <option value="GPY" {% if form.unit.value == "GPY" %}selected{% endif %}>GPY</option>
-                    <option value="MGD" {% if form.unit.value == "MGD" %}selected{% endif %}>MGD</option>
-                    <option value="CFS" {% if form.unit.value == "CFS" %}selected{% endif %}>CFS</option>
-                </select>
-                {% if form.unit.errors %}
-                    <div class="pfas-error-message">
-                        {% for error in form.unit.errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="pfas-form-row">
-            <div class="pfas-form-group col-md-12">
-                <label for="{{ form.supporting_file.id_for_label }}">Supporting Document (Required)</label>
-                <input type="file" name="supporting_file" id="{{ form.supporting_file.id_for_label }}" 
-                       class="pfas-form-control" required>
-                {% if form.supporting_file.errors %}
-                    <div class="pfas-error-message">
-                        {% for error in form.supporting_file.errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-
-        {% if form.errors %}
-            <div class="pfas-general-error" style="text-align: center; margin-top: 15px;">
-                <strong>Submission failure: please correct all validation errors.</strong>
-            </div>
-        {% endif %}
-
-        <div class="pfas-update-footer">
-            <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ pwsid }}&source_name={{ source_name }}" class="btn btn-secondary">Cancel</a>
-            <button type="submit" class="btn btn-primary">Save Changes</button>
-        </div>
-    </form>
 </div>
 {% endblock %}
