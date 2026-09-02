@@ -33,7 +33,7 @@ def process_pfas(pwsid):
     ).values(*fields)
 
     # Combine records from all models
-    data = list(data1) + list(data2) + list(data3)
+    data = list(data1) + list(data2) + list(data3) + list(data4)
 
     # Dictionary to store the results for each water source
     sources = {}
