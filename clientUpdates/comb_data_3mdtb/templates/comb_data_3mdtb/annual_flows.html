@@ -33,7 +33,7 @@
                     </thead>
                     <tbody>
                         {% for year_info in source_data %}
-                            <tr {% if year_info.flow_rate_gpm is None %}class="needs-info-row"{% endif %}>
+                            <tr {% if year_info.flow_rate_gpm is None and not all_nds %}class="needs-info-row"{% endif %}>
                             <td style="text-align: center;">{{ year_info.year|stringformat:"d" }}</td>
                                 
                                 <!-- Flow Rate -->
@@ -65,7 +65,7 @@
 
                                 <!-- Actions -->
                                 <td>
-                                    {% if year_info.flow_rate_gpm is not None %}
+                                    {% if year_info.flow_rate_gpm is not None or all_nds %}
                                         <a href="{% url 'comb_data_3mdtb:af_update' %}?pwsid={{ pwsid }}&source_name={{ source_name | urlencode }}&year={{ year_info.year }}"
                                            class="edit-button"
                                            title="Update Flow Rate">

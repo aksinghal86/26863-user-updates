@@ -86,11 +86,19 @@ def pfas_update(request):
 def annual_flows(request):
     pwsid = request.GET.get('pwsid')
     source_name = request.GET.get('source_name')
+    all_nds_param = request.GET.get('all_nds')
 
     if not pwsid:
         pwsid = request.user.username
 
     yearly_flows = get_all_yearly_flows(pwsid, source_name)
+
+    # Convert all_nds_param string to boolean
+    if all_nds_param is not None:
+        all_nds = all_nds_param.lower() == 'true'
+    else:
+        # Fallback in case it's not provided
+        all_nds = False
 
     return render(
         request,
@@ -99,6 +107,7 @@ def annual_flows(request):
             "pwsid": pwsid,
             "source_name": source_name,
             "source_data": yearly_flows,
+            "all_nds": all_nds,
         }
     )
 
