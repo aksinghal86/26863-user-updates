@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from .utils import process_pfas, process_annual_flow, get_dashboard_data, get_all_yearly_flows
-from .forms import PFASUpdateForm, AFUpdateForm
+from .forms import PFASUpdateForm, AFUpdateForm, MFUpdateForm
 from clientUpdates.utils.calculations import calc_gpm_flow_rate
 
 from django.views.decorators.cache import never_cache
@@ -161,5 +161,53 @@ def af_update(request):
             "pwsid": pwsid,
             "source_name": source_name,
             "year": year,
+        }
+    )
+
+
+@login_required
+@never_cache
+def mf_update(request):
+    if request.method == "POST":
+        form = MFUpdateForm(request.POST, request.FILES)
+        pwsid = request.POST.get('pwsid')
+        source_name = request.POST.get('source_name')
+
+        if form.is_valid():
+            instance = form.save(commit=False)
+            
+            supporting_file = request.FILES.get('supporting_file')
+            if supporting_file:
+                instance.filename = supporting_file.name
+            
+            instance.pwsid = pwsid
+            instance.source_name = source_name
+            instance.flow_rate_gpm = calc_gpm_flow_rate(instance.flow_rate, instance.unit)
+            
+            instance.save()
+            return redirect("comb_data_3mdtb:landing_page")
+        else:
+            return render(
+                request,
+                "comb_data_3mdtb/mf_update.html",
+                {
+                    "form": form,
+                    "pwsid": pwsid,
+                    "source_name": source_name,
+                }
+            )
+    
+    # GET request
+    pwsid = request.GET.get('pwsid')
+    source_name = request.GET.get('source_name')
+    
+    form = MFUpdateForm()
+    return render(
+        request,
+        "comb_data_3mdtb/mf_update.html",
+        {
+            "form": form,
+            "pwsid": pwsid,
+            "source_name": source_name,
         }
     )

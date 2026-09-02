@@ -1,7 +1,7 @@
 
 from django import forms
 
-from .models import UpdatePfasResult, UpdateFlowRate
+from .models import UpdatePfasResult, UpdateFlowRate, UpdateMaxFlowRate
 
 
 class PFASUpdateForm(forms.ModelForm):
@@ -66,6 +66,28 @@ class AFUpdateForm(forms.ModelForm):
 
     class Meta:
         model = UpdateFlowRate
+        fields = [
+            "flow_rate",
+            "unit",
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.required = True
+
+    def clean_flow_rate(self):
+        flow_rate = self.cleaned_data.get("flow_rate")
+        if flow_rate is not None and flow_rate < 0:
+            raise forms.ValidationError("Flow rate cannot be negative.")
+        return flow_rate
+
+
+class MFUpdateForm(forms.ModelForm):
+    supporting_file = forms.FileField(required=True, label="Supporting Document")
+
+    class Meta:
+        model = UpdateMaxFlowRate
         fields = [
             "flow_rate",
             "unit",

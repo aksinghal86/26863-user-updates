@@ -179,13 +179,13 @@
 
                                 {{ row.max_flow_gpm | floatformat:1 | intcomma }} GPM
 
-                                <button type="button"
-                                        class="edit-button"
-                                        title="Edit maximum flow rate">
+                                <a href="{% url 'comb_data_3mdtb:mf_update' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}"
+                                   class="edit-button"
+                                   title="Edit maximum flow rate">
 
                                     <i class="bi bi-pencil"></i>
 
-                                </button>
+                                </a>
 
                             </span>
 

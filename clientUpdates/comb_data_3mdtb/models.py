@@ -42,3 +42,19 @@ class UpdateFlowRate(models.Model):
     class Meta:
         managed = True
         db_table = 'update_flow_rate'
+
+
+class UpdateMaxFlowRate(models.Model):
+    row_names = models.BigAutoField(primary_key=True)
+    pwsid = models.TextField(blank=True, null=True)
+    source_name = models.TextField(blank=True, null=True)
+    flow_rate = models.FloatField(blank=True, null=True)
+    unit = models.TextField(blank=True, null=True)
+    flow_rate_gpm = models.FloatField(blank=True, null=True)
+    filename = models.TextField(blank=True, null=True)
+    data_origin = models.TextField(default="EHE Portal")
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        managed = True
+        db_table = 'update_max_flow_rate'
