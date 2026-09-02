@@ -67,7 +67,8 @@ body {
 }
 
 /* Table headers */
-.dashboard-table thead th {
+.dashboard-table thead th,
+#annual-flows-table thead th {
     background-color: #0d6efd;
     color: white;
     border: none;
@@ -79,8 +80,9 @@ body {
     white-space: nowrap;
 }
 
-.dashboard-table thead th:first-child {
-    text-align: left;
+.dashboard-table thead th:first-child,
+#annual-flows-table thead th:first-child {
+    text-align: center;
 }
 
 /* Table body cells */

@@ -1,58 +1,74 @@
 {% extends 'base_generic.html' %}
 
 {% load humanize %}
+{% load static %}
+
+{% block extra_head %}
+    <link rel="stylesheet"
+          href="{% static 'comb_data_3mdtb/css/styles.css' %}">
+{% endblock %}
 
 {% block content %}
 
-
 <div class="dashboard-container">
+    <!-- Dashboard header -->
     <div class="dashboard-header">
         <h1>Annual Production Data</h1>
-        <p>Source: {{ source_name }} (PWSID: {{ pwsid }})</p>
+        <p>Source: <strong>{{ source_name }}</strong> (PWSID: {{ pwsid }})</p>
     </div>
 
+    <!-- Dashboard table -->
     <div class="dashboard-table-card">
         <div class="table-responsive">
             {% if source_data %}
-                <table class="dashboard-table">
+                <table id="annual-flows-table" class="dashboard-table">
                     <thead>
                         <tr>
                             <th>Year</th>
                             <th>Flow Rate (GPM)</th>
-                            <th>Gallons Per Year</th>
-                            <th>Million Gallons Per Day</th>
+                            <th>Annual Production (GPY)</th>
+                            <th>Daily Production (MGD)</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for year_info in source_data %}
                             <tr>
-                                <td>{{ year_info.year }}</td>
-                                <td>
+                            <td style="text-align: center;">{{ year_info.year|stringformat:"d" }}</td>
+                                
+                                <!-- Flow Rate -->
+                                <td class="flow-value">
                                     {% if year_info.flow_rate_gpm is not None %}
-                                        {{ year_info.flow_rate_gpm|floatformat }}
+                                        {{ year_info.flow_rate_gpm|floatformat:1|intcomma }}
                                     {% else %}
                                         -
                                     {% endif %}
                                 </td>
-                                <td>
+
+                                <!-- Gallons Per Year -->
+                                <td class="flow-value">
                                     {% if year_info.gallons_per_year is not None %}
-                                        {{ year_info.gallons_per_year|intcomma }}
+                                        {{ year_info.gallons_per_year|floatformat:1|intcomma }}
                                     {% else %}
                                         -
                                     {% endif %}
                                 </td>
-                                <td>
+
+                                <!-- Million Gallons Per Day -->
+                                <td class="flow-value">
                                     {% if year_info.mgd is not None %}
-                                        {{ year_info.mgd|floatformat }}
+                                        {{ year_info.mgd|floatformat:3|intcomma }}
                                     {% else %}
                                         -
                                     {% endif %}
                                 </td>
+
+                                <!-- Actions -->
                                 <td>
-                                    <a href="{% url 'comb_data_3mdtb:af_update' %}?pwsid={{ pwsid }}&source_name={{ source_name }}&year={{ year_info.year }}" 
-                                       class="btn btn-sm btn-outline-primary" title="Update Flow Rate">
-                                        Update
+                                    <a href="{% url 'comb_data_3mdtb:af_update' %}?pwsid={{ pwsid }}&source_name={{ source_name | urlencode }}&year={{ year_info.year }}"
+                                       class="edit-button"
+                                       title="Update Flow Rate">
+                                        <i class="bi bi-pencil"></i>
                                     </a>
                                 </td>
                             </tr>
@@ -60,14 +76,35 @@
                     </tbody>
                 </table>
             {% else %}
-                <p style="padding: 20px;">No annual flow data found for this source.</p>
+                <div class="no-data-message" style="padding: 40px; text-align: center;">
+                    <i class="bi bi-info-circle" style="font-size: 2rem; color: #6c757d;"></i>
+                    <p style="margin-top: 10px; color: #6c757d;">No annual flow data found for this source.</p>
+                </div>
             {% endif %}
-            
-            <div style="margin: 20px;">
-                <a href="{% url 'comb_data_3mdtb:landing_page' %}" class="btn btn-secondary">Back to Dashboard</a>
+
+            <div class="dashboard-footer-actions" style="margin: 20px; display: flex; justify-content: flex-end;">
+                <a href="{% url 'comb_data_3mdtb:landing_page' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Dashboard
+                </a>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function() {
+        if ($('#annual-flows-table').length) {
+            $('#annual-flows-table').DataTable({
+                pageLength: 10,
+                lengthChange: false,
+                searching: false,
+                ordering: true,
+                order: [[0, 'asc']], // Sort by Year ascending by default
+                info: false,
+                paging: false // Disable paging if data set is small, or keep it if it grows
+            });
+        }
+    });
+</script>
 
 {% endblock %}
