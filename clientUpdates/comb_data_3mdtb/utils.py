@@ -1,4 +1,5 @@
-from .models import ClaimPfasResult, TB_ClaimPfasResult, ClaimFlowRate, TB_ClaimFlowRate, Phase2_ClaimFlowRate, Phase2_ClaimPfasResult
+from .models import ClaimPfasResult, TB_ClaimPfasResult, ClaimFlowRate, TB_ClaimFlowRate, Phase2_ClaimFlowRate, \
+    Phase2_ClaimPfasResult, UpdatePfasResult
 
 
 def process_pfas(pwsid):
@@ -23,6 +24,11 @@ def process_pfas(pwsid):
 
     # Get PFAS records for this PWSID from the third model
     data3 = Phase2_ClaimPfasResult.objects.filter(
+        pwsid=pwsid
+    ).values(*fields)
+
+    # Get any updates made to PFAS results
+    data4 = UpdatePfasResult.objects.filter(
         pwsid=pwsid
     ).values(*fields)
 

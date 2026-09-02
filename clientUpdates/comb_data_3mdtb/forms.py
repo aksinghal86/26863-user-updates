@@ -12,7 +12,7 @@ class PFASUpdateForm(forms.ModelForm):
 
         fields = [
             "analyte",
-            "result",
+            "result_ppt",
             "lab",
             "lab_sample_id",
             "sample_collected_by",
@@ -27,21 +27,21 @@ class PFASUpdateForm(forms.ModelForm):
         for field_name, field in self.fields.items():
             field.required = True
 
-    def clean_result(self):
-        result = self.cleaned_data.get("result")
+    def clean_result_ppt(self):
+        result_ppt = self.cleaned_data.get("result_ppt")
 
-        if result is not None and result < 0:
+        if result_ppt is not None and result_ppt < 0:
             raise forms.ValidationError(
                 "Result cannot be negative."
             )
 
-        if result is not None and self.min_result is not None:
-            if result < float(self.min_result):
+        if result_ppt is not None and self.min_result is not None:
+            if result_ppt < float(self.min_result):
                 raise forms.ValidationError(
                     f"New result cannot be less than the current value of {self.min_result} ng/L."
                 )
 
-        return result
+        return result_ppt
 
     def clean(self):
         cleaned_data = super().clean()

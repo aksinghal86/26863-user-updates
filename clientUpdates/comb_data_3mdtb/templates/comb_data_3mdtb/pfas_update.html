@@ -108,23 +108,23 @@
                     </div>
 
                     <div class="pfas-form-group col-md-6">
-                        <label for="result">Result (must be units of ng/L)</label>
+                        <label for="result_ppt">Result (must be units of ng/L)</label>
                         <input type="number"
-                               id="result"
-                               name="result"
+                               id="result_ppt"
+                               name="result_ppt"
                                class="pfas-form-control"
                                step="any"
                                placeholder="Enter result"
-                               value="{{ form.result.value|default:'' }}"
+                               value="{{ form.result_ppt.value|default:'' }}"
                                {% if min_value %}min="{{ min_value }}"{% endif %}
                                required>
                         {% if min_value %}
                             <small class="form-text text-muted">Current maximum: {{ min_value }} ng/L. New value must be ≥ {{ min_value }} ng/L.</small>
                         {% endif %}
 
-                        {% if form.result.errors %}
+                        {% if form.result_ppt.errors %}
                             <div class="pfas-error-message" style="color: red;">
-                                {% for error in form.result.errors %}
+                                {% for error in form.result_ppt.errors %}
                                     {{ error }}
                                 {% endfor %}
                             </div>
