@@ -37,7 +37,7 @@
                         <th>Max PFOS Result</th>
                         <th>Max Other PFAS Result</th>
                         <th>Average Annual Production</th>
-                        <th>Max Annual Flow Rate</th>
+                        <th>Max Flow Rate</th>
                     </tr>
                 </thead>
 
@@ -124,7 +124,7 @@
 
                                 {{ row.max_other_pfas|floatformat:1 }}
 
-                                <a href="{% url 'comb_data_3mdtb:pfas_update' %}?analyte=Other PFAS&pwsid={{ row.pwsid }}&source_name={{ row.source_name|urlencode }}&min_value={{ row.max_other_pfas|default:0 }}"
+                                <a href="{% url 'comb_data_3mdtb:pfas_update' %}?analyte=Other PFAS&pwsid={{ row.pwsid }}&source_name={{ row.source_name|urlencode }}&min_value={{ row.max_other_pfas|default:0 }}&selected_analyte={{ row.max_other_pfas_analyte|urlencode }}"
                                    class="edit-button"
                                    title="Edit Other PFAS">
 

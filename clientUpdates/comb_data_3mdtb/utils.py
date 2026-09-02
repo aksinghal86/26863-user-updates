@@ -26,7 +26,7 @@ def process_pfas(pwsid):
         pwsid=pwsid
     ).values(*fields)
 
-    # Combine records from both models
+    # Combine records from all models
     data = list(data1) + list(data2) + list(data3)
 
     # Dictionary to store the results for each water source
@@ -48,7 +48,11 @@ def process_pfas(pwsid):
                 "source_name": record["source_name"],
                 "max_pfoa": None,
                 "max_pfos": None,
-                "max_other_pfas": None
+                "max_other_pfas": None,
+
+                # <-- CHANGE: Store the analyte associated
+                # with the maximum Other PFAS result
+                "max_other_pfas_analyte": None
             }
 
         # Get the PFAS result
@@ -77,19 +81,24 @@ def process_pfas(pwsid):
         # For all other analytes, keep the highest result
         else:
 
-            sources[key]["max_other_pfas"] = max(
-                sources[key]["max_other_pfas"] or result,
-                result
-            )
+            # <-- CHANGE: Instead of only updating the maximum
+            # value, update the value AND its associated analyte
+            if (
+                sources[key]["max_other_pfas"] is None
+                or result > sources[key]["max_other_pfas"]
+            ):
+                sources[key]["max_other_pfas"] = result
+                sources[key]["max_other_pfas_analyte"] = record["analyte"]
 
     # Determine whether each source has any reported PFAS result
     for source in sources.values():
+
         # If none of the PFAS categories have a result,
         # all_nds is True. Otherwise, it is False.
         source["all_nds"] = (
-                source["max_pfoa"] is None
-                and source["max_pfos"] is None
-                and source["max_other_pfas"] is None
+            source["max_pfoa"] is None
+            and source["max_pfos"] is None
+            and source["max_other_pfas"] is None
         )
 
     return list(sources.values())
@@ -322,6 +331,11 @@ def get_dashboard_data(pwsid):
             "max_pfoa": pfas.get("max_pfoa"),
             "max_pfos": pfas.get("max_pfos"),
             "max_other_pfas": pfas.get("max_other_pfas"),
+            # Include the analyte associated
+            # with the maximum Other PFAS result.
+            "max_other_pfas_analyte": pfas.get(
+                "max_other_pfas_analyte"
+            ),
             "all_nds": pfas.get("all_nds"),
         })
         # test

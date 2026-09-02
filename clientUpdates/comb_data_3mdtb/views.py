@@ -63,6 +63,7 @@ def pfas_update(request):
     pwsid = request.GET.get('pwsid')
     source_name = request.GET.get('source_name')
     min_value = request.GET.get('min_value')
+    selected_analyte = request.GET.get('selected_analyte')
     
     form = PFASUpdateForm()
     return render(
@@ -73,6 +74,7 @@ def pfas_update(request):
             "analyte": analyte,
             "pwsid": pwsid,
             "source_name": source_name,
-            "min_value": min_value
+            "min_value": min_value,
+            "selected_analyte": selected_analyte
         }
     )

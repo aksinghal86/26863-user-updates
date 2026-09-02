@@ -302,10 +302,18 @@
             if (analyteSelect) {
                 analyteSelect.style.display = '';
                 analyteSelect.disabled = false;
-                // If there's a form error, the select should keep its value
+                
+                // If there's a specific analyte to select (from dashboard)
+                const selectedAnalyte = "{{ selected_analyte|default:'' }}";
+                // If there's a form error, the select should keep its value (takes precedence)
                 const savedValue = "{{ form.analyte.value|default:'' }}";
+                
                 if (savedValue && savedValue !== 'PFOA' && savedValue !== 'PFOS') {
                     analyteSelect.value = savedValue;
+                } else if (selectedAnalyte && selectedAnalyte !== 'None') {
+                    analyteSelect.value = selectedAnalyte;
+                } else {
+                    analyteSelect.value = "";
                 }
             }
         } else {
