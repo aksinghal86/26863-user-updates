@@ -1,4 +1,3 @@
-```html
 {% extends 'base_generic.html' %}
 
 {% load humanize %}
@@ -33,9 +32,10 @@
                     <tr>
                         <th>Source Name</th>
                         <th>Impacted</th>
-                        <th>Max PFOA Result<br>(ppt)</th>
-                        <th>Max PFOS Result<br>(ppt)</th>
-                        <th>Max Other PFAS<br>Result (ppt)</th>
+                        <th>Max PFOA<br>Result (ppt)</th>
+                        <th>Max PFOS<br>Result (ppt)</th>
+                        <th>Max Other<br>PFAS Result (ppt)</th>
+                        <th>Max Other<br>PFAS Analyte</th>
                         <th>Average Annual<br>Production (GPY)</th>
                         <th>Max Flow Rate<br>(GPM)</th>
                     </tr>
@@ -143,6 +143,12 @@
                         </td>
 
 
+                        <!-- Max Other PFAS Analyte -->
+                        <td>
+                            {{ row.max_other_pfas_analyte | default:"" }}
+                        </td>
+
+
                         <!-- Average annual production -->
                         <td class="flow-value">
 
@@ -153,9 +159,7 @@
                                     <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&all_nds={{ row.all_nds }}"
                                        class="needs-info-button">
 
-                                        <i class="bi bi-exclamation-triangle"></i>
-
-                                        More Info Needed
+                                        <i class="bi bi-exclamation-triangle" style="size:1.2rem"></i>
 
                                     </a>
 
@@ -241,4 +245,3 @@
      PFAS UPDATE JAVASCRIPT
      ============================================================ -->
 {% endblock %}
-```

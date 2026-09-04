@@ -57,7 +57,7 @@ body {
 .container {
     margin-top: 20px;
     margin-bottom: 20px;
-    max-width: 1250px; /* Limit max-width to keep it centered and neat */
+    /*max-width: 1250px;  Limit max-width to keep it centered and neat */
 }
 
 h2 {
