@@ -28,7 +28,7 @@ class UpdatePfasResult(models.Model):
 
 
 class UpdateFlowRate(models.Model):
-    row_names = models.BigAutoField(primary_key=True)
+    id = models.BigAutoField(primary_key=True)
     pwsid = models.TextField(blank=True, null=True)
     source_name = models.TextField(blank=True, null=True)
     year = models.FloatField(blank=True, null=True)

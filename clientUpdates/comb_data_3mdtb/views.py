@@ -130,11 +130,12 @@ def af_update(request):
             supporting_file = request.FILES.get('supporting_file')
             if supporting_file:
                 instance.filename = supporting_file.name
+                upload_to_dropbox(file=supporting_file, filetype="New Claims/Annual Flow", pwsid=pwsid)
             
             instance.pwsid = pwsid
             instance.source_name = source_name
             instance.year = year
-            instance.flow_rate_gpm = calc_gpm_flow_rate(instance.flow_rate, instance.unit)
+            instance.flow_rate_gpm = calc_gpm_flow_rate(instance.flow_rate, instance.unit.lower())
             
             instance.save()
             return redirect(f"/annual_flows/?pwsid={pwsid}&source_name={source_name}")
