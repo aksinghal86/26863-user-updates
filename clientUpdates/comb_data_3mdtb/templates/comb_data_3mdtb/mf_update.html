@@ -94,6 +94,30 @@
                 </div>
 
                 <div class="pfas-form-group">
+                    <label for="{{ form.method_determined.id_for_label }}">
+                        How was the max flow determined?
+                        <span class="tooltip-container">
+                            <i class="bi bi-info-circle"></i>
+                            <span class="tooltip-text">Explain the methodology used to determine the maximum flow rate (e.g., pump capacity, pump tests, etc.)</span>
+                        </span>
+                    </label>
+                    <input type="text"
+                           name="method_determined"
+                           id="{{ form.method_determined.id_for_label }}"
+                           class="pfas-form-control"
+                           placeholder="Enter how the max flow rate was determined"
+                           value="{{ form.method_determined.value|default:'' }}"
+                           required>
+                    {% if form.method_determined.errors %}
+                        <div class="pfas-error-message" style="color: red;">
+                            {% for error in form.method_determined.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="pfas-form-group">
                     <label for="{{ form.supporting_file.id_for_label }}">Supporting Document</label>
                     <input type="file"
                            name="supporting_file"

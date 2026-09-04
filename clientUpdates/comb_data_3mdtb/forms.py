@@ -99,6 +99,7 @@ class MFUpdateForm(forms.ModelForm):
         fields = [
             "flow_rate",
             "unit",
+            "method_determined",
         ]
 
     def __init__(self, *args, **kwargs):
