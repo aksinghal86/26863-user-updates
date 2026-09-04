@@ -4,21 +4,6 @@
 {% block extra_head %}
     <link rel="stylesheet" href="{% static 'comb_data_3mdtb/css/styles.css' %}">
     <link rel="stylesheet" href="{% static 'comb_data_3mdtb/css/pfas_update_modal.css' %}">
-    <style>
-        .pfas-update-container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .pfas-update-header {
-            border-bottom: 1px solid #dee2e6;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-        }
-    </style>
 {% endblock %}
 
 {% block content %}
@@ -98,7 +83,10 @@
                     <div class="pfas-form-group col-md-6">
                         <label for="{{ form.flow_rate_reduced.id_for_label }}">
                             Was Flow Reduced due to PFAS?
-                            <i class="bi bi-info-circle" style="cursor: help;" title="If the flow rate was reduced due to PFAS contamination, please select 'Yes'"></i>
+                            <span class="tooltip-container">
+                                <i class="bi bi-info-circle"></i>
+                                <span class="tooltip-text">If the flow rate was reduced due to PFAS contamination, please select 'Yes'</span>
+                            </span>
                         </label>
                         <select name="flow_rate_reduced"
                                 id="{{ form.flow_rate_reduced.id_for_label }}"
@@ -118,7 +106,10 @@
                     <div class="pfas-form-group col-md-6">
                         <label for="{{ form.existed.id_for_label }}">
                             Did the Source Exist in {{ year|default:"" }}?
-                            <i class="bi bi-info-circle" style="cursor: help;" title="Please indicate whether the source existed in the specified year"></i>
+                            <span class="tooltip-container">
+                                <i class="bi bi-info-circle"></i>
+                                <span class="tooltip-text">Please indicate whether the source existed in the specified year</span>
+                            </span>
                         </label>
                         <select name="existed"
                                 id="{{ form.existed.id_for_label }}"
@@ -165,10 +156,6 @@
                 <button type="submit" class="btn btn-primary pfas-modal-save">Save</button>
             </div>
 
-            <div class="pfas-info-section" style="margin-top: 20px; padding: 15px; background-color: #e7f3ff; border: 1px solid #b6d4fe; border-radius: 8px; color: #084298;">
-                <i class="bi bi-info-circle-fill" style="margin-right: 8px;"></i>
-                <!-- Add field explanations here -->
-            </div>
         </form>
     </div>
 </div>
