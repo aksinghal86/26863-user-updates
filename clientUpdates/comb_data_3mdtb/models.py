@@ -43,7 +43,7 @@ class UpdateAnnualFlowRate(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'update_annual_flow_rate'
+        db_table = 'update_flow_rate_annual'
 
 
 class UpdateMaxFlowRate(models.Model):
