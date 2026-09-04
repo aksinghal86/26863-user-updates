@@ -25,6 +25,7 @@
             <input type="hidden" name="pwsid" value="{{ pwsid|default:"" }}">
             <input type="hidden" name="source_name" value="{{ source_name|default:"" }}">
             <input type="hidden" name="year" value="{{ year|default:"" }}">
+            <input type="hidden" name="all_nds" value="{{ all_nds|default:"" }}">
 
             {% if form.non_field_errors %}
                 <div class="pfas-error-message" style="color: red; margin-bottom: 10px;">
@@ -152,7 +153,7 @@
             </div>
 
             <div class="pfas-update-footer" style="margin-top: 20px; text-align: right;">
-                <a href="{% url "comb_data_3mdtb:annual_flows" %}?pwsid={{ pwsid|default:"" }}&source_name={{ source_name|default:"" }}" class="btn btn-secondary">Cancel</a>
+                <a href="{% url "comb_data_3mdtb:annual_flows" %}?pwsid={{ pwsid|default:"" }}&source_name={{ source_name|default:"" }}&all_nds={{ all_nds|default:"" }}" class="btn btn-secondary">Cancel</a>
                 <button type="submit" class="btn btn-primary pfas-modal-save">Save</button>
             </div>
 

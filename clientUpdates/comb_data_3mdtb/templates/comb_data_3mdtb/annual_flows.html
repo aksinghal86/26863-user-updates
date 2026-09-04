@@ -66,13 +66,13 @@
                                 <!-- Actions -->
                                 <td>
                                     {% if year_info.flow_rate_gpm is not None or all_nds %}
-                                        <a href="{% url 'comb_data_3mdtb:af_update' %}?pwsid={{ pwsid }}&source_name={{ source_name | urlencode }}&year={{ year_info.year }}"
+                                        <a href="{% url 'comb_data_3mdtb:af_update' %}?pwsid={{ pwsid }}&source_name={{ source_name | urlencode }}&year={{ year_info.year }}&all_nds={{ all_nds }}"
                                            class="edit-button"
                                            title="Update Flow Rate">
                                             <i class="bi bi-pencil"></i>
                                         </a>
                                     {% else %}
-                                        <a href="{% url 'comb_data_3mdtb:af_update' %}?pwsid={{ pwsid }}&source_name={{ source_name | urlencode }}&year={{ year_info.year }}"
+                                        <a href="{% url 'comb_data_3mdtb:af_update' %}?pwsid={{ pwsid }}&source_name={{ source_name | urlencode }}&year={{ year_info.year }}&all_nds={{ all_nds }}"
                                            class="needs-info-button"
                                            title="Update Flow Rate">
                                             <i class="bi bi-exclamation-triangle"></i>

@@ -123,6 +123,7 @@ def af_update(request):
         pwsid = request.POST.get('pwsid')
         source_name = request.POST.get('source_name')
         year = request.POST.get('year')
+        all_nds = request.POST.get('all_nds')
 
         if form.is_valid():
             instance = form.save(commit=False)
@@ -138,7 +139,7 @@ def af_update(request):
             instance.flow_rate_gpm = calc_gpm_flow_rate(instance.flow_rate, instance.unit.lower())
             
             instance.save()
-            return redirect(f"/annual_flows/?pwsid={pwsid}&source_name={source_name}")
+            return redirect(f"/all_data_dashboard/annual_flows/?pwsid={pwsid}&source_name={source_name}&all_nds={all_nds}")
         else:
             return render(
                 request,
@@ -148,6 +149,7 @@ def af_update(request):
                     "pwsid": pwsid,
                     "source_name": source_name,
                     "year": year,
+                    "all_nds": all_nds,
                 }
             )
     
@@ -155,6 +157,7 @@ def af_update(request):
     pwsid = request.GET.get('pwsid')
     source_name = request.GET.get('source_name')
     year = request.GET.get('year')
+    all_nds = request.GET.get('all_nds')
     
     form = AFUpdateForm()
     return render(
@@ -165,6 +168,7 @@ def af_update(request):
             "pwsid": pwsid,
             "source_name": source_name,
             "year": year,
+            "all_nds": all_nds,
         }
     )
 
