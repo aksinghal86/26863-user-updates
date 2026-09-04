@@ -39,7 +39,7 @@ class UpdateAnnualFlowRate(models.Model):
     existed = models.BooleanField(default=True)
     filename = models.TextField(blank=True, null=True)
     data_origin = models.TextField(default="EHE Portal")
-    timestamp = models.DateTimeField(auto_now_add=True)
+    submit_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         managed = True
