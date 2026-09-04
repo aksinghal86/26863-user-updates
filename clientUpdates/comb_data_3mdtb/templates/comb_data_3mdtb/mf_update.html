@@ -78,10 +78,10 @@
                                 required>
                             <option value="">Select unit</option>
                             <option value="GPM" {% if form.unit.value == "GPM" %}selected{% endif %}>GPM</option>
-                            <option value="GPD" {% if form.unit.value == "GPD" %}selected{% endif %}>GPD</option>
                             <option value="GPY" {% if form.unit.value == "GPY" %}selected{% endif %}>GPY</option>
                             <option value="MGD" {% if form.unit.value == "MGD" %}selected{% endif %}>MGD</option>
-                            <option value="CFS" {% if form.unit.value == "CFS" %}selected{% endif %}>CFS</option>
+                            <option value="MGY" {% if form.unit.value == "MGY" %}selected{% endif %}>MGY</option>
+                            <option value="AFPY" {% if form.unit.value == "AFPY" %}selected{% endif %}>AFPY</option>
                         </select>
                         {% if form.unit.errors %}
                             <div class="pfas-error-message" style="color: red;">

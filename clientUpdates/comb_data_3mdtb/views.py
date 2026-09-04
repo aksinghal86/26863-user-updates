@@ -196,10 +196,11 @@ def mf_update(request):
             supporting_file = request.FILES.get('supporting_file')
             if supporting_file:
                 instance.filename = supporting_file.name
+                upload_to_dropbox(file=supporting_file, filetype="New Claims/Max Flow", pwsid=pwsid)
             
             instance.pwsid = pwsid
             instance.source_name = source_name
-            instance.flow_rate_gpm = calc_gpm_flow_rate(instance.flow_rate, instance.unit)
+            instance.flow_rate_gpm = calc_gpm_flow_rate(instance.flow_rate, instance.unit.lower())
             
             instance.save()
             return redirect("comb_data_3mdtb:landing_page")
