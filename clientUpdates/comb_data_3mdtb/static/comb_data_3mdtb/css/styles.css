@@ -125,6 +125,39 @@ body {
     align-items: center;
     justify-content: center;
     gap: 6px;
+    width: 100%;
+    min-height: 38px;
+}
+
+.edit-button-hover {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    background-color: #0d6efd;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    width: 80px;
+    text-align: center;
+}
+
+.edit-button-hover:hover {
+    background-color: #0b5ed7;
+    color: white;
+}
+
+.editable-value:hover .value-display {
+    display: none;
+}
+
+.editable-value:hover .edit-button-hover {
+    display: inline-flex;
 }
 
 .edit-button {
