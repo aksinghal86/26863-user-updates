@@ -96,7 +96,10 @@
 
                 <div class="pfas-form-row">
                     <div class="pfas-form-group col-md-6">
-                        <label for="{{ form.flow_rate_reduced.id_for_label }}">Was Flow Reduced due to PFAS?</label>
+                        <label for="{{ form.flow_rate_reduced.id_for_label }}">
+                            Was Flow Reduced due to PFAS?
+                            <i class="bi bi-info-circle" style="cursor: help;" title="If the flow rate was reduced due to PFAS contamination, please select 'Yes'"></i>
+                        </label>
                         <select name="flow_rate_reduced"
                                 id="{{ form.flow_rate_reduced.id_for_label }}"
                                 class="pfas-form-control">
@@ -113,7 +116,10 @@
                     </div>
 
                     <div class="pfas-form-group col-md-6">
-                        <label for="{{ form.existed.id_for_label }}">Did the Source Exist in {{ year|default:"" }}?</label>
+                        <label for="{{ form.existed.id_for_label }}">
+                            Did the Source Exist in {{ year|default:"" }}?
+                            <i class="bi bi-info-circle" style="cursor: help;" title="Please indicate whether the source existed in the specified year"></i>
+                        </label>
                         <select name="existed"
                                 id="{{ form.existed.id_for_label }}"
                                 class="pfas-form-control">
