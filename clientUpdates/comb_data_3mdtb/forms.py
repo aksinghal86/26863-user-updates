@@ -1,7 +1,7 @@
 
 from django import forms
 
-from .models import UpdatePfasResult, UpdateFlowRate, UpdateMaxFlowRate
+from .models import UpdatePfasResult, UpdateAnnualFlowRate, UpdateMaxFlowRate
 
 
 class PFASUpdateForm(forms.ModelForm):
@@ -64,7 +64,7 @@ class AFUpdateForm(forms.ModelForm):
     supporting_file = forms.FileField(required=True, label="Supporting Document")
 
     class Meta:
-        model = UpdateFlowRate
+        model = UpdateAnnualFlowRate
         fields = [
             "flow_rate",
             "unit",

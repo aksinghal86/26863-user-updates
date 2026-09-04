@@ -1,5 +1,5 @@
 from .models import ClaimPfasResult, TB_ClaimPfasResult, ClaimFlowRate, TB_ClaimFlowRate, Phase2_ClaimFlowRate, \
-    Phase2_ClaimPfasResult, UpdatePfasResult
+    Phase2_ClaimPfasResult, UpdatePfasResult, UpdateAnnualFlowRate
 
 
 def process_pfas(pwsid):
@@ -408,6 +408,20 @@ def get_all_yearly_flows(pwsid, source_name):
                 yearly_flows[year],
                 flow
             )
+
+    # Get any annual flow updates for 2024 and 2025.
+    update_data = UpdateAnnualFlowRate.objects.filter(
+        pwsid=pwsid,
+        source_name=source_name,
+        year__in=[2024, 2025]
+    ).values("year", "flow_rate_gpm")
+
+    for update in update_data:
+        year = update["year"]
+        flow = update["flow_rate_gpm"]
+        if flow is not None:
+            if year not in yearly_flows or flow > yearly_flows[year]:
+                yearly_flows[year] = flow
 
     # Add 2024 and 2025 if they are not already present.
     yearly_flows.setdefault(2024, None)
