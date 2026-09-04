@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
+from django.utils.http import urlencode
 
 from clientUpdates.utils.dropbox_utils import upload_to_dropbox
 from .utils import process_pfas, process_annual_flow, get_dashboard_data, get_all_yearly_flows
@@ -139,7 +140,15 @@ def af_update(request):
             instance.flow_rate_gpm = calc_gpm_flow_rate(instance.flow_rate, instance.unit.lower())
             
             instance.save()
-            return redirect(f"/all_data_dashboard/annual_flows/?pwsid={pwsid}&source_name={source_name}&all_nds={all_nds}")
+            
+            # Safely build the redirect URL with encoded parameters
+            base_url = reverse("comb_data_3mdtb:annual_flows")
+            query_string = urlencode({
+                "pwsid": pwsid,
+                "source_name": source_name,
+                "all_nds": all_nds
+            })
+            return redirect(f"{base_url}?{query_string}")
         else:
             return render(
                 request,
