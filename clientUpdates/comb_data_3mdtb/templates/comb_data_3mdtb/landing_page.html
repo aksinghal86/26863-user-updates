@@ -33,11 +33,11 @@
                     <tr>
                         <th>Source Name</th>
                         <th>Impacted</th>
-                        <th>Max PFOA Result</th>
-                        <th>Max PFOS Result</th>
-                        <th>Max Other PFAS Result</th>
-                        <th>Average Annual Production</th>
-                        <th>Max Flow Rate</th>
+                        <th>Max PFOA Result<br>(ppt)</th>
+                        <th>Max PFOS Result<br>(ppt)</th>
+                        <th>Max Other PFAS<br>Result (ppt)</th>
+                        <th>Average Annual<br>Production (GPY)</th>
+                        <th>Max Flow Rate<br>(GPM)</th>
                     </tr>
                 </thead>
 
@@ -162,7 +162,7 @@
                                 {% else %}
 
                                     <span class="value-display">
-                                        {{ row.average_annual_production_gpy | floatformat:1 | intcomma }} GPY
+                                        {{ row.average_annual_production_gpy | floatformat:1 | intcomma }}
                                     </span>
 
                                     <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&all_nds={{ row.all_nds }}"
@@ -186,7 +186,7 @@
                             <span class="editable-value">
 
                                 <span class="value-display">
-                                    {{ row.max_flow_gpm | floatformat:1 | intcomma }} GPM
+                                    {{ row.max_flow_gpm | floatformat:1 | intcomma }}
                                 </span>
 
                                 <a href="{% url 'comb_data_3mdtb:mf_update' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}"
