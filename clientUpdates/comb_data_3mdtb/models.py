@@ -35,6 +35,8 @@ class UpdateFlowRate(models.Model):
     flow_rate = models.FloatField(blank=True, null=True)
     unit = models.TextField(blank=True, null=True)
     flow_rate_gpm = models.FloatField(blank=True, null=True)
+    flow_rate_reduced = models.BooleanField(default=False)
+    existed = models.BooleanField(default=True)
     filename = models.TextField(blank=True, null=True)
     data_origin = models.TextField(default="EHE Portal")
     timestamp = models.DateTimeField(auto_now_add=True)

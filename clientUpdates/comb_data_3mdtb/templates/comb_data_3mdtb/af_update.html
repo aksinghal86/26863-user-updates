@@ -37,9 +37,9 @@
             {% csrf_token %}
             
             <!-- Hidden context fields -->
-            <input type="hidden" name="pwsid" value="{{ pwsid|default:'' }}">
-            <input type="hidden" name="source_name" value="{{ source_name|default:'' }}">
-            <input type="hidden" name="year" value="{{ year|default:'' }}">
+            <input type="hidden" name="pwsid" value="{{ pwsid|default:"" }}">
+            <input type="hidden" name="source_name" value="{{ source_name|default:"" }}">
+            <input type="hidden" name="year" value="{{ year|default:"" }}">
 
             {% if form.non_field_errors %}
                 <div class="pfas-error-message" style="color: red; margin-bottom: 10px;">
@@ -60,7 +60,7 @@
                                id="{{ form.flow_rate.id_for_label }}"
                                class="pfas-form-control"
                                placeholder="Enter flow rate"
-                               value="{{ form.flow_rate.value|default:'' }}"
+                               value="{{ form.flow_rate.value|default:"" }}"
                                required>
                         {% if form.flow_rate.errors %}
                             <div class="pfas-error-message" style="color: red;">
@@ -94,6 +94,42 @@
                     </div>
                 </div>
 
+                <div class="pfas-form-row">
+                    <div class="pfas-form-group col-md-6">
+                        <label for="{{ form.flow_rate_reduced.id_for_label }}">Was Flow Reduced due to PFAS?</label>
+                        <select name="flow_rate_reduced"
+                                id="{{ form.flow_rate_reduced.id_for_label }}"
+                                class="pfas-form-control">
+                            <option value="False" {% if form.flow_rate_reduced.value == False or form.flow_rate_reduced.value == 'False' %}selected{% endif %}>No</option>
+                            <option value="True" {% if form.flow_rate_reduced.value == True or form.flow_rate_reduced.value == 'True' %}selected{% endif %}>Yes</option>
+                        </select>
+                        {% if form.flow_rate_reduced.errors %}
+                            <div class="pfas-error-message" style="color: red;">
+                                {% for error in form.flow_rate_reduced.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="pfas-form-group col-md-6">
+                        <label for="{{ form.existed.id_for_label }}">Did the Source Exist in {{ year|default:"" }}?</label>
+                        <select name="existed"
+                                id="{{ form.existed.id_for_label }}"
+                                class="pfas-form-control">
+                            <option value="False" {% if form.existed.value == False or form.existed.value == 'False' %}selected{% endif %}>No</option>
+                            <option value="True" {% if form.existed.value == True or form.existed.value == 'True' or form.existed.value == None %}selected{% endif %}>Yes</option>
+                        </select>
+                        {% if form.existed.errors %}
+                            <div class="pfas-error-message" style="color: red;">
+                                {% for error in form.existed.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
                 <div class="pfas-form-group">
                     <label for="{{ form.supporting_file.id_for_label }}">Supporting Document</label>
                     <input type="file"
@@ -119,8 +155,13 @@
             </div>
 
             <div class="pfas-update-footer" style="margin-top: 20px; text-align: right;">
-                <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ pwsid|default:'' }}&source_name={{ source_name|default:'' }}" class="btn btn-secondary">Cancel</a>
+                <a href="{% url "comb_data_3mdtb:annual_flows" %}?pwsid={{ pwsid|default:"" }}&source_name={{ source_name|default:"" }}" class="btn btn-secondary">Cancel</a>
                 <button type="submit" class="btn btn-primary pfas-modal-save">Save</button>
+            </div>
+
+            <div class="pfas-info-section" style="margin-top: 20px; padding: 15px; background-color: #e7f3ff; border: 1px solid #b6d4fe; border-radius: 8px; color: #084298;">
+                <i class="bi bi-info-circle-fill" style="margin-right: 8px;"></i>
+                <!-- Add field explanations here -->
             </div>
         </form>
     </div>

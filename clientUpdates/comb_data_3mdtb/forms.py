@@ -68,12 +68,21 @@ class AFUpdateForm(forms.ModelForm):
         fields = [
             "flow_rate",
             "unit",
+            "flow_rate_reduced",
+            "existed",
         ]
+        widgets = {
+            "flow_rate_reduced": forms.Select(choices=[(False, 'No'), (True, 'Yes')]),
+            "existed": forms.Select(choices=[(False, 'No'), (True, 'Yes')]),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
-            field.required = True
+            if field_name in ["flow_rate_reduced", "existed"]:
+                field.required = False
+            else:
+                field.required = True
 
     def clean_flow_rate(self):
         flow_rate = self.cleaned_data.get("flow_rate")
