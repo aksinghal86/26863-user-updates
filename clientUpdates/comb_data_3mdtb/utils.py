@@ -1,5 +1,5 @@
 from .models import ClaimPfasResult, TB_ClaimPfasResult, ClaimFlowRate, TB_ClaimFlowRate, Phase2_ClaimFlowRate, \
-    Phase2_ClaimPfasResult, UpdatePfasResult, UpdateAnnualFlowRate
+    Phase2_ClaimPfasResult, UpdatePfasResult, UpdateAnnualFlowRate, UpdateMaxFlowRate
 
 
 def process_pfas(pwsid):
@@ -133,11 +133,15 @@ def process_annual_flow(pwsid):
         source_variable="AFR",
     ).values(*fields)
 
+    af_updates = UpdateAnnualFlowRate.objects.filter(
+        pwsid=pwsid
+    ).values(*fields)
+
     # Store data by (pwsid, source_name).
     sources = {}
 
     # Add data from all three models.
-    all_data = list(claim_data) + list(tb_claim_data) + list(phase2_claim_data)
+    all_data = list(claim_data) + list(tb_claim_data) + list(phase2_claim_data) + list(af_updates)
 
     for record in all_data:
         key = (record["pwsid"], record["source_name"])
@@ -240,11 +244,15 @@ def process_max_flow(pwsid):
         source_variable="VFR",
     ).values(*fields)
 
+    mf_updates = UpdateMaxFlowRate.objects.filter(
+        pwsid=pwsid
+    ).values(*fields)
+
     # Store data by (pwsid, source_name).
     sources = {}
 
     # Add data from all three models.
-    all_data = list(claim_data) + list(tb_claim_data) + list(phase2_claim_data)
+    all_data = list(claim_data) + list(tb_claim_data) + list(phase2_claim_data) + list(mf_updates)
 
     for record in all_data:
         key = (record["pwsid"], record["source_name"])
@@ -381,8 +389,13 @@ def get_all_yearly_flows(pwsid, source_name):
         source_variable="AFR"
     ).values(*fields)
 
+    af_updates = UpdateAnnualFlowRate.objects.filter(
+        pwsid=pwsid,
+        source_name=source_name
+    ).values(*fields)
+
     # Combine records from all three models.
-    data = list(data1) + list(data2) + list(data3)
+    data = list(data1) + list(data2) + list(data3) + list(af_updates)
 
     # Dictionary to store the maximum flow for each year.
     yearly_flows = {}
@@ -408,20 +421,6 @@ def get_all_yearly_flows(pwsid, source_name):
                 yearly_flows[year],
                 flow
             )
-
-    # Get any annual flow updates for 2024 and 2025.
-    update_data = UpdateAnnualFlowRate.objects.filter(
-        pwsid=pwsid,
-        source_name=source_name,
-        year__in=[2024, 2025]
-    ).values("year", "flow_rate_gpm")
-
-    for update in update_data:
-        year = update["year"]
-        flow = update["flow_rate_gpm"]
-        if flow is not None:
-            if year not in yearly_flows or flow > yearly_flows[year]:
-                yearly_flows[year] = flow
 
     # Add 2024 and 2025 if they are not already present.
     yearly_flows.setdefault(2024, None)
