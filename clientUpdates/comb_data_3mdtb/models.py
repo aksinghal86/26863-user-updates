@@ -71,14 +71,15 @@ class AddNewSource(models.Model):
     pfas_tested = models.TextField(blank=True, null=True)
     pfas_detected = models.TextField(blank=True, null=True)
     pws_own_source = models.TextField(blank=True, null=True)
+    pws_operate_source = models.TextField(blank=True, null=True)
     co_owners = models.TextField(blank=True, null=True)
     drinking_water = models.TextField(blank=True, null=True)
     idws = models.TextField(blank=True, null=True)
-    pfas_file_1 = models.FileField(upload_to='pfas_data/', blank=True, null=True)
-    pfas_file_2 = models.FileField(upload_to='pfas_data/', blank=True, null=True)
+    filename_1 = models.TextField(blank=True, null=True)
+    filename_2 = models.TextField(blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
     submit_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         managed = True
-        db_table = 'add_new_source'
+        db_table = 'add_source_request'

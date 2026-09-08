@@ -81,7 +81,7 @@
                     </div>
                 </div>
 
-                <!-- PWS Own Source & Co-Owners Sliders -->
+                <!-- PWS Own Source & Co-Owners -->
                 <div class="pfas-form-row">
                     <div class="pfas-form-group col-md-6">
                         <label for="{{ form.pws_own_source.id_for_label }}">Does the PWS own this source?</label>
@@ -99,7 +99,15 @@
                     </div>
                 </div>
 
+                <!-- PWS Operate & Drinking Water Source -->
                 <div class="pfas-form-row">
+                    <div class="pfas-form-group col-md-6">
+                        <label for="{{ form.pws_operate_source.id_for_label }}">Does the PWS operate this source?</label>
+                        {{ form.pws_operate_source }}
+                        {% if form.pws_operate_source.errors %}
+                            <div class="text-danger small">{{ form.pws_operate_source.errors }}</div>
+                        {% endif %}
+                    </div>
                     <div class="pfas-form-group col-md-6">
                         <label for="{{ form.drinking_water.id_for_label }}">Is this a drinking water source?</label>
                         {{ form.drinking_water }}
@@ -107,8 +115,12 @@
                             <div class="text-danger small">{{ form.drinking_water.errors }}</div>
                         {% endif %}
                     </div>
+                </div>
+
+                <!-- IDWS -->
+                <div class="pfas-form-row">
                     <div class="pfas-form-group col-md-6">
-                        <label for="{{ form.idws.id_for_label }}">IDWS</label>
+                        <label for="{{ form.idws.id_for_label }}">Is this Source part of an IDWS?</label>
                         {{ form.idws }}
                         {% if form.idws.errors %}
                             <div class="text-danger small">{{ form.idws.errors }}</div>
@@ -132,18 +144,12 @@
                         <label>PFAS Data Upload (Maximum 2 files)</label>
                         <div class="row">
                             <div class="col-md-6">
-                                {{ form.pfas_file_1 }}
+                                <input type="file" name="pfas_file_1" class="pfas-form-control" style="padding: 10px;">
                                 <small class="text-muted">File 1</small>
-                                {% if form.pfas_file_1.errors %}
-                                    <div class="text-danger small">{{ form.pfas_file_1.errors }}</div>
-                                {% endif %}
                             </div>
                             <div class="col-md-6">
-                                {{ form.pfas_file_2 }}
+                                <input type="file" name="pfas_file_2" class="pfas-form-control" style="padding: 10px;">
                                 <small class="text-muted">File 2</small>
-                                {% if form.pfas_file_2.errors %}
-                                    <div class="text-danger small">{{ form.pfas_file_2.errors }}</div>
-                                {% endif %}
                             </div>
                         </div>
                     </div>

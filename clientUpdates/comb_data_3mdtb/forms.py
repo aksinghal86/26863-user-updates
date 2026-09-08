@@ -13,61 +13,63 @@ class AddNewSourceForm(forms.ModelForm):
             "pfas_tested",
             "pfas_detected",
             "pws_own_source",
+            "pws_operate_source",
             "co_owners",
             "drinking_water",
             "idws",
             "comments",
-            "pfas_file_1",
-            "pfas_file_2",
         ]
         widgets = {
             "source_name": forms.TextInput(attrs={"class": "pfas-form-control", "placeholder": "Enter source name"}),
             "source_type": forms.Select(attrs={"class": "pfas-form-control"}, choices=[
                 ("", "Select source type"),
-                ("Well", "Well"),
+                ("Groundwater Well", "Groundwater Well"),
                 ("Surface Water", "Surface Water"),
                 ("Interconnection", "Interconnection"),
                 ("Other", "Other"),
             ]),
             "pfas_tested": forms.Select(attrs={"class": "pfas-form-control"}, choices=[
-                ("", "Select..."),
+                ("", ""),
                 ("No", "No"),
                 ("Yes", "Yes"),
             ]),
             "pfas_detected": forms.Select(attrs={"class": "pfas-form-control"}, choices=[
-                ("", "Select..."),
+                ("", ""),
                 ("No", "No"),
                 ("Yes", "Yes"),
             ]),
             "pws_own_source": forms.Select(attrs={"class": "pfas-form-control"}, choices=[
-                ("", "Select..."),
+                ("", ""),
+                ("Yes", "Yes"),
+                ("No", "No"),
+            ]),
+            "pws_operate_source": forms.Select(attrs={"class": "pfas-form-control"}, choices=[
+                ("", ""),
                 ("Yes", "Yes"),
                 ("No", "No"),
             ]),
             "co_owners": forms.Select(attrs={"class": "pfas-form-control"}, choices=[
-                ("", "Select..."),
+                ("", ""),
                 ("No", "No"),
                 ("Yes", "Yes"),
             ]),
             "drinking_water": forms.Select(attrs={"class": "pfas-form-control"}, choices=[
-                ("", "Select..."),
+                ("", ""),
                 ("Yes", "Yes"),
                 ("No", "No"),
             ]),
             "idws": forms.Select(attrs={"class": "pfas-form-control"}, choices=[
-                ("", "Select..."),
+                ("", ""),
                 ("No", "No"),
                 ("Yes", "Yes"),
             ]),
             "comments": forms.Textarea(attrs={"class": "pfas-form-control", "placeholder": "Enter any additional comments here", "rows": 3}),
-            "pfas_file_1": forms.FileInput(attrs={"class": "pfas-form-control", "style": "padding: 10px;"}),
-            "pfas_file_2": forms.FileInput(attrs={"class": "pfas-form-control", "style": "padding: 10px;"}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
-            if field_name not in ["pfas_file_1", "pfas_file_2", "comments"]:
+            if field_name not in ["comments"]:
                 field.required = True
             else:
                 field.required = False

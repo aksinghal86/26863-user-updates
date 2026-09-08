@@ -238,8 +238,21 @@ def add_source(request):
         form = AddNewSourceForm(request.POST, request.FILES)
         if form.is_valid():
             instance = form.save(commit=False)
-            # You might want to handle pwsid here if it's available in the session or POST
-            # For now, we'll just save the form
+            
+            pwsid = request.user.username
+            instance.pwsid = pwsid
+            
+            # Manually handle file uploads
+            pfas_file_1 = request.FILES.get('pfas_file_1')
+            if pfas_file_1:
+                instance.filename_1 = pfas_file_1.name
+                upload_to_dropbox(file=pfas_file_1, filetype="New Claims/PFAS", pwsid=pwsid)
+                
+            pfas_file_2 = request.FILES.get('pfas_file_2')
+            if pfas_file_2:
+                instance.filename_2 = pfas_file_2.name
+                upload_to_dropbox(file=pfas_file_2, filetype="New Claims/PFAS", pwsid=pwsid)
+
             instance.save()
             return redirect("comb_data_3mdtb:landing_page")
         else:
