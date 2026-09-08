@@ -61,3 +61,23 @@ class UpdateMaxFlowRate(models.Model):
     class Meta:
         managed = True
         db_table = 'update_flow_rate_max'
+
+
+class AddNewSource(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    pwsid = models.TextField(blank=True, null=True)
+    source_name = models.TextField(blank=True, null=True)
+    source_type = models.TextField(blank=True, null=True)
+    pfas_tested = models.TextField(blank=True, null=True)
+    pfas_detected = models.TextField(blank=True, null=True)
+    pws_own_source = models.TextField(blank=True, null=True)
+    co_owners = models.TextField(blank=True, null=True)
+    drinking_water = models.TextField(blank=True, null=True)
+    idws = models.TextField(blank=True, null=True)
+    pfas_file_1 = models.FileField(upload_to='pfas_data/', blank=True, null=True)
+    pfas_file_2 = models.FileField(upload_to='pfas_data/', blank=True, null=True)
+    submit_date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        managed = True
+        db_table = 'add_new_source'

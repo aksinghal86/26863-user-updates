@@ -9,4 +9,5 @@ urlpatterns = [
     path("annual_flows/", views.annual_flows, name="annual_flows"),
     path("af_update/", views.af_update, name="af_update"),
     path("mf_update/", views.mf_update, name="mf_update"),
+    path("add_source/", views.add_source, name="add_source"),
 ]

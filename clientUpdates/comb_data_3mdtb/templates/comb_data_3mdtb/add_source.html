@@ -1,0 +1,152 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'comb_data_3mdtb/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'comb_data_3mdtb/css/pfas_update_modal.css' %}">
+    <style>
+        .pfas-update-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .pfas-update-header {
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="pfas-update-container">
+        <div class="pfas-update-header">
+            <h2>Add New Source</h2>
+            <p>Please provide the details for the new water source.</p>
+        </div>
+
+        <form id="add-source-form" method="post" action="" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="pfas-update-body">
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Source Name & Type -->
+                <div class="pfas-form-row">
+                    <div class="pfas-form-group col-md-6">
+                        <label for="{{ form.source_name.id_for_label }}">Source Name</label>
+                        {{ form.source_name }}
+                        {% if form.source_name.errors %}
+                            <div class="text-danger small">{{ form.source_name.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="pfas-form-group col-md-6">
+                        <label for="{{ form.source_type.id_for_label }}">Source Type</label>
+                        {{ form.source_type }}
+                        {% if form.source_type.errors %}
+                            <div class="text-danger small">{{ form.source_type.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- PFAS Tested & Detected -->
+                <div class="pfas-form-row">
+                    <div class="pfas-form-group col-md-6">
+                        <label for="{{ form.pfas_tested.id_for_label }}">Has this source been tested for PFAS?</label>
+                        {{ form.pfas_tested }}
+                        {% if form.pfas_tested.errors %}
+                            <div class="text-danger small">{{ form.pfas_tested.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="pfas-form-group col-md-6">
+                        <label for="{{ form.pfas_detected.id_for_label }}">Was PFAS detected in this source?</label>
+                        {{ form.pfas_detected }}
+                        {% if form.pfas_detected.errors %}
+                            <div class="text-danger small">{{ form.pfas_detected.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- PWS Own Source & Co-Owners Sliders -->
+                <div class="pfas-form-row">
+                    <div class="pfas-form-group col-md-6">
+                        <label for="{{ form.pws_own_source.id_for_label }}">Does the PWS own this source?</label>
+                        {{ form.pws_own_source }}
+                        {% if form.pws_own_source.errors %}
+                            <div class="text-danger small">{{ form.pws_own_source.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="pfas-form-group col-md-6">
+                        <label for="{{ form.co_owners.id_for_label }}">Are there co-owners for this source?</label>
+                        {{ form.co_owners }}
+                        {% if form.co_owners.errors %}
+                            <div class="text-danger small">{{ form.co_owners.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="pfas-form-row">
+                    <div class="pfas-form-group col-md-6">
+                        <label for="{{ form.drinking_water.id_for_label }}">Is this a drinking water source?</label>
+                        {{ form.drinking_water }}
+                        {% if form.drinking_water.errors %}
+                            <div class="text-danger small">{{ form.drinking_water.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="pfas-form-group col-md-6">
+                        <label for="{{ form.idws.id_for_label }}">IDWS</label>
+                        {{ form.idws }}
+                        {% if form.idws.errors %}
+                            <div class="text-danger small">{{ form.idws.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- PFAS Data File Uploads -->
+                <div class="pfas-form-row" style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
+                    <div class="pfas-form-group col-md-12">
+                        <label>PFAS Data Upload (Maximum 2 files)</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form.pfas_file_1 }}
+                                <small class="text-muted">File 1</small>
+                                {% if form.pfas_file_1.errors %}
+                                    <div class="text-danger small">{{ form.pfas_file_1.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.pfas_file_2 }}
+                                <small class="text-muted">File 2</small>
+                                {% if form.pfas_file_2.errors %}
+                                    <div class="text-danger small">{{ form.pfas_file_2.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if error_message %}
+                    <div class="pfas-general-error" style="color: red; margin-top: 15px; font-weight: bold; text-align: center;">
+                        {{ error_message }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="pfas-update-footer" style="margin-top: 20px; text-align: right;">
+                <a href="{% url 'comb_data_3mdtb:landing_page' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary pfas-modal-save">Add Source</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

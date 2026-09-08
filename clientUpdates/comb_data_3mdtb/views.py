@@ -4,7 +4,7 @@ from django.utils.http import urlencode
 
 from clientUpdates.utils.dropbox_utils import upload_to_dropbox
 from .utils import process_pfas, process_annual_flow, get_dashboard_data, get_all_yearly_flows
-from .forms import PFASUpdateForm, AFUpdateForm, MFUpdateForm
+from .forms import PFASUpdateForm, AFUpdateForm, MFUpdateForm, AddNewSourceForm
 from clientUpdates.utils.calculations import calc_gpm_flow_rate
 
 from django.views.decorators.cache import never_cache
@@ -229,3 +229,21 @@ def mf_update(request):
             "source_name": source_name,
         }
     )
+
+
+@login_required
+@never_cache
+def add_source(request):
+    if request.method == "POST":
+        form = AddNewSourceForm(request.POST, request.FILES)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            # You might want to handle pwsid here if it's available in the session or POST
+            # For now, we'll just save the form
+            instance.save()
+            return redirect("comb_data_3mdtb:landing_page")
+        else:
+            return render(request, "comb_data_3mdtb/add_source.html", {"form": form})
+    
+    form = AddNewSourceForm()
+    return render(request, "comb_data_3mdtb/add_source.html", {"form": form})
