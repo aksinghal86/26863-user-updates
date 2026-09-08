@@ -108,7 +108,7 @@
                             <span class="editable-value">
 
                                 <span class="value-display">
-                                    {{ row.max_pfoa | floatformat:1 }}
+                                    {{ row.max_pfoa | floatformat:1 | default:"--" }}
                                 </span>
 
                                 <a href="{% url 'comb_data_3mdtb:pfas_update' %}?analyte=PFOA&pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&min_value={{ row.max_pfoa | default:0 }}"
@@ -130,7 +130,7 @@
                             <span class="editable-value">
 
                                 <span class="value-display">
-                                    {{ row.max_pfos | floatformat:1 }}
+                                    {{ row.max_pfos | floatformat:1 | default:"--" }}
                                 </span>
 
                                 <a href="{% url 'comb_data_3mdtb:pfas_update' %}?analyte=PFOS&pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&min_value={{ row.max_pfos | default:0 }}"
@@ -152,7 +152,7 @@
                             <span class="editable-value">
 
                                 <span class="value-display">
-                                    {{ row.max_other_pfas | floatformat:1 }}
+                                    {{ row.max_other_pfas | floatformat:1 | default:"--" }}
                                 </span>
 
                                 <a href="{% url 'comb_data_3mdtb:pfas_update' %}?analyte=Other PFAS&pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&min_value={{ row.max_other_pfas | default:0 }}&selected_analyte={{ row.max_other_pfas_analyte | urlencode }}"
@@ -170,7 +170,7 @@
 
                         <!-- Max Other PFAS Analyte -->
                         <td>
-                            {{ row.max_other_pfas_analyte | default:"" }}
+                            {{ row.max_other_pfas_analyte | default:"--" }}
                         </td>
 
 
@@ -200,7 +200,7 @@
                                 {% else %}
 
                                     <span class="value-display">
-                                        {{ row.average_annual_production_gpy | floatformat:1 | intcomma }}
+                                        {{ row.average_annual_production_gpy | floatformat:1 | intcomma | default:"--" }}
                                     </span>
 
                                     <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&all_nds={{ row.all_nds }}"
@@ -224,7 +224,7 @@
                             <span class="editable-value">
 
                                 <span class="value-display">
-                                    {{ row.max_flow_gpm | floatformat:1 | intcomma }}
+                                    {{ row.max_flow_gpm | floatformat:1 | intcomma | default:"--" }}
                                 </span>
 
                                 <a href="{% url 'comb_data_3mdtb:mf_update' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}"
