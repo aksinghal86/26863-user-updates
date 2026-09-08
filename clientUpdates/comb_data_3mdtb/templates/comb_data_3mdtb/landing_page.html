@@ -179,11 +179,19 @@
 
                                 {% if not row.future_data_provided and not row.all_nds %}
 
-                                    <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&all_nds={{ row.all_nds }}"
-                                       class="needs-info-button"
-                                       title="More Info Needed">
+                                    <span class="value-display">
+                                        <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&all_nds={{ row.all_nds }}"
+                                           class="needs-info-button"
+                                           title="More Info Needed">
+                                            <i class="bi bi-exclamation-triangle" style="size:1.2rem"></i>
+                                        </a>
+                                    </span>
 
-                                        <i class="bi bi-exclamation-triangle" style="size:1.2rem"></i>
+                                    <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&all_nds={{ row.all_nds }}"
+                                       class="edit-button-hover"
+                                       title="Edit annual production">
+
+                                        Update
 
                                     </a>
 
