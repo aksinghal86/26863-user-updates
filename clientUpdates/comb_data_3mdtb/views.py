@@ -20,7 +20,7 @@ def landing_page(request):
     # retrieve all dashboard data for the given pwsid
     data = get_dashboard_data(pwsid)
 
-    return render(request, "comb_data_3mdtb/landing_page.html", {"data": data})
+    return render(request, "comb_data_3mdtb/landing_page.html", {"data": data, "pwsid": pwsid})
 
 
 @login_required

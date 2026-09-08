@@ -19,6 +19,29 @@
     </div>
 
 
+    <!-- Informational section -->
+    <div class="info-banner"
+         style="background-color: #e8f3ff; border-left: 5px solid #0d6efd; padding: 20px; border-radius: 8px; margin-bottom: 24px; display: flex; align-items: center; gap: 15px;">
+        <i class="bi bi-info-circle-fill"
+           style="font-size: 1.5rem; color: #0d6efd;"></i>
+        <div>
+            <h4 style="margin: 0; color: #164e63; font-size: 1.1rem; font-weight: 600;">Important Information</h4>
+            <p style="margin: 5px 0 0; color: #243447; font-size: 0.95rem;">
+                The table below provides a comprehensive list of all sources associated with the AFFF Action Fund Claims for {{ pwsid }}. 
+                It displays whether the source was impacted by PFAS, maximum PFOA and PFOS results, other PFAS detections, average annual production (GPY), and maximum flow rates (GPM).
+                The PFAS and flow data each play a role in determining the settlement amount a given source will receive; the higher the values, the higher the settlement amount.
+                <br>
+                <br>
+                Hover over any of the PFAS Results, Average Annual Flow, or Max Flow values to provide updated results.
+                <br>
+                <br>
+                If a row in the table is <span style="color: black; background-color: #fff3cd">highlighted yellow</span>, this means the source has PFAS impacts and some annual production data has not yet been provided. 
+                The warning symbol ( <i class="bi bi-exclamation-triangle" style="color: #856404; font-size: 1.1rem;"></i> ) indicates where there is missing data.
+            </p>
+        </div>
+    </div>
+
+
     <!-- Dashboard table -->
     <div class="dashboard-table-card">
 
@@ -157,7 +180,8 @@
                                 {% if not row.future_data_provided and not row.all_nds %}
 
                                     <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&all_nds={{ row.all_nds }}"
-                                       class="needs-info-button">
+                                       class="needs-info-button"
+                                       title="More Info Needed">
 
                                         <i class="bi bi-exclamation-triangle" style="size:1.2rem"></i>
 
