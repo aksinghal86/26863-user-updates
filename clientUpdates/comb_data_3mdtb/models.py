@@ -76,6 +76,7 @@ class AddNewSource(models.Model):
     idws = models.TextField(blank=True, null=True)
     pfas_file_1 = models.FileField(upload_to='pfas_data/', blank=True, null=True)
     pfas_file_2 = models.FileField(upload_to='pfas_data/', blank=True, null=True)
+    comments = models.TextField(blank=True, null=True)
     submit_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:

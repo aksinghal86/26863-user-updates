@@ -16,6 +16,7 @@ class AddNewSourceForm(forms.ModelForm):
             "co_owners",
             "drinking_water",
             "idws",
+            "comments",
             "pfas_file_1",
             "pfas_file_2",
         ]
@@ -58,6 +59,7 @@ class AddNewSourceForm(forms.ModelForm):
                 ("No", "No"),
                 ("Yes", "Yes"),
             ]),
+            "comments": forms.Textarea(attrs={"class": "pfas-form-control", "placeholder": "Enter any additional comments here", "rows": 3}),
             "pfas_file_1": forms.FileInput(attrs={"class": "pfas-form-control", "style": "padding: 10px;"}),
             "pfas_file_2": forms.FileInput(attrs={"class": "pfas-form-control", "style": "padding: 10px;"}),
         }
@@ -65,7 +67,7 @@ class AddNewSourceForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
-            if field_name not in ["pfas_file_1", "pfas_file_2"]:
+            if field_name not in ["pfas_file_1", "pfas_file_2", "comments"]:
                 field.required = True
             else:
                 field.required = False

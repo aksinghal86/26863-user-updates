@@ -398,6 +398,9 @@ body {
     margin-bottom: 20px;
     padding-bottom: 10px;
 }
+.submit-source-header {
+    padding-bottom: 10px;
+}
     /* Tooltip styles */
 .tooltip-container {
     position: relative;
