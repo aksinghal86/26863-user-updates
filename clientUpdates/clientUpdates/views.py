@@ -12,8 +12,9 @@ import django_localflavor_us.us_states as us_states
 from .models import (Pws, Source, PfasResult, FlowRate, ClaimSource, ClaimFlowRate,
                      ClaimPfasResult, paymentInfo,
                      TB_ClaimPfasResult, TB_ClaimFlowRate, supplementalSourceTracker, TB_ClaimSource,
-                     pwsPaymentDist, srcPaymentDist, ClaimSubmission, phase2PwsInfo, phase2AnnualFlow, phase2PfasResults,
-                     pwsCreds, phase2SourceInfo, phase2MaxFlow)
+                     pwsPaymentDist, srcPaymentDist, ClaimSubmission, phase2PwsInfo, phase2AnnualFlow,
+                     phase2PfasResults,
+                     pwsCreds, phase2SourceInfo, phase2MaxFlow, Phase2_ClaimPfasResult)
 from .forms import MaxFlowRateUpdateForm, AnnualProductionForm, PfasResultUpdateForm, ContactForm, pwsInfoForm, \
     phase2SourceInfoForm, phase2MaxFlowForm, phase2AnnualFlowForm, phase2PfasResultsForm, \
     formConstants, annualFiles, pfasFiles, maxFlowFile
@@ -92,7 +93,8 @@ def root_redirect(request):
 @never_cache
 def dashboard(request, claim, supplemental=0):
     # Retrieve the PWS associated with the logged-in user; otherwise, throw an error.
-    pws_record = Pws.objects.get(form_userid=request.user.username)
+    #pws_record = Pws.objects.get(form_userid=request.user.username)
+    pws_record = pwsCreds.objects.get(pwsid=request.user.username)
     if not pws_record:
         raise Http404("Record not found")
 
@@ -223,30 +225,55 @@ def payment_details(request):
 def landing_page(request):
     pwsid = request.user.username
     # Retrieve the PWS associated with the logged-in user; otherwise, throw an error.
-    try:
 
-        pws_submitted_claim = ClaimSubmission.objects.get(pwsid=pwsid)
-        pws_record = Pws.objects.get(form_userid=pwsid)
+    pws_record = pwsCreds.objects.filter(
+        pwsid=pwsid
+    ).values('pwsid', 'pws_name').get(pwsid=pwsid)
 
-        context = {
-            'pws': pws_record,
-        }
+    # Check whether this PWS has PFAS records in each model
+    has_phase1_claim = ClaimPfasResult.objects.filter(
+        pwsid=pwsid
+    ).exists()
 
-        return render(request, 'landing_page.html', context)
+    has_tb_claim = TB_ClaimPfasResult.objects.filter(
+        pwsid=pwsid
+    ).exists()
+
+    has_phase2_claim = Phase2_ClaimPfasResult.objects.filter(
+        pwsid=pwsid
+    ).exists()
+
+    context = {
+        'pws': pws_record,
+        'has_phase1_claim': has_phase1_claim,
+        'has_tb_claim': has_tb_claim,
+        'has_phase2_claim': has_phase2_claim,
+    }
+
+    return render(request, 'landing_page.html', context)
+
+    # pws_submitted_claim = ClaimSubmission.objects.get(pwsid=pwsid)
+    # pws_record = pwsCreds.objects.filter(pwsid=pwsid).values('pwsid', 'pws_name').get(pwsid=pwsid)
+    #
+    #     context = {
+    #         'pws': pws_record,
+    #     }
+
+    #    return render(request, 'landing_page.html', context)
     # exception handling for if the query in the above try statement returns nothing.
-    except ClaimSubmission.DoesNotExist:
-
-        pwsGenInfo = phase2PwsInfo.objects.filter(pwsid=pwsid)
-        sourceGenInfo = phase2SourceInfo.objects.filter(pwsid=pwsid)
-
-        context = {
-            'pws': pwsid,
-            'pwsGenInfo': pwsGenInfo,
-            'sourceGenInfo': sourceGenInfo
-        }
-
-        #return render(request, 'no_data_landing_page.html', context)
-        return render(request, 'phase2_landing_page.html', context)
+    # except ClaimSubmission.DoesNotExist:
+    #
+    #     pwsGenInfo = phase2PwsInfo.objects.filter(pwsid=pwsid)
+    #     sourceGenInfo = phase2SourceInfo.objects.filter(pwsid=pwsid)
+    #
+    #     context = {
+    #         'pws': pwsid,
+    #         'pwsGenInfo': pwsGenInfo,
+    #         'sourceGenInfo': sourceGenInfo
+    #     }
+    #
+    #     #return render(request, 'no_data_landing_page.html', context)
+    #     return render(request, 'phase2_landing_page.html', context)
 
 
 @login_required
