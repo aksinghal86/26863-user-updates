@@ -74,6 +74,14 @@
 
                 <p style="text-align:left;">Use the buttons below to file a Supplemental Fund Claim for water
                     sources relative to a specific claim.</p>
+                {% if has_phase2_claim %}
+                    <div class="alert alert-info d-flex align-items-center" role="alert" style="text-align: left;">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        <div>
+                            Note: 3M/DuPont Phase 2 Supplemental Claims cannot yet be filed. We are waiting on the Claims Administration team to allow this functionality. Once made available, you will be contacted.
+                        </div>
+                    </div>
+                {% endif %}
         </div>
         <div style="display:flex; justify-content:space-evenly; gap: 10px; flex-wrap: wrap;">
             {% if has_phase1_claim %}
