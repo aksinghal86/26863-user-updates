@@ -22,9 +22,9 @@
         </div>
         <br>
         <br>
-        <div style="display:flex; justify-content:center; gap: 10px; flex-wrap: wrap;">
+        <div style="display:flex; justify-content:space-evenly; gap: 10px; flex-wrap: wrap;">
             {% if has_phase1_claim %}
-                <a href="{% url 'dashboard_simple' claim='3M_DuPont' supplemental=0%}" class="btn btn-primary" style="flex: 1 1 30%; min-width: 150px; max-width:40%;">3M/DuPont Phase 1</a>
+                <a href="{% url 'dashboard_simple' claim='3M_DuPont Phase 1' supplemental=0%}" class="btn btn-primary" style="flex: 1 1 30%; min-width: 150px; max-width:40%;">3M/DuPont Phase 1</a>
             {% endif %}
             {% if has_tb_claim %}
                 <a href="{% url 'dashboard_simple' claim='Tyco_BASF' supplemental=0%}" class="btn btn-primary" style="flex: 1 1 30%; min-width: 150px; max-width:40%;">Tyco/BASF</a>
@@ -75,7 +75,7 @@
                 <p style="text-align:left;">Use the buttons below to file a Supplemental Fund Claim for water
                     sources relative to a specific claim.</p>
         </div>
-        <div style="display:flex; justify-content:center; gap: 10px; flex-wrap: wrap;">
+        <div style="display:flex; justify-content:space-evenly; gap: 10px; flex-wrap: wrap;">
             {% if has_phase1_claim %}
                 <a href="{% url 'dashboard' claim='3M_DuPont' supplemental=1%}" class="btn btn-primary" style="flex: 1 1 30%; min-width: 150px; max-width:40%;">3M/DuPont Phase 1</a>
             {% endif %}
@@ -83,7 +83,7 @@
                 <a href="{% url 'dashboard' claim='Tyco_BASF' supplemental=1%}" class="btn btn-primary" style="flex: 1 1 30%; min-width: 150px; max-width:40%;">Tyco/BASF</a>
             {% endif %}
             {% if has_phase2_claim %}
-                <a href="{% url 'dashboard' claim='3M_DuPont Phase 2' supplemental=1%}" class="btn btn-primary" style="flex: 1 1 30%; min-width: 150px; max-width:40%;">3M/DuPont Phase 2</a>
+                <a href="#" class="btn btn-primary" style="flex: 1 1 30%; min-width: 150px; max-width:40%; pointer-events: none; background-color: #ccc; border-color: #ccc; color: #666; cursor: not-allowed;">3M/DuPont Phase 2</a>
             {% endif %}
         </div>
 
