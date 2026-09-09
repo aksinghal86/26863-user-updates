@@ -15,6 +15,7 @@
                 <input type="password" class="form-control" name="password" id="id_password" required>
             </div>
             <button type="submit" class="btn btn-primary">Login</button>
+            <input type="hidden" name="next" value="{{ next }}">
         </form>
     </div>
 {% endblock %}

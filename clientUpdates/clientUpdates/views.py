@@ -72,8 +72,8 @@ class CustomLoginView(LoginView):
     # Placing this in a function that overrides get_success_url... this was done because
     # sometimes it was returning an older URL (the old update dashboard)
     #success_url = reverse_lazy('payment_dashboard')
-    def get_success_url(self):
-        return reverse_lazy('landing_page')
+    # def get_success_url(self):
+    #     return reverse_lazy('landing_page')
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
