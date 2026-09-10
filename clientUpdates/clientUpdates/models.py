@@ -597,6 +597,7 @@ class ClaimSource(models.Model):
     idws_partner_relationship = models.TextField(blank=True, null=True)
     claimed_share_percent = models.FloatField(blank=True, null=True)
     source_type = models.TextField(blank=True, null=True)
+    water_source_determination = models.TextField(blank=True, null=True)
     source_type_other = models.TextField(blank=True, null=True)
     pws_owns_source = models.BooleanField(blank=True, null=True)
     source_co_owned = models.BooleanField(blank=True, null=True)
