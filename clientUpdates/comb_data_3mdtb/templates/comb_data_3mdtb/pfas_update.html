@@ -40,7 +40,8 @@
         <form id="pfas-update-form"
               method="post"
               action="{% url 'comb_data_3mdtb:pfas_update' %}"
-              enctype="multipart/form-data">
+              enctype="multipart/form-data"
+              novalidate>
 
             {% csrf_token %}
             
@@ -107,11 +108,13 @@
                         </select>
 
                         {% if form.analyte.errors %}
-                            <div class="pfas-error-message" style="color: red;">
+                            <div class="pfas-error-message field-error" style="color: red;">
                                 {% for error in form.analyte.errors %}
                                     {{ error }}
                                 {% endfor %}
                             </div>
+                        {% else %}
+                            <div class="pfas-error-message field-error" style="color: red; display: none;"></div>
                         {% endif %}
                     </div>
 
@@ -130,11 +133,13 @@
                         {% endif %}
 
                         {% if form.result_ppt.errors %}
-                            <div class="pfas-error-message" style="color: red;">
+                            <div class="pfas-error-message field-error" style="color: red;">
                                 {% for error in form.result_ppt.errors %}
                                     {{ error }}
                                 {% endfor %}
                             </div>
+                        {% else %}
+                            <div class="pfas-error-message field-error" style="color: red; display: none;"></div>
                         {% endif %}
                     </div>
                 </div>
@@ -154,11 +159,13 @@
                         </select>
 
                         {% if form.lab.errors %}
-                            <div class="pfas-error-message" style="color: red;">
+                            <div class="pfas-error-message field-error" style="color: red;">
                                 {% for error in form.lab.errors %}
                                     {{ error }}
                                 {% endfor %}
                             </div>
+                        {% else %}
+                            <div class="pfas-error-message field-error" style="color: red; display: none;"></div>
                         {% endif %}
                     </div>
 
@@ -173,11 +180,13 @@
                                required>
 
                         {% if form.lab_sample_id.errors %}
-                            <div class="pfas-error-message" style="color: red;">
+                            <div class="pfas-error-message field-error" style="color: red;">
                                 {% for error in form.lab_sample_id.errors %}
                                     {{ error }}
                                 {% endfor %}
                             </div>
+                        {% else %}
+                            <div class="pfas-error-message field-error" style="color: red; display: none;"></div>
                         {% endif %}
                     </div>
                 </div>
@@ -195,11 +204,13 @@
                                required>
 
                         {% if form.sample_collected_by.errors %}
-                            <div class="pfas-error-message" style="color: red;">
+                            <div class="pfas-error-message field-error" style="color: red;">
                                 {% for error in form.sample_collected_by.errors %}
                                     {{ error }}
                                 {% endfor %}
                             </div>
+                        {% else %}
+                            <div class="pfas-error-message field-error" style="color: red; display: none;"></div>
                         {% endif %}
                     </div>
 
@@ -214,11 +225,13 @@
                         </select>
 
                         {% if form.analysis_method.errors %}
-                            <div class="pfas-error-message" style="color: red;">
+                            <div class="pfas-error-message field-error" style="color: red;">
                                 {% for error in form.analysis_method.errors %}
                                     {{ error }}
                                 {% endfor %}
                             </div>
+                        {% else %}
+                            <div class="pfas-error-message field-error" style="color: red; display: none;"></div>
                         {% endif %}
                     </div>
                 </div>
@@ -234,11 +247,13 @@
                                required>
 
                         {% if form.sampling_date.errors %}
-                            <div class="pfas-error-message" style="color: red;">
+                            <div class="pfas-error-message field-error" style="color: red;">
                                 {% for error in form.sampling_date.errors %}
                                     {{ error }}
                                 {% endfor %}
                             </div>
+                        {% else %}
+                            <div class="pfas-error-message field-error" style="color: red; display: none;"></div>
                         {% endif %}
                     </div>
 
@@ -253,11 +268,13 @@
                                required>
 
                         {% if form.analysis_date.errors %}
-                            <div class="pfas-error-message" style="color: red;">
+                            <div class="pfas-error-message field-error" style="color: red;">
                                 {% for error in form.analysis_date.errors %}
                                     {{ error }}
                                 {% endfor %}
                             </div>
+                        {% else %}
+                            <div class="pfas-error-message field-error" style="color: red; display: none;"></div>
                         {% endif %}
                     </div>
                 </div>
@@ -269,23 +286,24 @@
                            id="supporting_file"
                            name="supporting_file"
                            class="pfas-form-control"
-                           required>
+                           required
+                    >
 
                     {% if form.supporting_file.errors %}
-                        <div class="pfas-error-message" style="color: red;">
+                        <div class="pfas-error-message field-error" style="color: red;">
                             {% for error in form.supporting_file.errors %}
                                 {{ error }}
                             {% endfor %}
                         </div>
+                    {% else %}
+                        <div class="pfas-error-message field-error" style="color: red; display: none;"></div>
                     {% endif %}
                     <small>Upload one supporting document.</small>
                 </div>
 
-                {% if form.errors %}
-                    <div class="pfas-general-error" style="color: red; margin-top: 15px; font-weight: bold; text-align: center;">
-                        Submission failure: please correct all validation errors.
-                    </div>
-                {% endif %}
+                <div id="pfas-general-error" class="pfas-general-error" style="color: red; margin-top: 15px; font-weight: bold; text-align: center; display: {% if form.errors %}block{% else %}none{% endif %};">
+                    Submission failure: please correct all validation errors.
+                </div>
             </div>
 
             <div class="pfas-update-footer" style="margin-top: 20px; text-align: right;">
@@ -297,44 +315,12 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const analyte = "{{ analyte|default:'PFOA' }}";
-        const analyteText = document.getElementById('pfas-analyte-text');
-        const analyteSelect = document.getElementById('pfas-analyte-select');
-
-        if (analyte === 'Other PFAS') {
-            if (analyteText) {
-                analyteText.style.display = 'none';
-                analyteText.disabled = true;
-            }
-            if (analyteSelect) {
-                analyteSelect.style.display = '';
-                analyteSelect.disabled = false;
-                
-                // If there's a specific analyte to select (from dashboard)
-                const selectedAnalyte = "{{ selected_analyte|default:'' }}";
-                // If there's a form error, the select should keep its value (takes precedence)
-                const savedValue = "{{ form.analyte.value|default:'' }}";
-                
-                if (savedValue && savedValue !== 'PFOA' && savedValue !== 'PFOS') {
-                    analyteSelect.value = savedValue;
-                } else if (selectedAnalyte && selectedAnalyte !== 'None') {
-                    analyteSelect.value = selectedAnalyte;
-                } else {
-                    analyteSelect.value = "";
-                }
-            }
-        } else {
-            if (analyteText) {
-                analyteText.value = analyte;
-                analyteText.style.display = '';
-                analyteText.disabled = false;
-            }
-            if (analyteSelect) {
-                analyteSelect.style.display = 'none';
-                analyteSelect.disabled = true;
-            }
-        }
-    });
+    window.pfasData = {
+        analyte: "{{ analyte|default:'PFOA' }}",
+        minValue: "{{ min_value|default:'0' }}",
+        selectedAnalyte: "{{ selected_analyte|default:'' }}",
+        savedValue: "{{ form.analyte.value|default:'' }}"
+    };
 </script>
+<script src="{% static 'comb_data_3mdtb/js/pfas_update.js' %}"></script>
 {% endblock %}
