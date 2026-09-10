@@ -29,6 +29,19 @@
             <p>Source: {{ source_name }} | PWSID: {{ pwsid }}</p>
         </div>
 
+        <div class="info-banner"
+             style="background-color: #e8f3ff; border-left: 5px solid #0d6efd; padding: 20px; border-radius: 8px; margin-bottom: 24px; display: flex; align-items: center; gap: 15px;">
+            <i class="bi bi-info-circle-fill"
+               style="font-size: 1.5rem; color: #0d6efd;"></i>
+            <div>
+                <h4 style="margin: 0; color: #164e63; font-size: 1.1rem; font-weight: 600;">Important Information</h4>
+                <p style="margin: 5px 0 0; color: #243447; font-size: 0.95rem;">
+                    Please provide the maximum flow rate for this source.
+                    All of the below fields are required, including uploading a supporting document.
+                </p>
+            </div>
+        </div>
+
         <form id="mf-update-form"
               method="post"
               action="{% url 'comb_data_3mdtb:mf_update' %}"
