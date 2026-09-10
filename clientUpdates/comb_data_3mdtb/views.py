@@ -120,12 +120,21 @@ def annual_flows(request):
 @never_cache
 def af_update(request):
     if request.method == "POST":
-        form = AFUpdateForm(request.POST, request.FILES)
         pwsid = request.POST.get('pwsid')
         source_name = request.POST.get('source_name')
         year = request.POST.get('year')
         all_nds = request.POST.get('all_nds')
 
+        # Get existing flow rate for this year to prevent lower updates
+        existing_flow_gpm = None
+        if year and pwsid and source_name:
+            yearly_flows = get_all_yearly_flows(pwsid, source_name)
+            for flow in yearly_flows:
+                if str(flow['year']) == str(year):
+                    existing_flow_gpm = flow['flow_rate_gpm']
+                    break
+
+        form = AFUpdateForm(request.POST, request.FILES, existing_flow_gpm=existing_flow_gpm)
         if form.is_valid():
             instance = form.save(commit=False)
             
@@ -159,6 +168,7 @@ def af_update(request):
                     "source_name": source_name,
                     "year": year,
                     "all_nds": all_nds,
+                    "existing_flow_gpm": existing_flow_gpm,
                 }
             )
     
@@ -167,8 +177,17 @@ def af_update(request):
     source_name = request.GET.get('source_name')
     year = request.GET.get('year')
     all_nds = request.GET.get('all_nds')
+
+    # Get existing flow rate for this year to prevent lower updates
+    existing_flow_gpm = None
+    if year and pwsid and source_name:
+        yearly_flows = get_all_yearly_flows(pwsid, source_name)
+        for flow in yearly_flows:
+            if str(flow['year']) == str(year):
+                existing_flow_gpm = flow['flow_rate_gpm']
+                break
     
-    form = AFUpdateForm()
+    form = AFUpdateForm(existing_flow_gpm=existing_flow_gpm)
     return render(
         request,
         "comb_data_3mdtb/af_update.html",
@@ -178,6 +197,7 @@ def af_update(request):
             "source_name": source_name,
             "year": year,
             "all_nds": all_nds,
+            "existing_flow_gpm": existing_flow_gpm,
         }
     )
 

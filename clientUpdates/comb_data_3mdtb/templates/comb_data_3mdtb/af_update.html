@@ -62,6 +62,9 @@
                                placeholder="Enter flow rate"
                                value="{{ form.flow_rate.value|default:"" }}"
                                required>
+                        {% if existing_flow_gpm %}
+                            <small class="form-text text-muted">Current value: {{ existing_flow_gpm|floatformat:1 }} GPM. New value must be &ge; {{ existing_flow_gpm|floatformat:1 }} GPM.</small>
+                        {% endif %}
                         <div class="field-error" style="color: red; display: none;"></div>
                         {% if form.flow_rate.errors %}
                             <div class="pfas-error-message" style="color: red;">
@@ -183,5 +186,10 @@
         </form>
     </div>
 </div>
+<script>
+    window.afData = {
+        existingFlowGpm: "{{ existing_flow_gpm|default:'' }}"
+    };
+</script>
 <script src="{% static 'comb_data_3mdtb/js/af_update.js' %}"></script>
 {% endblock %}
