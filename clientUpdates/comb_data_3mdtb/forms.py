@@ -107,9 +107,9 @@ class PFASUpdateForm(forms.ModelForm):
             )
 
         if result_ppt is not None and self.min_result is not None:
-            if result_ppt < float(self.min_result):
+            if result_ppt <= float(self.min_result):
                 raise forms.ValidationError(
-                    f"New result cannot be less than the current value of {self.min_result} ng/L."
+                    f"New result must be greater than the current value of {self.min_result} ng/L."
                 )
 
         return result_ppt
