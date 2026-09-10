@@ -151,15 +151,21 @@ class AFUpdateForm(forms.ModelForm):
             "existed",
         ]
         widgets = {
-            "flow_rate_reduced": forms.Select(choices=[(False, 'No'), (True, 'Yes')]),
-            "existed": forms.Select(choices=[(False, 'No'), (True, 'Yes')]),
+            "flow_rate_reduced": forms.Select(choices=[('', 'Select one'), ('No', 'No'), ('Yes', 'Yes')]),
+            "existed": forms.Select(choices=[('', 'Select one'), ('No', 'No'), ('Yes', 'Yes')]),
         }
 
     def __init__(self, *args, **kwargs):
         self.existing_flow_gpm = kwargs.pop("existing_flow_gpm", None)
         super().__init__(*args, **kwargs)
+        
+        # Default to None so "Select one" is shown instead of model defaults
+        if not self.instance.pk:
+            self.initial['flow_rate_reduced'] = None
+            self.initial['existed'] = None
+
         for field_name, field in self.fields.items():
-                field.required = True
+            field.required = True
 
     def clean_flow_rate(self):
         flow_rate = self.cleaned_data.get("flow_rate")
@@ -172,9 +178,9 @@ class AFUpdateForm(forms.ModelForm):
             from clientUpdates.utils.calculations import calc_gpm_flow_rate
             new_flow_gpm = calc_gpm_flow_rate(flow_rate, unit.lower())
             
-            if new_flow_gpm < float(self.existing_flow_gpm):
+            if new_flow_gpm <= float(self.existing_flow_gpm):
                 raise forms.ValidationError(
-                    f"New flow rate must be greater than or equal to the current value of {self.existing_flow_gpm:.1f} GPM."
+                    f"New flow rate must be greater than the current value of {self.existing_flow_gpm:.1f} GPM."
                 )
                 
         return flow_rate

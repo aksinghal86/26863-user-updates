@@ -55,8 +55,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     newFlowGpm = flowRate * 325851 / (365 * 1440);
                 }
                 
-                if (newFlowGpm < (existingFlowGpm - 0.00001)) { // Small epsilon for floating point comparison
-                    showError('flow_rate', `New flow rate must be greater than or equal to the current value of ${existingFlowGpm.toFixed(1)} GPM.`);
+                if (newFlowGpm <= (existingFlowGpm + 0.00001)) { // Small epsilon to handle floating point and strict inequality
+                    showError('flow_rate', `New flow rate must be greater than the current value of ${existingFlowGpm.toFixed(1)} GPM.`);
                     hasErrors = true;
                 }
             }
@@ -65,7 +65,8 @@ document.addEventListener('DOMContentLoaded', function () {
         // 1. Required fields check
         const requiredFields = afForm.querySelectorAll('[required]');
         requiredFields.forEach(field => {
-            if (!field.value || (field.type === 'file' && field.files.length === 0)) {
+            const val = field.value.trim();
+            if (!val || val === 'Select one' || (field.type === 'file' && field.files.length === 0)) {
                 if (field.type === 'file') {
                     showError(field.name, "A file must be uploaded.");
                 } else {

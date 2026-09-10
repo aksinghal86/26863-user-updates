@@ -63,7 +63,7 @@
                                value="{{ form.flow_rate.value|default:"" }}"
                                required>
                         {% if existing_flow_gpm %}
-                            <small class="form-text text-muted">Current value: {{ existing_flow_gpm|floatformat:1 }} GPM. New value must be &ge; {{ existing_flow_gpm|floatformat:1 }} GPM.</small>
+                            <small class="form-text text-muted">Current value: {{ existing_flow_gpm|floatformat:1 }} GPM. New value must be greater than {{ existing_flow_gpm|floatformat:1 }} GPM.</small>
                         {% endif %}
                         <div class="field-error" style="color: red; display: none;"></div>
                         {% if form.flow_rate.errors %}
@@ -110,9 +110,11 @@
                         </label>
                         <select name="flow_rate_reduced"
                                 id="{{ form.flow_rate_reduced.id_for_label }}"
-                                class="pfas-form-control">
-                            <option value="False" {% if form.flow_rate_reduced.value == False or form.flow_rate_reduced.value == 'False' %}selected{% endif %}>No</option>
-                            <option value="True" {% if form.flow_rate_reduced.value == True or form.flow_rate_reduced.value == 'True' %}selected{% endif %}>Yes</option>
+                                class="pfas-form-control"
+                                required>
+                            <option value="" {% if form.flow_rate_reduced.value == None or form.flow_rate_reduced.value == '' or form.flow_rate_reduced.value == 'None' %}selected{% endif %}>Select one</option>
+                            <option value="No" {% if form.flow_rate_reduced.value == "No" %}selected{% endif %}>No</option>
+                            <option value="Yes" {% if form.flow_rate_reduced.value == "Yes" %}selected{% endif %}>Yes</option>
                         </select>
                         <div class="field-error" style="color: red; display: none;"></div>
                         {% if form.flow_rate_reduced.errors %}
@@ -134,9 +136,11 @@
                         </label>
                         <select name="existed"
                                 id="{{ form.existed.id_for_label }}"
-                                class="pfas-form-control">
-                            <option value="False" {% if form.existed.value == False or form.existed.value == 'False' %}selected{% endif %}>No</option>
-                            <option value="True" {% if form.existed.value == True or form.existed.value == 'True' or form.existed.value == None %}selected{% endif %}>Yes</option>
+                                class="pfas-form-control"
+                                required>
+                            <option value="" {% if form.existed.value == None or form.existed.value == '' or form.existed.value == 'None' %}selected{% endif %}>Select one</option>
+                            <option value="No" {% if form.existed.value == "No" %}selected{% endif %}>No</option>
+                            <option value="Yes" {% if form.existed.value == "Yes" %}selected{% endif %}>Yes</option>
                         </select>
                         <div class="field-error" style="color: red; display: none;"></div>
                         {% if form.existed.errors %}
