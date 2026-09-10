@@ -18,6 +18,7 @@ from .models import (Pws, Source, PfasResult, FlowRate, ClaimSource, ClaimFlowRa
 from .forms import MaxFlowRateUpdateForm, AnnualProductionForm, PfasResultUpdateForm, ContactForm, pwsInfoForm, \
     phase2SourceInfoForm, phase2MaxFlowForm, phase2AnnualFlowForm, phase2PfasResultsForm, \
     formConstants, annualFiles, pfasFiles, maxFlowFile
+from .utils.data_cleaning import get_phase1_sources, get_tb_sources, get_phase2_sources
 from .utils.dropbox_utils import upload_to_dropbox, dropboxLink
 
 # Custom functions
@@ -224,24 +225,17 @@ def payment_details(request):
 @never_cache
 def landing_page(request):
     pwsid = request.user.username
-    # Retrieve the PWS associated with the logged-in user; otherwise, throw an error.
 
     pws_record = pwsCreds.objects.filter(
         pwsid=pwsid
     ).values('pwsid', 'pws_name').get(pwsid=pwsid)
 
     # Check whether this PWS has PFAS records in each model
-    has_phase1_claim = ClaimPfasResult.objects.filter(
-        pwsid=pwsid
-    ).exists()
+    has_phase1_claim = bool(get_phase1_sources(pwsid))
 
-    has_tb_claim = TB_ClaimPfasResult.objects.filter(
-        pwsid=pwsid
-    ).exists()
+    has_tb_claim = bool(get_tb_sources(pwsid))
 
-    has_phase2_claim = Phase2_ClaimPfasResult.objects.filter(
-        pwsid=pwsid
-    ).exists()
+    has_phase2_claim = bool(get_phase2_sources(pwsid))
 
     context = {
         'pws': pws_record,

@@ -576,6 +576,8 @@ class ClaimPws(models.Model):
     timestamp = models.DateTimeField(blank=True, null=True)
     in_consortium = models.BooleanField(blank=True, null=True)
     data_origin = models.TextField(default="Claims Portal")
+    x3m_eligibility_determination = models.TextField(blank=True, null=True)
+    dupont_eligibility_determination = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = True
@@ -683,6 +685,24 @@ class TB_ClaimPfasResult(models.Model):
         db_table = 'claim_tb_pfas_result'
 
 
+class TB_ClaimPws(models.Model):
+
+    row_names = models.BigAutoField(primary_key=True)
+    pwsid = models.TextField(blank=True, null=True)
+    pwsid_portal = models.TextField(blank=True, null=True)
+    pws_name = models.TextField(blank=True, null=True)
+    tyco_eligibility_determination = models.TextField(blank=True, null=True)
+    basf_eligibility_determination = models.TextField(blank=True, null=True)
+    timestamp = models.DateTimeField(blank=True, null=True)
+    data_origin = models.TextField(default="Claims Portal")
+
+    class Meta:
+        managed = True
+        db_table = 'claim_tb_pws'
+
+
+
+
 class TB_ClaimFlowRate(models.Model):
     row_names = models.BigAutoField(primary_key=True)
     claim_number = models.FloatField(blank=True, null=True)
@@ -735,7 +755,7 @@ class TB_ClaimSource(models.Model):
     needs_recalculation = models.TextField(blank=True, null=True)
     water_source_id = models.FloatField(blank=True, null=True)
     source_name = models.TextField(blank=True, null=True)
-    water_source_determination = models.FloatField(blank=True, null=True)
+    water_source_determination = models.TextField(blank=True, null=True)
     source_type = models.TextField(blank=True, null=True)
     source_type_other = models.TextField(blank=True, null=True)
     pws_owns_source = models.BooleanField(blank=True, null=True)
@@ -1033,3 +1053,35 @@ class Phase2_ClaimFlowRate(models.Model):
     class Meta:
         managed = True
         db_table = 'claim_3d_p2_flow_rate'
+
+
+class Phase2_ClaimPws(models.Model):
+
+    row_names = models.BigAutoField(primary_key=True)
+    pwsid = models.TextField(blank=True, null=True)
+    pwsid_portal = models.TextField(blank=True, null=True)
+    pws_name = models.TextField(blank=True, null=True)
+    x3m_phase_ii_eligibility_determination = models.TextField(blank=True, null=True)
+    dupont_phase_ii_eligibility_determination = models.TextField(blank=True, null=True)
+    timestamp = models.DateTimeField(blank=True, null=True)
+    data_origin = models.TextField(default="Claims Portal")
+
+    class Meta:
+        managed = True
+        db_table = 'claim_3d_p2_pws'
+
+
+class Phase2_ClaimSource(models.Model):
+
+    row_name = models.BigAutoField(primary_key=True)
+    pwsid = models.TextField(blank=True, null=True)
+    pws_name = models.TextField(blank=True, null=True)
+    source_name = models.TextField(blank=True, null=True)
+    water_source_determination = models.TextField(blank=True, null=True)
+    timestamp = models.DateTimeField(blank=True, null=True)
+    data_origin = models.TextField(default="Claims Portal")
+
+
+    class Meta:
+        managed = True
+        db_table = 'claim_3d_p2_source'
