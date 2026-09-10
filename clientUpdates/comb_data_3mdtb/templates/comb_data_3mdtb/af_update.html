@@ -11,7 +11,7 @@
     <div class="pfas-update-container">
         <div class="pfas-update-header">
             <h2>Update Annual Production (Flow Rate)</h2>
-            <p>Source: {{ source_name }} | Year: {{ year }} | PWSID: {{ pwsid }}</p>
+            <p>Source: {{ source_name }} | Year: {{ year|floatformat:0 }} | PWSID: {{ pwsid }}</p>
         </div>
 
         <form id="af-update-form"
@@ -106,7 +106,7 @@
 
                     <div class="pfas-form-group col-md-6">
                         <label for="{{ form.existed.id_for_label }}">
-                            Did the Source Exist in {{ year|default:"" }}?
+                            Did the Source Exist in {{ year|floatformat:0|default:"" }}?
                             <span class="tooltip-container">
                                 <i class="bi bi-info-circle"></i>
                                 <span class="tooltip-text">Please indicate whether the source existed in the specified year</span>
