@@ -2,10 +2,9 @@
 
 {% block content %}
 
-<div class = "card" style="display: flex; width:80%; margin:auto; text-align:center">
-
-    <h1>{{pws.pwsid}} : {{pws.pws_name|title}}</h1>
-
+<div class = "card" style="display: flex; flex-direction: column; width:80%; margin:auto; text-align:center; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border: none; background-color: #f8f9fa;">
+    <h1 style="font-weight: 500; color: #333; margin-bottom: 5px;">{{pws.pws_name|title}}</h1>
+    <p style="font-size: 1.2rem; color: #6c757d; font-weight: 400; margin: 0;">PWS ID: {{pws.pwsid}}</p>
 </div>
 
 <div class = "card-container" style= "flex-wrap:wrap; align-items:stretch">
