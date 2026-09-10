@@ -45,7 +45,8 @@
         <form id="mf-update-form"
               method="post"
               action="{% url 'comb_data_3mdtb:mf_update' %}"
-              enctype="multipart/form-data">
+              enctype="multipart/form-data"
+              novalidate>
 
             {% csrf_token %}
             
@@ -74,6 +75,7 @@
                                placeholder="Enter maximum flow rate"
                                value="{{ form.flow_rate.value|default:'' }}"
                                required>
+                        <div class="field-error" style="color: red; display: none;"></div>
                         {% if form.flow_rate.errors %}
                             <div class="pfas-error-message" style="color: red;">
                                 {% for error in form.flow_rate.errors %}
@@ -96,6 +98,7 @@
                             <option value="MGY" {% if form.unit.value == "MGY" %}selected{% endif %}>MGY</option>
                             <option value="AFPY" {% if form.unit.value == "AFPY" %}selected{% endif %}>AFPY</option>
                         </select>
+                        <div class="field-error" style="color: red; display: none;"></div>
                         {% if form.unit.errors %}
                             <div class="pfas-error-message" style="color: red;">
                                 {% for error in form.unit.errors %}
@@ -121,6 +124,7 @@
                            placeholder="Enter how the max flow rate was determined"
                            value="{{ form.method_determined.value|default:'' }}"
                            required>
+                    <div class="field-error" style="color: red; display: none;"></div>
                     {% if form.method_determined.errors %}
                         <div class="pfas-error-message" style="color: red;">
                             {% for error in form.method_determined.errors %}
@@ -137,6 +141,7 @@
                            id="{{ form.supporting_file.id_for_label }}"
                            class="pfas-form-control"
                            required>
+                    <div class="field-error" style="color: red; display: none;"></div>
                     {% if form.supporting_file.errors %}
                         <div class="pfas-error-message" style="color: red;">
                             {% for error in form.supporting_file.errors %}
@@ -148,7 +153,11 @@
                 </div>
 
                 {% if form.errors %}
-                    <div class="pfas-general-error" style="color: red; margin-top: 15px; font-weight: bold; text-align: center;">
+                    <div id="pfas-general-error" class="pfas-general-error" style="color: red; margin-top: 15px; font-weight: bold; text-align: center;">
+                        Submission failure: please correct all validation errors.
+                    </div>
+                {% else %}
+                    <div id="pfas-general-error" class="pfas-general-error" style="color: red; margin-top: 15px; font-weight: bold; text-align: center; display: none;">
                         Submission failure: please correct all validation errors.
                     </div>
                 {% endif %}
@@ -159,6 +168,8 @@
                 <button type="submit" class="btn btn-primary pfas-modal-save">Save</button>
             </div>
         </form>
+        
+        <script src="{% static 'comb_data_3mdtb/js/mf_update.js' %}"></script>
     </div>
 </div>
 {% endblock %}

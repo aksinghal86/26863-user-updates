@@ -187,7 +187,11 @@ class AFUpdateForm(forms.ModelForm):
 
 
 class MFUpdateForm(forms.ModelForm):
-    supporting_file = forms.FileField(required=True, label="Supporting Document")
+    supporting_file = forms.FileField(
+        required=True,
+        label="Supporting Document",
+        error_messages={'required': 'A file must be uploaded'}
+    )
 
     class Meta:
         model = UpdateMaxFlowRate
