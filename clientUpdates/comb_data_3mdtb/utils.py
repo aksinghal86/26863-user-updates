@@ -1,3 +1,4 @@
+from clientUpdates.utils.data_cleaning import get_phase1_sources, get_tb_sources, get_phase2_sources
 from .models import ClaimPfasResult, TB_ClaimPfasResult, ClaimFlowRate, TB_ClaimFlowRate, Phase2_ClaimFlowRate, \
     Phase2_ClaimPfasResult, UpdatePfasResult, UpdateAnnualFlowRate, UpdateMaxFlowRate
 
@@ -12,19 +13,31 @@ def process_pfas(pwsid):
         "result_ppt"
     ]
 
+    phase1_sources = get_phase1_sources(pwsid)
+    phase1_source_names = [s['source_name'] for s in phase1_sources]
+
+    tb_sources = get_tb_sources(pwsid)
+    tb_source_names = [s['source_name'] for s in tb_sources]
+
+    phase2_sources = get_phase2_sources(pwsid)
+    phase2_source_names = [s['source_name'] for s in phase2_sources]
+
     # Get PFAS records for this PWSID from the first model
     data1 = ClaimPfasResult.objects.filter(
-        pwsid=pwsid
+        pwsid=pwsid,
+        source_name__in=phase1_source_names
     ).values(*fields)
 
     # Get PFAS records for this PWSID from the second model
     data2 = TB_ClaimPfasResult.objects.filter(
-        pwsid=pwsid
+        pwsid=pwsid,
+        source_name__in=tb_source_names
     ).values(*fields)
 
     # Get PFAS records for this PWSID from the third model
     data3 = Phase2_ClaimPfasResult.objects.filter(
-        pwsid=pwsid
+        pwsid=pwsid,
+        source_name__in=phase2_source_names
     ).values(*fields)
 
     # Get any updates made to PFAS results
@@ -117,19 +130,31 @@ def process_annual_flow(pwsid):
         "flow_rate_gpm",
     ]
 
+    phase1_sources = get_phase1_sources(pwsid)
+    phase1_source_names = [s['source_name'] for s in phase1_sources]
+
+    tb_sources = get_tb_sources(pwsid)
+    tb_source_names = [s['source_name'] for s in tb_sources]
+
+    phase2_sources = get_phase2_sources(pwsid)
+    phase2_source_names = [s['source_name'] for s in phase2_sources]
+
     # Get historical data from all three models.
     claim_data = ClaimFlowRate.objects.filter(
         pwsid=pwsid,
+        source_name__in=phase1_source_names,
         source_variable="AFR",
     ).values(*fields)
 
     tb_claim_data = TB_ClaimFlowRate.objects.filter(
         pwsid=pwsid,
+        source_name__in=tb_source_names,
         source_variable="AFR",
     ).values(*fields)
 
     phase2_claim_data = Phase2_ClaimFlowRate.objects.filter(
         pwsid=pwsid,
+        source_name__in=phase2_source_names,
         source_variable="AFR",
     ).values(*fields)
 
@@ -228,19 +253,31 @@ def process_max_flow(pwsid):
         "flow_rate_gpm",
     ]
 
+    phase1_sources = get_phase1_sources(pwsid)
+    phase1_source_names = [s['source_name'] for s in phase1_sources]
+
+    tb_sources = get_tb_sources(pwsid)
+    tb_source_names = [s['source_name'] for s in tb_sources]
+
+    phase2_sources = get_phase2_sources(pwsid)
+    phase2_source_names = [s['source_name'] for s in phase2_sources]
+
     # Get max flow data from all three models.
     claim_data = ClaimFlowRate.objects.filter(
         pwsid=pwsid,
+        source_name__in=phase1_source_names,
         source_variable="VFR",
     ).values(*fields)
 
     tb_claim_data = TB_ClaimFlowRate.objects.filter(
         pwsid=pwsid,
+        source_name__in=tb_source_names,
         source_variable="VFR",
     ).values(*fields)
 
     phase2_claim_data = Phase2_ClaimFlowRate.objects.filter(
         pwsid=pwsid,
+        source_name__in=phase2_source_names,
         source_variable="VFR",
     ).values(*fields)
 
