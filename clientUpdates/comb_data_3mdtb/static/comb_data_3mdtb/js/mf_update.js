@@ -44,15 +44,39 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // 2. Flow rate validation
-        const flowRateInput = document.getElementsByName('flow_rate')[0];
-        if (flowRateInput && flowRateInput.value) {
-            const val = parseFloat(flowRateInput.value);
-            if (val < 0) {
-                showError('flow_rate', "Flow rate cannot be negative.");
+    // 2. Flow rate validation
+    const flowRateInput = document.getElementsByName('flow_rate')[0];
+    const unitInput = document.getElementsByName('unit')[0];
+    const existingMaxFlowGpmInput = document.getElementById('existing-max-flow-gpm');
+    
+    if (flowRateInput && flowRateInput.value && unitInput && unitInput.value) {
+        const val = parseFloat(flowRateInput.value);
+        if (val < 0) {
+            showError('flow_rate', "Flow rate cannot be negative.");
+            hasErrors = true;
+        } else if (existingMaxFlowGpmInput && existingMaxFlowGpmInput.value) {
+            const existingGpm = parseFloat(existingMaxFlowGpmInput.value);
+            const unit = unitInput.value.toLowerCase();
+            let newGpm = 0;
+            
+            if (unit === 'gpm') {
+                newGpm = val;
+            } else if (unit === 'mgd') {
+                newGpm = val * 1000000 / 1440;
+            } else if (unit === 'gpy') {
+                newGpm = val / (365 * 1440);
+            } else if (unit === 'mgy') {
+                newGpm = val * 1000000 / (365 * 1440);
+            } else if (unit === 'afpy') {
+                newGpm = val * 325851 / (365 * 1440);
+            }
+            
+            if (newGpm <= existingGpm) {
+                showError('flow_rate', `New flow rate must be greater than the current value of ${existingGpm.toFixed(1)} GPM.`);
                 hasErrors = true;
             }
         }
+    }
 
         if (hasErrors) {
             event.preventDefault();

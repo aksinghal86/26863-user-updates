@@ -53,6 +53,7 @@
             <!-- Hidden context fields -->
             <input type="hidden" name="pwsid" value="{{ pwsid|default:'' }}">
             <input type="hidden" name="source_name" value="{{ source_name|default:'' }}">
+            <input type="hidden" id="existing-max-flow-gpm" value="{{ existing_max_flow_gpm|default:'' }}">
 
             {% if form.non_field_errors %}
                 <div class="pfas-error-message" style="color: red; margin-bottom: 10px;">

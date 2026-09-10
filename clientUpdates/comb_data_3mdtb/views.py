@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, reverse
 from django.utils.http import urlencode
 
 from clientUpdates.utils.dropbox_utils import upload_to_dropbox
-from .utils import process_pfas, process_annual_flow, get_dashboard_data, get_all_yearly_flows
+from .utils import process_pfas, process_annual_flow, process_max_flow, get_dashboard_data, get_all_yearly_flows
 from .forms import PFASUpdateForm, AFUpdateForm, MFUpdateForm, AddNewSourceForm
 from clientUpdates.utils.calculations import calc_gpm_flow_rate
 
@@ -210,6 +210,17 @@ def mf_update(request):
         pwsid = request.POST.get('pwsid')
         source_name = request.POST.get('source_name')
 
+        # Get existing max flow rate for validation in form
+        existing_max_flow_gpm = None
+        if pwsid and source_name:
+            max_flow_data = process_max_flow(pwsid)
+            for item in max_flow_data:
+                if item['source_name'] == source_name:
+                    existing_max_flow_gpm = item['max_flow_gpm']
+                    break
+        
+        form = MFUpdateForm(request.POST, request.FILES, existing_max_flow_gpm=existing_max_flow_gpm)
+
         if form.is_valid():
             instance = form.save(commit=False)
             
@@ -232,6 +243,7 @@ def mf_update(request):
                     "form": form,
                     "pwsid": pwsid,
                     "source_name": source_name,
+                    "existing_max_flow_gpm": existing_max_flow_gpm,
                 }
             )
     
@@ -239,7 +251,16 @@ def mf_update(request):
     pwsid = request.GET.get('pwsid')
     source_name = request.GET.get('source_name')
     
-    form = MFUpdateForm()
+    # Get existing max flow rate to prevent lower updates
+    existing_max_flow_gpm = None
+    if pwsid and source_name:
+        max_flow_data = process_max_flow(pwsid)
+        for item in max_flow_data:
+            if item['source_name'] == source_name:
+                existing_max_flow_gpm = item['max_flow_gpm']
+                break
+    
+    form = MFUpdateForm(existing_max_flow_gpm=existing_max_flow_gpm)
     return render(
         request,
         "comb_data_3mdtb/mf_update.html",
@@ -247,6 +268,7 @@ def mf_update(request):
             "form": form,
             "pwsid": pwsid,
             "source_name": source_name,
+            "existing_max_flow_gpm": existing_max_flow_gpm,
         }
     )
 

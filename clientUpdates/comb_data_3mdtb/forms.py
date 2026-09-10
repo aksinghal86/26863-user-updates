@@ -202,13 +202,26 @@ class MFUpdateForm(forms.ModelForm):
         ]
 
     def __init__(self, *args, **kwargs):
+        self.existing_max_flow_gpm = kwargs.pop("existing_max_flow_gpm", None)
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.required = True
 
     def clean_flow_rate(self):
         flow_rate = self.cleaned_data.get("flow_rate")
+        unit = self.cleaned_data.get("unit")
+        
         if flow_rate is not None and flow_rate < 0:
             raise forms.ValidationError("Flow rate cannot be negative.")
+
+        if flow_rate is not None and unit and self.existing_max_flow_gpm is not None:
+            from clientUpdates.utils.calculations import calc_gpm_flow_rate
+            new_flow_gpm = calc_gpm_flow_rate(flow_rate, unit.lower())
+            
+            if new_flow_gpm <= float(self.existing_max_flow_gpm):
+                raise forms.ValidationError(
+                    f"New flow rate must be greater than the current value of {self.existing_max_flow_gpm:.1f} GPM."
+                )
+                
         return flow_rate
 
