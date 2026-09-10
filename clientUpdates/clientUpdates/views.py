@@ -14,7 +14,8 @@ from .models import (Pws, Source, PfasResult, FlowRate, ClaimSource, ClaimFlowRa
                      TB_ClaimPfasResult, TB_ClaimFlowRate, supplementalSourceTracker, TB_ClaimSource,
                      pwsPaymentDist, srcPaymentDist, ClaimSubmission, phase2PwsInfo, phase2AnnualFlow,
                      phase2PfasResults,
-                     pwsCreds, phase2SourceInfo, phase2MaxFlow, Phase2_ClaimPfasResult)
+                     pwsCreds, phase2SourceInfo, phase2MaxFlow, Phase2_ClaimPfasResult, Phase2_ClaimSource,
+                     Phase2_ClaimFlowRate)
 from .forms import MaxFlowRateUpdateForm, AnnualProductionForm, PfasResultUpdateForm, ContactForm, pwsInfoForm, \
     phase2SourceInfoForm, phase2MaxFlowForm, phase2AnnualFlowForm, phase2PfasResultsForm, \
     formConstants, annualFiles, pfasFiles, maxFlowFile
@@ -93,24 +94,37 @@ def root_redirect(request):
 @login_required
 @never_cache
 def dashboard(request, claim, supplemental=0):
-    # Retrieve the PWS associated with the logged-in user; otherwise, throw an error.
-    #pws_record = Pws.objects.get(form_userid=request.user.username)
-    pws_record = pwsCreds.objects.get(pwsid=request.user.username)
-    if not pws_record:
-        raise Http404("Record not found")
 
-    # Pull all the sources filed in the claims portal. Only select
-    # those that are unimpacted (where all_nds = True)
-    # sources = (Source.objects.
-    #            filter(pwsid=pws_record.pwsid).
-    #            filter(all_nds=True))
+    pwsid = request.user.username
 
-    if claim == "3M_DuPont":
-        claim_filter = "3M/DuPont Phase 1"
-    elif claim == "Tyco_BASF":
-        claim_filter = "Tyco/BASF"
+    pws_record = (pwsCreds.objects
+                  .filter(pwsid=pwsid)
+                  .values('pwsid', 'pws_name').get(pwsid=pwsid))
 
-    sources = supplementalSourceTracker.objects.filter(pwsid=pws_record.pwsid, claim=claim_filter)
+    if supplemental:
+
+        if claim == "3M_DuPont":
+            claim_filter = "3M/DuPont Phase 1"
+
+        elif claim == "Tyco_BASF":
+            claim_filter = "Tyco/BASF"
+
+        elif claim == "3M_DuPont_P2":
+            claim_filter = "3M/DuPont Phase 2"
+
+        sources = supplementalSourceTracker.objects.filter(pwsid=pwsid, claim=claim_filter)
+
+    else:
+
+        if claim == "3M_DuPont":
+            sources = get_phase1_sources(pwsid)
+
+        elif claim == "Tyco_BASF":
+            sources = get_tb_sources(pwsid)
+
+        elif claim == "3M_DuPont_P2":
+            sources = get_phase2_sources(pwsid)
+
 
     context = {
         'pws': pws_record,
@@ -283,6 +297,12 @@ def source_detail_view(request, claim, pwsid, source_name):
         pfas_results = TB_ClaimPfasResult.objects.filter(pwsid=pwsid, source_name=source_name).exclude(
             analyte__isnull=True)
         flow_data = TB_ClaimFlowRate.objects.filter(pwsid=pwsid, source_name=source_name)
+
+    if claim == "3M_DuPont_P2":
+        source = get_object_or_404(Phase2_ClaimSource, pwsid=pwsid, source_name=source_name)
+        pfas_results = Phase2_ClaimPfasResult.objects.filter(pwsid=pwsid, source_name=source_name).exclude(
+            analyte__isnull=True)
+        flow_data = Phase2_ClaimFlowRate.objects.filter(pwsid=pwsid, source_name=source_name)
 
     pfas_results = list(pfas_results.values())
     for i in pfas_results:

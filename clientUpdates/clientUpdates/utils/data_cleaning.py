@@ -14,7 +14,7 @@ def get_phase1_sources(pwsid):
         sources = (ClaimSource.objects.filter(pwsid=pwsid)
                    .filter(Q(water_source_determination__startswith="Eligible"))
                    .exclude(source_name__endswith="- SUPPLEMENTAL")
-                   .values('pwsid', 'pws_name', 'source_name'))
+                   .values('pwsid', 'pws_name', 'source_name', 'all_nds'))
     else:
         sources = []
 
@@ -37,7 +37,7 @@ def get_phase2_sources(pwsid):
                    .filter(Q(water_source_determination__startswith="Eligible")
                                                                  | Q(water_source_determination__isnull=True))
                    .exclude(source_name__endswith="- SUPPLEMENTAL")
-                   .values('pwsid', 'pws_name', 'source_name'))
+                   .values('pwsid', 'pws_name', 'source_name', 'all_nds'))
     else:
         sources = []
 
@@ -56,7 +56,7 @@ def get_tb_sources(pwsid):
         sources = (TB_ClaimSource.objects.filter(pwsid=pwsid)
                    .filter(Q(water_source_determination__startswith="Eligible"))
                    .exclude(source_name__endswith="- SUPPLEMENTAL")
-                   .values('pwsid', 'pws_name', 'source_name'))
+                   .values('pwsid', 'pws_name', 'source_name', 'all_nds'))
     else:
         sources = []
 

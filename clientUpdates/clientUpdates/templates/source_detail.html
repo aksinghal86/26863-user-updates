@@ -3,14 +3,29 @@
 
 {% block content %}
 <div class="container">
-    <h3 class="no-bottom-border" style="text-align:center; font-weight:bold;">{% if claim == "3M_DuPont" %} 3M/Dupont Phase I Action Fund Claim Data {% else %} Tyco/BASF Action Fund Claim Data {% endif %}</h3>
+    <h3 class="no-bottom-border" style="text-align:center; font-weight:bold;">
+        {% if claim == "3M_DuPont" %}
+            3M/Dupont Phase I Action Fund Claim Data
+        {% elif claim == "Tyco_BASF" %}
+            Tyco/BASF Action Fund Claim Data
+        {% elif claim == "3M_DuPont_P2" %}
+            3M/DuPont Phase 2 Action Fund Claim Data
+        {% endif %}</h3>
+    </h3>
     <h5 class="no-bottom-border" style="text-align:center; font-style:italic; margin-bottom:20px;">{{source.source_name}}</h5>
 
     {% if not impacted %}
         <div class="alert alert-primary" style="display:flex;">
             <i class="bi bi-info-circle h5" style="padding-right:5px; color:blue; width:5%"></i>
             <p style="text-align:left; margin:0px;">This source was <strong>unimpacted</strong> by PFAS, meaning there were no detections of PFAS at the time
-                of filing the {% if claim == "3M_DuPont" %} 3M/Dupont Phase I Action Fund Claim{% else %} Tyco/BASF Action Fund Claim{% endif %}. Additionally, since this source
+                of filing the
+                {% if claim == "3M_DuPont" %}
+                    3M/Dupont Phase I Action Fund Claim Data.
+                {% elif claim == "Tyco_BASF" %}
+                    Tyco/BASF Action Fund Claim Data.
+                {% elif claim == "3M_DuPont_P2" %}
+                    3M/DuPont Phase 2 Action Fund Claim Data.
+                {% endif %} Additionally, since this source
                 was unimpacted, max flow rate and annual production data were not required to be submitted. Therefore, there is no useful information
                 to display for this source. If you have any questions, please <a style="color:blue;" href="{% url 'contact_default' %}">contact</a> EH&E.</p>
         </div>

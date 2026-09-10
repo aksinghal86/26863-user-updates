@@ -772,7 +772,7 @@ class TB_ClaimSource(models.Model):
     partner_pwsid = models.TextField(blank=True, null=True)
     idws_partner_relationship = models.TextField(blank=True, null=True)
     claimed_share_percent = models.FloatField(blank=True, null=True)
-    all_nds = models.BooleanField(default=False)
+    all_nds = models.BooleanField(blank=True, null=True)
     in_consortium = models.BooleanField(blank=True, null=True)
     timestamp = models.DateTimeField(blank=True, null=True)
     data_origin = models.TextField(default="Claims Portal")
@@ -1073,11 +1073,12 @@ class Phase2_ClaimPws(models.Model):
 
 class Phase2_ClaimSource(models.Model):
 
-    row_name = models.BigAutoField(primary_key=True)
+    row_names = models.BigAutoField(primary_key=True)
     pwsid = models.TextField(blank=True, null=True)
     pws_name = models.TextField(blank=True, null=True)
     source_name = models.TextField(blank=True, null=True)
     water_source_determination = models.TextField(blank=True, null=True)
+    all_nds = models.BooleanField(blank=True, null=True)
     timestamp = models.DateTimeField(blank=True, null=True)
     data_origin = models.TextField(default="Claims Portal")
 
