@@ -30,7 +30,8 @@
         <form id="af-update-form"
               method="post"
               action="{% url 'comb_data_3mdtb:af_update' %}"
-              enctype="multipart/form-data">
+              enctype="multipart/form-data"
+              novalidate>
 
             {% csrf_token %}
             
@@ -61,6 +62,7 @@
                                placeholder="Enter flow rate"
                                value="{{ form.flow_rate.value|default:"" }}"
                                required>
+                        <div class="field-error" style="color: red; display: none;"></div>
                         {% if form.flow_rate.errors %}
                             <div class="pfas-error-message" style="color: red;">
                                 {% for error in form.flow_rate.errors %}
@@ -83,6 +85,7 @@
                             <option value="MGY" {% if form.unit.value == "MGY" %}selected{% endif %}>MGY</option>
                             <option value="AFPY" {% if form.unit.value == "AFPY" %}selected{% endif %}>AFPY</option>
                         </select>
+                        <div class="field-error" style="color: red; display: none;"></div>
                         {% if form.unit.errors %}
                             <div class="pfas-error-message" style="color: red;">
                                 {% for error in form.unit.errors %}
@@ -108,6 +111,7 @@
                             <option value="False" {% if form.flow_rate_reduced.value == False or form.flow_rate_reduced.value == 'False' %}selected{% endif %}>No</option>
                             <option value="True" {% if form.flow_rate_reduced.value == True or form.flow_rate_reduced.value == 'True' %}selected{% endif %}>Yes</option>
                         </select>
+                        <div class="field-error" style="color: red; display: none;"></div>
                         {% if form.flow_rate_reduced.errors %}
                             <div class="pfas-error-message" style="color: red;">
                                 {% for error in form.flow_rate_reduced.errors %}
@@ -131,6 +135,7 @@
                             <option value="False" {% if form.existed.value == False or form.existed.value == 'False' %}selected{% endif %}>No</option>
                             <option value="True" {% if form.existed.value == True or form.existed.value == 'True' or form.existed.value == None %}selected{% endif %}>Yes</option>
                         </select>
+                        <div class="field-error" style="color: red; display: none;"></div>
                         {% if form.existed.errors %}
                             <div class="pfas-error-message" style="color: red;">
                                 {% for error in form.existed.errors %}
@@ -148,6 +153,7 @@
                            id="{{ form.supporting_file.id_for_label }}"
                            class="pfas-form-control"
                            required>
+                    <div class="field-error" style="color: red; display: none;"></div>
                     {% if form.supporting_file.errors %}
                         <div class="pfas-error-message" style="color: red;">
                             {% for error in form.supporting_file.errors %}
@@ -159,7 +165,11 @@
                 </div>
 
                 {% if form.errors %}
-                    <div class="pfas-general-error" style="color: red; margin-top: 15px; font-weight: bold; text-align: center;">
+                    <div class="pfas-general-error" id="pfas-general-error" style="color: red; margin-top: 15px; font-weight: bold; text-align: center;">
+                        Submission failure: please correct all validation errors.
+                    </div>
+                {% else %}
+                    <div id="pfas-general-error" style="color: red; margin-top: 15px; font-weight: bold; text-align: center; display: none;">
                         Submission failure: please correct all validation errors.
                     </div>
                 {% endif %}
@@ -173,4 +183,5 @@
         </form>
     </div>
 </div>
+<script src="{% static 'comb_data_3mdtb/js/af_update.js' %}"></script>
 {% endblock %}

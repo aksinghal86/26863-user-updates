@@ -136,7 +136,11 @@ class PFASUpdateForm(forms.ModelForm):
 
 
 class AFUpdateForm(forms.ModelForm):
-    supporting_file = forms.FileField(required=True, label="Supporting Document")
+    supporting_file = forms.FileField(
+        required=True,
+        label="Supporting Document",
+        error_messages={'required': 'A file must be uploaded'}
+    )
 
     class Meta:
         model = UpdateAnnualFlowRate
@@ -154,9 +158,6 @@ class AFUpdateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
-            if field_name in ["flow_rate_reduced", "existed"]:
-                field.required = False
-            else:
                 field.required = True
 
     def clean_flow_rate(self):
