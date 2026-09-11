@@ -32,10 +32,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     form.addEventListener('submit', function(event) {
         let isValid = true;
+        const generalError = document.getElementById('pfas-general-error');
 
         // Clear previous JS errors
         form.querySelectorAll('.js-error').forEach(e => e.textContent = '');
         form.querySelectorAll('.is-invalid').forEach(i => i.classList.remove('is-invalid'));
+        if (generalError) generalError.style.display = 'none';
 
         // Validate Source Name
         if (sourceName.value.trim().length < 3) {
@@ -66,6 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!isValid) {
             event.preventDefault();
+            if (generalError) generalError.style.display = 'block';
             // Scroll to the first error
             const firstError = form.querySelector('.is-invalid');
             if (firstError) {

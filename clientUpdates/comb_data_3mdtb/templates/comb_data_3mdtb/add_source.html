@@ -162,9 +162,13 @@
                     </div>
                 </div>
 
-                {% if error_message %}
-                    <div class="pfas-general-error" style="color: red; margin-top: 15px; font-weight: bold; text-align: center;">
-                        {{ error_message }}
+                {% if form.errors %}
+                    <div id="pfas-general-error" class="pfas-general-error" style="color: red; margin-top: 15px; font-weight: bold; text-align: center;">
+                        Submission failure: please correct all validation errors.
+                    </div>
+                {% else %}
+                    <div id="pfas-general-error" class="pfas-general-error" style="color: red; margin-top: 15px; font-weight: bold; text-align: center; display: none;">
+                        Submission failure: please correct all validation errors.
                     </div>
                 {% endif %}
             </div>
