@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const sourceName = form.querySelector('[name="source_name"]');
     const pfasTested = form.querySelector('[name="pfas_tested"]');
     const pfasDetected = form.querySelector('[name="pfas_detected"]');
+    const pfasFile1 = form.querySelector('[name="pfas_file_1"]');
+    const pfasFile2 = form.querySelector('[name="pfas_file_2"]');
     
     // Add validation error display function
     const showError = (input, message) => {
@@ -44,6 +46,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Validate PFAS Tested/Detected logic
         if (pfasTested.value === 'No' && pfasDetected.value === 'Yes') {
             showError(pfasDetected, 'PFAS cannot be detected if it was not tested.');
+            isValid = false;
+        }
+
+        // Validate at least one file is uploaded
+        if (!pfasFile1.value && !pfasFile2.value) {
+            showError(pfasFile1, 'At least one PFAS data file must be uploaded.');
             isValid = false;
         }
 
