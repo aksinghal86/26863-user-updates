@@ -321,6 +321,7 @@ def source_detail_view(request, claim, pwsid, source_name):
     })
 
     annuals = [fr for fr in flow_data if fr['year'] is not None]
+    annuals = sorted(annuals, key=lambda x: x['year'])
     for annual in annuals:
         gpm = annual.get('flow_rate_gpm') or 0
         annual['flow_rate_gpm'] = gpm  # overwrite None with 0
