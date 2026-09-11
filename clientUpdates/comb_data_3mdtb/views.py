@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, reverse
 from django.utils.http import urlencode
+from django.contrib import messages
 
 from clientUpdates.utils.dropbox_utils import upload_to_dropbox
 from .utils import process_pfas, process_annual_flow, process_max_flow, get_dashboard_data, get_all_yearly_flows
@@ -45,6 +46,7 @@ def pfas_update(request):
                 upload_to_dropbox(file=supporting_file, filetype="New Claims/PFAS", pwsid=instance.pwsid)
             
             instance.save()
+            messages.success(request, "Form Submitted Successfully!")
             return redirect("comb_data_3mdtb:landing_page")
         else:
             # Re-render update page with form errors
@@ -149,6 +151,7 @@ def af_update(request):
             instance.flow_rate_gpm = calc_gpm_flow_rate(instance.flow_rate, instance.unit.lower())
             
             instance.save()
+            messages.success(request, "Form Submitted Successfully!")
             
             # Safely build the redirect URL with encoded parameters
             base_url = reverse("comb_data_3mdtb:annual_flows")
@@ -234,6 +237,7 @@ def mf_update(request):
             instance.flow_rate_gpm = calc_gpm_flow_rate(instance.flow_rate, instance.unit.lower())
             
             instance.save()
+            messages.success(request, "Form Submitted Successfully!")
             return redirect("comb_data_3mdtb:landing_page")
         else:
             return render(
@@ -296,6 +300,7 @@ def add_source(request):
                 upload_to_dropbox(file=pfas_file_2, filetype="New Claims/PFAS", pwsid=pwsid)
 
             instance.save()
+            messages.success(request, "Form Submitted Successfully!")
             return redirect("comb_data_3mdtb:landing_page")
         else:
             return render(request, "comb_data_3mdtb/add_source.html", {"form": form})
