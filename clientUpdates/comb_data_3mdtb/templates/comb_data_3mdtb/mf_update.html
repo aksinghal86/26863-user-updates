@@ -13,11 +13,6 @@
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        .pfas-update-header {
-            border-bottom: 1px solid #dee2e6;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-        }
     </style>
 {% endblock %}
 
@@ -76,6 +71,9 @@
                                placeholder="Enter maximum flow rate"
                                value="{{ form.flow_rate.value|default:'' }}"
                                required>
+                        {% if existing_max_flow_gpm %}
+                            <small class="form-text text-muted">New value must be greater than {{ existing_max_flow_gpm|floatformat:1 }} GPM.</small>
+                        {% endif %}
                         <div class="field-error" style="color: red; display: none;"></div>
                         {% if form.flow_rate.errors %}
                             <div class="pfas-error-message" style="color: red;">
