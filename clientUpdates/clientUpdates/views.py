@@ -19,7 +19,7 @@ from .models import (Pws, Source, PfasResult, FlowRate, ClaimSource, ClaimFlowRa
 from .forms import MaxFlowRateUpdateForm, AnnualProductionForm, PfasResultUpdateForm, ContactForm, pwsInfoForm, \
     phase2SourceInfoForm, phase2MaxFlowForm, phase2AnnualFlowForm, phase2PfasResultsForm, \
     formConstants, annualFiles, pfasFiles, maxFlowFile
-from .utils.data_cleaning import get_phase1_sources, get_tb_sources, get_phase2_sources
+from .utils.data_cleaning import get_phase1_sources, get_tb_sources, get_phase2_sources, remove_sup_sources
 from .utils.dropbox_utils import upload_to_dropbox, dropboxLink
 
 # Custom functions
@@ -117,13 +117,13 @@ def dashboard(request, claim, supplemental=0):
     else:
 
         if claim == "3M_DuPont":
-            sources = get_phase1_sources(pwsid)
+            sources = remove_sup_sources(get_phase1_sources(pwsid))
 
         elif claim == "Tyco_BASF":
-            sources = get_tb_sources(pwsid)
+            sources = remove_sup_sources(get_tb_sources(pwsid))
 
         elif claim == "3M_DuPont_P2":
-            sources = get_phase2_sources(pwsid)
+            sources = remove_sup_sources(get_phase2_sources(pwsid))
 
 
     context = {

@@ -1,6 +1,19 @@
-from clientUpdates.utils.data_cleaning import get_phase1_sources, get_tb_sources, get_phase2_sources
+from clientUpdates.utils.data_cleaning import get_phase1_sources, get_tb_sources, get_phase2_sources, remove_sup_suffix
 from .models import ClaimPfasResult, TB_ClaimPfasResult, ClaimFlowRate, TB_ClaimFlowRate, Phase2_ClaimFlowRate, \
     Phase2_ClaimPfasResult, UpdatePfasResult, UpdateAnnualFlowRate, UpdateMaxFlowRate
+
+# a function that returns eligible sources for each claim. E.g., if sources in Phase 1 were considered
+# inelgible, they would not appear in the phase1_source_names list. These lists include sources
+# that filed a supplemental fund claim.
+def get_eligible_sources(pwsid):
+
+    phase1_source_names = [s["source_name"] for s in get_phase1_sources(pwsid)]
+
+    tb_source_names = [s["source_name"] for s in get_tb_sources(pwsid)]
+
+    phase2_source_names = [s["source_name"] for s in get_phase2_sources(pwsid)]
+
+    return phase1_source_names, tb_source_names, phase2_source_names
 
 
 def process_pfas(pwsid):
@@ -13,14 +26,9 @@ def process_pfas(pwsid):
         "result_ppt"
     ]
 
-    phase1_sources = get_phase1_sources(pwsid)
-    phase1_source_names = [s['source_name'] for s in phase1_sources]
+    # get eligible sources by claim
+    phase1_source_names, tb_source_names, phase2_source_names = get_eligible_sources(pwsid)
 
-    tb_sources = get_tb_sources(pwsid)
-    tb_source_names = [s['source_name'] for s in tb_sources]
-
-    phase2_sources = get_phase2_sources(pwsid)
-    phase2_source_names = [s['source_name'] for s in phase2_sources]
 
     # Get PFAS records for this PWSID from the first model
     data1 = ClaimPfasResult.objects.filter(
@@ -28,11 +36,17 @@ def process_pfas(pwsid):
         source_name__in=phase1_source_names
     ).values(*fields)
 
+    # remove supplemental suffix from source names
+    data1 = remove_sup_suffix(data1)
+
     # Get PFAS records for this PWSID from the second model
     data2 = TB_ClaimPfasResult.objects.filter(
         pwsid=pwsid,
         source_name__in=tb_source_names
     ).values(*fields)
+
+    # remove supplemental suffix from source names
+    data2 = remove_sup_suffix(data2)
 
     # Get PFAS records for this PWSID from the third model
     data3 = Phase2_ClaimPfasResult.objects.filter(
@@ -40,13 +54,16 @@ def process_pfas(pwsid):
         source_name__in=phase2_source_names
     ).values(*fields)
 
+    # remove supplemental suffix from source names
+    data3 = remove_sup_suffix(data3)
+
     # Get any updates made to PFAS results
-    data4 = UpdatePfasResult.objects.filter(
+    data4 = list(UpdatePfasResult.objects.filter(
         pwsid=pwsid
-    ).values(*fields)
+    ).values(*fields))
 
     # Combine records from all models
-    data = list(data1) + list(data2) + list(data3) + list(data4)
+    data = data1 + data2 + data3 + data4
 
     # Dictionary to store the results for each water source
     sources = {}
@@ -130,14 +147,9 @@ def process_annual_flow(pwsid):
         "flow_rate_gpm",
     ]
 
-    phase1_sources = get_phase1_sources(pwsid)
-    phase1_source_names = [s['source_name'] for s in phase1_sources]
+    # get eligible sources by claim
+    phase1_source_names, tb_source_names, phase2_source_names = get_eligible_sources(pwsid)
 
-    tb_sources = get_tb_sources(pwsid)
-    tb_source_names = [s['source_name'] for s in tb_sources]
-
-    phase2_sources = get_phase2_sources(pwsid)
-    phase2_source_names = [s['source_name'] for s in phase2_sources]
 
     # Get historical data from all three models.
     claim_data = ClaimFlowRate.objects.filter(
@@ -146,11 +158,17 @@ def process_annual_flow(pwsid):
         source_variable="AFR",
     ).values(*fields)
 
+    # remove supplemental suffix from source names
+    claim_data = remove_sup_suffix(claim_data)
+
     tb_claim_data = TB_ClaimFlowRate.objects.filter(
         pwsid=pwsid,
         source_name__in=tb_source_names,
         source_variable="AFR",
     ).values(*fields)
+
+    # remove supplemental suffix from source names
+    tb_claim_data = remove_sup_suffix(tb_claim_data)
 
     phase2_claim_data = Phase2_ClaimFlowRate.objects.filter(
         pwsid=pwsid,
@@ -158,15 +176,18 @@ def process_annual_flow(pwsid):
         source_variable="AFR",
     ).values(*fields)
 
-    af_updates = UpdateAnnualFlowRate.objects.filter(
+    # remove supplemental suffix from source names
+    phase2_claim_data = remove_sup_suffix(phase2_claim_data)
+
+    af_updates = list(UpdateAnnualFlowRate.objects.filter(
         pwsid=pwsid
-    ).values(*fields)
+    ).values(*fields))
+
+    # Add data from all three models.
+    all_data = claim_data + tb_claim_data + phase2_claim_data + af_updates
 
     # Store data by (pwsid, source_name).
     sources = {}
-
-    # Add data from all three models.
-    all_data = list(claim_data) + list(tb_claim_data) + list(phase2_claim_data) + list(af_updates)
 
     for record in all_data:
         key = (record["pwsid"], record["source_name"])
@@ -253,14 +274,8 @@ def process_max_flow(pwsid):
         "flow_rate_gpm",
     ]
 
-    phase1_sources = get_phase1_sources(pwsid)
-    phase1_source_names = [s['source_name'] for s in phase1_sources]
-
-    tb_sources = get_tb_sources(pwsid)
-    tb_source_names = [s['source_name'] for s in tb_sources]
-
-    phase2_sources = get_phase2_sources(pwsid)
-    phase2_source_names = [s['source_name'] for s in phase2_sources]
+    # get eligible sources by claim
+    phase1_source_names, tb_source_names, phase2_source_names = get_eligible_sources(pwsid)
 
     # Get max flow data from all three models.
     claim_data = ClaimFlowRate.objects.filter(
@@ -269,11 +284,17 @@ def process_max_flow(pwsid):
         source_variable="VFR",
     ).values(*fields)
 
+    # remove supplemental suffix from source names
+    claim_data = remove_sup_suffix(claim_data)
+
     tb_claim_data = TB_ClaimFlowRate.objects.filter(
         pwsid=pwsid,
         source_name__in=tb_source_names,
         source_variable="VFR",
     ).values(*fields)
+
+    # remove supplemental suffix from source names
+    tb_claim_data = remove_sup_suffix(tb_claim_data)
 
     phase2_claim_data = Phase2_ClaimFlowRate.objects.filter(
         pwsid=pwsid,
@@ -281,15 +302,18 @@ def process_max_flow(pwsid):
         source_variable="VFR",
     ).values(*fields)
 
-    mf_updates = UpdateMaxFlowRate.objects.filter(
+    # remove supplemental suffix from source names
+    phase2_claim_data = remove_sup_suffix(phase2_claim_data)
+
+    mf_updates = list(UpdateMaxFlowRate.objects.filter(
         pwsid=pwsid
-    ).values(*fields)
+    ).values(*fields))
 
     # Store data by (pwsid, source_name).
     sources = {}
 
     # Add data from all three models.
-    all_data = list(claim_data) + list(tb_claim_data) + list(phase2_claim_data) + list(mf_updates)
+    all_data = claim_data + tb_claim_data + phase2_claim_data + mf_updates
 
     for record in all_data:
         key = (record["pwsid"], record["source_name"])
@@ -325,6 +349,12 @@ def process_max_flow(pwsid):
 
 def get_dashboard_data(pwsid):
 
+    # Get PFAS data and organize it by pwsid/source_name.
+    pfas_data = {
+        (item["pwsid"], item["source_name"]): item
+        for item in process_pfas(pwsid)
+    }
+
     # Get annual flow data and organize it by pwsid/source_name.
     annual_flow = {
         (item["pwsid"], item["source_name"]): item
@@ -335,12 +365,6 @@ def get_dashboard_data(pwsid):
     max_flow = {
         (item["pwsid"], item["source_name"]): item
         for item in process_max_flow(pwsid)
-    }
-
-    # Get PFAS data and organize it by pwsid/source_name.
-    pfas_data = {
-        (item["pwsid"], item["source_name"]): item
-        for item in process_pfas(pwsid)
     }
 
     results = []
@@ -404,35 +428,46 @@ def get_all_yearly_flows(pwsid, source_name):
         "flow_rate_gpm"
     ]
 
+    source_names = [source_name, f"{source_name} - SUPPLEMENTAL"]
+
     # Get annual flow records from the first model.
     data1 = ClaimFlowRate.objects.filter(
         pwsid=pwsid,
-        source_name=source_name,
+        source_name__in=source_names,
         source_variable="AFR"
     ).values(*fields)
+
+    # remove supplemental suffix from source names
+    data1 = remove_sup_suffix(data1)
 
     # Get annual flow records from the second model.
     data2 = TB_ClaimFlowRate.objects.filter(
         pwsid=pwsid,
-        source_name=source_name,
+        source_name__in=source_names,
         source_variable="AFR"
     ).values(*fields)
+
+    # remove supplemental suffix from source names
+    data2 = remove_sup_suffix(data2)
 
     # Get annual flow records from the third model.
     # Keep the same source_variable filter used in process_annual_flow().
     data3 = Phase2_ClaimFlowRate.objects.filter(
         pwsid=pwsid,
-        source_name=source_name,
+        source_name__in=source_names,
         source_variable="AFR"
     ).values(*fields)
 
-    af_updates = UpdateAnnualFlowRate.objects.filter(
+    # remove supplemental suffix from source names
+    data3 = remove_sup_suffix(data3)
+
+    af_updates = list(UpdateAnnualFlowRate.objects.filter(
         pwsid=pwsid,
-        source_name=source_name
-    ).values(*fields)
+        source_name__in=source_names
+    ).values(*fields))
 
     # Combine records from all three models.
-    data = list(data1) + list(data2) + list(data3) + list(af_updates)
+    data = data1 + data2 + data3 + af_updates
 
     # Dictionary to store the maximum flow for each year.
     yearly_flows = {}

@@ -12,11 +12,13 @@ def get_phase1_sources(pwsid):
 
     if pws_eligible:
         sources = (ClaimSource.objects.filter(pwsid=pwsid)
-                   .filter(Q(water_source_determination__startswith="Eligible"))
-                   .exclude(source_name__endswith="- SUPPLEMENTAL")
+                   .filter(Q(water_source_determination__startswith="Eligible") |
+                           Q(source_name__endswith="- SUPPLEMENTAL"))
                    .values('pwsid', 'pws_name', 'source_name', 'all_nds'))
     else:
-        sources = []
+        sources = ClaimSource.objects.none().values(
+            'pwsid', 'pws_name', 'source_name', 'all_nds'
+        )
 
     return sources
 
@@ -34,12 +36,14 @@ def get_phase2_sources(pwsid):
         # on 09/10/2026 all water_source_determination values are NULL. Keeping NULL values for now but once this is more
         # updated they should only be selected to where there are eligible sources.
         sources = (Phase2_ClaimSource.objects.filter(pwsid=pwsid)
-                   .filter(Q(water_source_determination__startswith="Eligible")
-                                                                 | Q(water_source_determination__isnull=True))
-                   .exclude(source_name__endswith="- SUPPLEMENTAL")
+                   .filter(Q(water_source_determination__startswith="Eligible") |
+                           Q(water_source_determination__isnull=True) |
+                           Q(source_name__endswith="- SUPPLEMENTAL"))
                    .values('pwsid', 'pws_name', 'source_name', 'all_nds'))
     else:
-        sources = []
+        sources = Phase2_ClaimSource.objects.none().values(
+            'pwsid', 'pws_name', 'source_name', 'all_nds'
+        )
 
     return sources
 
@@ -54,10 +58,31 @@ def get_tb_sources(pwsid):
 
     if pws_eligible:
         sources = (TB_ClaimSource.objects.filter(pwsid=pwsid)
-                   .filter(Q(water_source_determination__startswith="Eligible"))
-                   .exclude(source_name__endswith="- SUPPLEMENTAL")
+                   .filter(Q(water_source_determination__startswith="Eligible") |
+                           Q(source_name__endswith="- SUPPLEMENTAL"))
                    .values('pwsid', 'pws_name', 'source_name', 'all_nds'))
     else:
-        sources = []
+        sources = TB_ClaimSource.objects.none().values(
+            'pwsid', 'pws_name', 'source_name', 'all_nds'
+        )
 
     return sources
+
+
+def remove_sup_sources(sources):
+    return [
+        source for source in sources
+        if not source["source_name"].endswith("- SUPPLEMENTAL")
+    ]
+
+
+def remove_sup_suffix(sources):
+    # Loop through each source and create a new dictionary
+    return [
+        {
+            **source,  # Keep all existing fields, unpack dictionary
+            # Remove the supplemental suffix from the source name
+            "source_name": source["source_name"].removesuffix(" - SUPPLEMENTAL")
+        }
+        for source in sources
+    ]
