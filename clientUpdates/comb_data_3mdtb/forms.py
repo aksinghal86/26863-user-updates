@@ -5,6 +5,9 @@ from .models import UpdatePfasResult, UpdateAnnualFlowRate, UpdateMaxFlowRate, A
 
 
 class AddNewSourceForm(forms.ModelForm):
+    pfas_file_1 = forms.FileField(required=False, widget=forms.FileInput(attrs={"class": "pfas-form-control", "style": "padding: 10px;"}))
+    pfas_file_2 = forms.FileField(required=False, widget=forms.FileInput(attrs={"class": "pfas-form-control", "style": "padding: 10px;"}))
+
     class Meta:
         model = AddNewSource
         fields = [
@@ -69,10 +72,20 @@ class AddNewSourceForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
-            if field_name not in ["comments"]:
+            if field_name not in ["comments", "pfas_file_1", "pfas_file_2"]:
                 field.required = True
             else:
                 field.required = False
+
+    def clean(self):
+        cleaned_data = super().clean()
+        pfas_tested = cleaned_data.get("pfas_tested")
+        pfas_detected = cleaned_data.get("pfas_detected")
+
+        if pfas_tested == "No" and pfas_detected == "Yes":
+            self.add_error("pfas_detected", "PFAS cannot be detected if it was not tested.")
+
+        return cleaned_data
 
 
 class PFASUpdateForm(forms.ModelForm):
