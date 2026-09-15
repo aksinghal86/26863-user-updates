@@ -244,18 +244,8 @@ def landing_page(request):
         pwsid=pwsid
     ).values('pwsid', 'pws_name').get(pwsid=pwsid)
 
-    # Check whether this PWS has PFAS records in each model
-    has_phase1_claim = bool(get_phase1_sources(pwsid))
-
-    has_tb_claim = bool(get_tb_sources(pwsid))
-
-    has_phase2_claim = bool(get_phase2_sources(pwsid))
-
     context = {
         'pws': pws_record,
-        'has_phase1_claim': has_phase1_claim,
-        'has_tb_claim': has_tb_claim,
-        'has_phase2_claim': has_phase2_claim,
     }
 
     return render(request, 'landing_page.html', context)

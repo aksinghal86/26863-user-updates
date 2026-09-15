@@ -39,18 +39,26 @@
                             <a class="nav-link" href="{% url 'landing_page' %}">Home</a>
                         </li>
 
+                        {% if has_phase1_claim or has_phase2_claim %}
                         <li class="nav-item dropdown">
                           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             3M/DuPont
                           </a>
                           <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'dashboard' claim='3M_DuPont' supplemental=0 %}">Action Fund Data</a></li>
-                            <!--<li><a class="dropdown-item" href="{% url 'payment_dashboard' claim='3M_DuPont' %}">Payment Information</a></li>-->
-                              <li><a class="dropdown-item" href="{% url 'dashboard' claim='3M_DuPont' supplemental=1%}">Supplemental Fund Claims</a></li>
+                            {% if has_phase1_claim %}
+                                <li><a class="dropdown-item" href="{% url 'dashboard' claim='3M_DuPont' supplemental=0 %}">Action Fund Data</a></li>
+                                <li><a class="dropdown-item" href="{% url 'dashboard' claim='3M_DuPont' supplemental=1%}">Supplemental Fund Claims</a></li>
+                            {% endif %}
+                            {% if has_phase2_claim %}
+                                <li><a class="dropdown-item" href="{% url 'dashboard' claim='3M_DuPont_P2' supplemental=0 %}">Action Fund Data</a></li>
+                                <li><a class="dropdown-item" href="#" style="pointer-events: none; color: #ccc;">Supplemental Fund Claims (Coming Soon)</a></li>
+                            {% endif %}
                               <li><a class="dropdown-item" href="{% url 'supplemental_info'%}">Supplemental Fund Helpful Info</a></li>
                           </ul>
                         </li>
+                        {% endif %}
 
+                        {% if has_tb_claim %}
                         <li class="nav-item dropdown">
                           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Tyco/BASF
@@ -62,6 +70,7 @@
                               <li><a class="dropdown-item" href="{% url 'supplemental_info'%}">Supplemental Fund Helpful Info</a></li>
                           </ul>
                         </li>
+                        {% endif %}
 
 
                         <li class="nav-item">
