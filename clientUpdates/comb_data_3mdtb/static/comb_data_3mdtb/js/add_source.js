@@ -74,6 +74,20 @@ document.addEventListener('DOMContentLoaded', function() {
             if (firstError) {
                 firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
+        } else {
+            event.preventDefault(); // Prevent immediate submission to show loader
+            const loaderContainer = document.getElementById('loader-container');
+            const loader = document.getElementById('loader');
+            if (loaderContainer) {
+                loaderContainer.style.setProperty('display', 'flex', 'important');
+            }
+            if (loader) {
+                loader.style.setProperty('display', 'block', 'important');
+            }
+            // Submit the form after a short delay to allow the browser to render the loader
+            setTimeout(() => {
+                form.submit();
+            }, 100);
         }
     });
 
