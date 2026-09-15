@@ -186,3 +186,22 @@ def calc_gfes(pfas_score, afr, defendant):
 
     gfe = math.exp(log_gfe)
     return gfe
+
+
+def calc_adj_base_score(base_score, reg_bump, lit_bump, bell_bump, idws):
+    """
+    Calculate the adjusted base score.
+
+    Formula:
+        0 OR {[(reg_bump + lit_bump + bell_bump) * base_score]
+              + base_score} * idws
+
+    Returns 0 if base_score is 0.
+    """
+
+    if base_score == 0:
+        return 0
+
+    return (
+        ((reg_bump + lit_bump + bell_bump) * base_score) + base_score
+    ) * idws

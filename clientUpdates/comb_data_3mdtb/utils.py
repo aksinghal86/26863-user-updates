@@ -1,3 +1,5 @@
+from clientUpdates.utils.calculations import calc_capital_costs, calc_pfas_score_and_method, calc_base_score, \
+    calc_adj_base_score
 from clientUpdates.utils.data_cleaning import get_phase1_sources, get_tb_sources, get_phase2_sources, remove_sup_suffix
 from .models import ClaimPfasResult, TB_ClaimPfasResult, ClaimFlowRate, TB_ClaimFlowRate, Phase2_ClaimFlowRate, \
     Phase2_ClaimPfasResult, UpdatePfasResult, UpdateAnnualFlowRate, UpdateMaxFlowRate
@@ -261,6 +263,7 @@ def process_annual_flow(pwsid):
             "pwsid": pwsid,
             "source_name": source_name,
             "highest_three_years": highest_three,
+            "average_annual_production_gpm": average_gpm,
             "average_annual_production_gpy": average_gpy,
             "future_data_provided": future_data_provided,
         })
@@ -383,11 +386,45 @@ def get_dashboard_data(pwsid):
         maximum = max_flow.get(key, {})
         pfas = pfas_data.get(key, {})
 
+        # Calculate the Average Flow Rate (AFR).
+        # (average annual flow rate in gpm + max flow rate in gpm) / 2
+        avg_annual_gpm = annual.get("average_annual_production_gpm", 0)
+        max_flow_gpm = maximum.get("max_flow_gpm", 0)
+
+        # Convert None to 0 for calculation.
+        avg_annual_gpm = avg_annual_gpm if avg_annual_gpm is not None else 0
+        max_flow_gpm = max_flow_gpm if max_flow_gpm is not None else 0
+
+        afr = (avg_annual_gpm + max_flow_gpm) / 2
+
+        # Get PFAS Score
+        pfoa = pfas.get("max_pfoa") if pfas.get("max_pfoa") is not None else 0
+        pfos = pfas.get("max_pfos") if pfas.get("max_pfos") is not None else 0
+        other_pfas = pfas.get("max_other_pfas") if pfas.get("max_other_pfas") is not None else 0
+
+        pfas_score, _ = calc_pfas_score_and_method(pfoa, pfos, other_pfas)
+
+        # Get Base Score
+        base_score = calc_base_score(pfas_score, afr)
+
+        # Determine Bumps
+        reg_bump = 4 if pfoa >= 4 or pfos >= 4 else 0
+
+        # Determine Adjusted Base Score
+        adj_base_score = calc_adj_base_score(base_score=base_score, reg_bump=reg_bump, lit_bump=0, bell_bump=0, idws=1)
+
+        # Determine Estimated Allocation
+        carrier4_est = adj_base_score * 0.0047 * 0.75
+
+
         # Combine the annual flow, max flow, and PFAS data
         # into one result for this source.
         results.append({
             "pwsid": pwsid,
             "source_name": source_name,
+
+            # carrier4_est
+            "carrier4_est": carrier4_est,
 
             # Annual flow information.
             "highest_three_years": annual.get("highest_three_years"),
