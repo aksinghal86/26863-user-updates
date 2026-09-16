@@ -90,7 +90,11 @@ def process_pfas(pwsid):
 
                 # <-- CHANGE: Store the analyte associated
                 # with the maximum Other PFAS result
-                "max_other_pfas_analyte": None
+                "max_other_pfas_analyte": None,
+                "max_pfhxs": None,
+                "max_genx": None,
+                "max_pfna": None,
+                "max_pfbs": None
             }
 
         # Get the PFAS result
@@ -115,6 +119,28 @@ def process_pfas(pwsid):
                 sources[key]["max_pfos"] or result,
                 result
             )
+        
+        # Track analytes for Hazard Index
+        elif record["analyte"] == "PFHxS":
+            sources[key]["max_pfhxs"] = max(
+                sources[key]["max_pfhxs"] or result,
+                result
+            )
+        elif record["analyte"] in ["HFPO-DA", "GenX"]:
+            sources[key]["max_genx"] = max(
+                sources[key]["max_genx"] or result,
+                result
+            )
+        elif record["analyte"] == "PFNA":
+            sources[key]["max_pfna"] = max(
+                sources[key]["max_pfna"] or result,
+                result
+            )
+        elif record["analyte"] == "PFBS":
+            sources[key]["max_pfbs"] = max(
+                sources[key]["max_pfbs"] or result,
+                result
+            )
 
         # For all other analytes, keep the highest result
         else:
@@ -131,12 +157,30 @@ def process_pfas(pwsid):
     # Determine whether each source has any reported PFAS result
     for source in sources.values():
 
+        # Calculate Hazard Index (HI)
+        # HI = (PFHxS / 9) + (GenX / 10) + (PFNA / 10) + (PFBS / 2000)
+        hi = 0
+        if source["max_pfhxs"]:
+            hi += source["max_pfhxs"] / 9
+        if source["max_genx"]:
+            hi += source["max_genx"] / 10
+        if source["max_pfna"]:
+            hi += source["max_pfna"] / 10
+        if source["max_pfbs"]:
+            hi += source["max_pfbs"] / 2000
+        
+        source["hazard_index"] = hi if hi > 0 else None
+
         # If none of the PFAS categories have a result,
         # all_nds is True. Otherwise, it is False.
         source["all_nds"] = (
             source["max_pfoa"] is None
             and source["max_pfos"] is None
             and source["max_other_pfas"] is None
+            and source["max_pfhxs"] is None
+            and source["max_genx"] is None
+            and source["max_pfna"] is None
+            and source["max_pfbs"] is None
         )
 
     return list(sources.values())
@@ -448,6 +492,7 @@ def get_dashboard_data(pwsid):
             "max_other_pfas_analyte": pfas.get(
                 "max_other_pfas_analyte"
             ),
+            "hazard_index": pfas.get("hazard_index"),
             "all_nds": pfas.get("all_nds"),
         })
         # test

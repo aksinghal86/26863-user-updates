@@ -57,11 +57,13 @@
                 <thead>
                     <tr>
                         <th>Source Name</th>
+                        <th>Estimate</th>
                         <th>Impacted</th>
                         <th>Max PFOA<br>Result (ppt)</th>
                         <th>Max PFOS<br>Result (ppt)</th>
                         <th>Max Other<br>PFAS Result (ppt)</th>
                         <th>Max Other<br>PFAS Analyte</th>
+                        <th>Hazard Index</th>
                         <th>Average Annual<br>Production (GPY)</th>
                         <th>Max Flow Rate<br>(GPM)</th>
                     </tr>
@@ -80,6 +82,14 @@
                         <!-- Source name -->
                         <td>
                             {{ row.source_name }}
+                        </td>
+
+
+                        <!-- carrier4_est -->
+                        <td class="result-value">
+                            <span class="value-display">
+                                ${{ row.carrier4_est|floatformat:2|intcomma|default:"--" }}
+                            </span>
                         </td>
 
 
@@ -175,6 +185,12 @@
                         </td>
 
 
+                        <!-- Hazard Index -->
+                        <td class="result-value">
+                            {{ row.hazard_index | floatformat:2 | default:"--" }}
+                        </td>
+
+
                         <!-- Average annual production -->
                         <td class="flow-value">
 
@@ -240,6 +256,7 @@
 
                         </td>
 
+
                     </tr>
 
                     {% endfor %}
@@ -273,6 +290,7 @@
     $(document).ready(function() {
 
         $('#dashboard-table').DataTable({
+            scrollX:true,
             pageLength: 10,
             lengthChange: false
         });
