@@ -1,0 +1,212 @@
+{% extends 'base_templ_no_info_bar.html' %}
+{% load static %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'comb_data_3mdtb/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'comb_data_3mdtb/css/pfas_update_modal.css' %}">
+    <style>
+        .pfas-update-container {
+            max-width: 850px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .hi-analytes-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+            background-color: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        .analyte-label {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+            display: block;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="pfas-update-container">
+        <div class="pfas-update-header">
+            <h2>Update Hazard Index Results</h2>
+        </div>
+
+        <div class="info-banner"
+             style="background-color: #e8f3ff; border-left: 5px solid #0d6efd; padding: 20px; border-radius: 8px; margin-bottom: 24px; display: flex; align-items: center; gap: 15px;">
+            <i class="bi bi-info-circle-fill"
+               style="font-size: 1.5rem; color: #0d6efd;"></i>
+            <div>
+                <h4 style="margin: 0; color: #164e63; font-size: 1.1rem; font-weight: 600;">Important Information</h4>
+                <p style="margin: 5px 0 0; color: #243447; font-size: 0.95rem;">
+                    Please provide results for all four analytes involved in the Hazard Index calculation. All results must be from the <strong>same sampling date</strong> and in units of <strong>ng/L (ppt)</strong>.
+                </p>
+            </div>
+        </div>
+
+        <form id="hi-update-form"
+              method="post"
+              action="{% url 'comb_data_3mdtb:hi_update' %}"
+              enctype="multipart/form-data"
+              novalidate>
+
+            {% csrf_token %}
+            
+            <!-- Hidden context fields -->
+            <input type="hidden" name="pwsid" value="{{ pwsid|default:'' }}">
+            <input type="hidden" name="source_name" value="{{ source_name|default:'' }}">
+            <input type="hidden" name="min_hi" id="min_hi_input" value="{{ min_hi }}">
+            
+            {% if form.non_field_errors %}
+                <div class="pfas-error-message" style="color: red; margin-bottom: 10px;">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="pfas-update-body">
+                <h5 style="margin-bottom: 15px; color: #164e63; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px;">Analyte Results (ng/L)</h5>
+                
+                <div class="hi-analytes-grid">
+                    <div class="pfas-form-group">
+                        <label class="analyte-label" for="{{ form.pfhxs_result.id_for_label }}">PFHxS</label>
+                        <input type="number" step="any" name="pfhxs_result" id="pfhxs_result" class="pfas-form-control" value="{{ form.pfhxs_result.value|default:'' }}" required>
+                        {% if form.pfhxs_result.errors %}
+                            <div class="pfas-error-message field-error" style="color: red;">{{ form.pfhxs_result.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="pfas-form-group">
+                        <label class="analyte-label" for="{{ form.hfpo_da_result.id_for_label }}">HFPO-DA (GenX)</label>
+                        <input type="number" step="any" name="hfpo_da_result" id="hfpo_da_result" class="pfas-form-control" value="{{ form.hfpo_da_result.value|default:'' }}" required>
+                        {% if form.hfpo_da_result.errors %}
+                            <div class="pfas-error-message field-error" style="color: red;">{{ form.hfpo_da_result.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="pfas-form-group">
+                        <label class="analyte-label" for="{{ form.pfna_result.id_for_label }}">PFNA</label>
+                        <input type="number" step="any" name="pfna_result" id="pfna_result" class="pfas-form-control" value="{{ form.pfna_result.value|default:'' }}" required>
+                        {% if form.pfna_result.errors %}
+                            <div class="pfas-error-message field-error" style="color: red;">{{ form.pfna_result.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="pfas-form-group">
+                        <label class="analyte-label" for="{{ form.pfbs_result.id_for_label }}">PFBS</label>
+                        <input type="number" step="any" name="pfbs_result" id="pfbs_result" class="pfas-form-control" value="{{ form.pfbs_result.value|default:'' }}" required>
+                        {% if form.pfbs_result.errors %}
+                            <div class="pfas-error-message field-error" style="color: red;">{{ form.pfbs_result.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if min_hi %}
+                    <div style="margin-bottom: 20px; font-size: 0.9rem; color: #64748b;">
+                        Current maximum Hazard Index: <strong>{{ min_hi }}</strong>. New calculation must be > {{ min_hi }}.
+                    </div>
+                {% endif %}
+
+                <h5 style="margin-bottom: 15px; color: #164e63; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px;">Laboratory & Sampling Information</h5>
+
+                <div class="pfas-form-row">
+                    <div class="pfas-form-group col-md-6">
+                        <label for="lab">Lab Name</label>
+                        <select id="lab" name="lab" class="pfas-form-control" required>
+                            <option value="">Select laboratory</option>
+                            <option value="Eurofins" {% if form.lab.value == 'Eurofins' %}selected{% endif %}>Eurofins</option>
+                            <option value="Pace Analytical" {% if form.lab.value == 'Pace Analytical' %}selected{% endif %}>Pace Analytical</option>
+                            <option value="ALS" {% if form.lab.value == 'ALS' %}selected{% endif %}>ALS</option>
+                            <option value="SGS" {% if form.lab.value == 'SGS' %}selected{% endif %}>SGS</option>
+                            <option value="TestAmerica" {% if form.lab.value == 'TestAmerica' %}selected{% endif %}>TestAmerica</option>
+                            <option value="Other" {% if form.lab.value == 'Other' %}selected{% endif %}>Other</option>
+                        </select>
+                        {% if form.lab.errors %}
+                            <div class="pfas-error-message field-error" style="color: red;">{{ form.lab.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="pfas-form-group col-md-6">
+                        <label for="lab_sample_id">Lab Sample ID</label>
+                        <input type="text" id="lab_sample_id" name="lab_sample_id" class="pfas-form-control" placeholder="Enter lab sample ID" value="{{ form.lab_sample_id.value|default:'' }}" required>
+                        {% if form.lab_sample_id.errors %}
+                            <div class="pfas-error-message field-error" style="color: red;">{{ form.lab_sample_id.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="pfas-form-row">
+                    <div class="pfas-form-group col-md-6">
+                        <label for="sample_collected_by">Sample Collected By</label>
+                        <input type="text" id="sample_collected_by" name="sample_collected_by" class="pfas-form-control" placeholder="Enter company or entity name" value="{{ form.sample_collected_by.value|default:'' }}" required>
+                        {% if form.sample_collected_by.errors %}
+                            <div class="pfas-error-message field-error" style="color: red;">{{ form.sample_collected_by.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="pfas-form-group col-md-6">
+                        <label for="analysis_method">Analysis Method</label>
+                        <select id="analysis_method" name="analysis_method" class="pfas-form-control" required>
+                            <option value="">Select analysis method</option>
+                            <option value="EPA 537.1" {% if form.analysis_method.value == 'EPA 537.1' %}selected{% endif %}>EPA 537.1</option>
+                            <option value="EPA 533" {% if form.analysis_method.value == 'EPA 533' %}selected{% endif %}>EPA 533</option>
+                            <option value="EPA 1633" {% if form.analysis_method.value == 'EPA 1633' %}selected{% endif %}>EPA 1633</option>
+                            <option value="Other" {% if form.analysis_method.value == 'Other' %}selected{% endif %}>Other</option>
+                        </select>
+                        {% if form.analysis_method.errors %}
+                            <div class="pfas-error-message field-error" style="color: red;">{{ form.analysis_method.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="pfas-form-row">
+                    <div class="pfas-form-group col-md-6">
+                        <label for="sampling_date">Sampling Date</label>
+                        <input type="date" id="sampling_date" name="sampling_date" class="pfas-form-control" value="{{ form.sampling_date.value|default:'' }}" required>
+                        {% if form.sampling_date.errors %}
+                            <div class="pfas-error-message field-error" style="color: red;">{{ form.sampling_date.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="pfas-form-group col-md-6">
+                        <label for="analysis_date">Analysis Date</label>
+                        <input type="date" id="analysis_date" name="analysis_date" class="pfas-form-control" value="{{ form.analysis_date.value|default:'' }}" required>
+                        {% if form.analysis_date.errors %}
+                            <div class="pfas-error-message field-error" style="color: red;">{{ form.analysis_date.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="pfas-form-group">
+                    <label for="supporting_file">Supporting Document</label>
+                    <input type="file" id="supporting_file" name="supporting_file" class="pfas-form-control" required>
+                    {% if form.supporting_file.errors %}
+                        <div class="pfas-error-message field-error" style="color: red;">{{ form.supporting_file.errors.0 }}</div>
+                    {% endif %}
+                    <small>Upload one supporting document covering all results.</small>
+                </div>
+
+                <div id="pfas-general-error" class="pfas-general-error" style="color: red; margin-top: 15px; font-weight: bold; text-align: center; display: {% if form.errors %}block{% else %}none{% endif %};">
+                    Submission failure: please correct all validation errors.
+                </div>
+            </div>
+
+            <div class="pfas-update-footer" style="margin-top: 20px; text-align: right;">
+                <a href="{% url 'comb_data_3mdtb:landing_page' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary pfas-modal-save">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="loader-container">
+    <div id="loader"></div>
+</div>
+
+<script src="{% static 'comb_data_3mdtb/js/hi_update.js' %}"></script>
+{% endblock %}

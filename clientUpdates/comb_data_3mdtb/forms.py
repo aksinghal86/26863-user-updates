@@ -153,6 +153,70 @@ class PFASUpdateForm(forms.ModelForm):
         return cleaned_data
 
 
+class HazardIndexUpdateForm(forms.Form):
+    pfhxs_result = forms.FloatField(required=True, label="PFHxS Result (ng/L)", min_value=0)
+    hfpo_da_result = forms.FloatField(required=True, label="HFPO-DA (GenX) Result (ng/L)", min_value=0)
+    pfna_result = forms.FloatField(required=True, label="PFNA Result (ng/L)", min_value=0)
+    pfbs_result = forms.FloatField(required=True, label="PFBS Result (ng/L)", min_value=0)
+
+    lab = forms.ChoiceField(
+        choices=[
+            ('', 'Select laboratory'),
+            ('Eurofins', 'Eurofins'),
+            ('Pace Analytical', 'Pace Analytical'),
+            ('ALS', 'ALS'),
+            ('SGS', 'SGS'),
+            ('TestAmerica', 'TestAmerica'),
+            ('Other', 'Other')
+        ],
+        required=True
+    )
+    lab_sample_id = forms.CharField(required=True, label="Lab Sample ID")
+    sample_collected_by = forms.CharField(required=True, label="Sample Collected By")
+    analysis_method = forms.ChoiceField(
+        choices=[
+            ('', 'Select analysis method'),
+            ('EPA 537.1', 'EPA 537.1'),
+            ('EPA 533', 'EPA 533'),
+            ('EPA 1633', 'EPA 1633'),
+            ('Other', 'Other')
+        ],
+        required=True
+    )
+    sampling_date = forms.DateField(required=True, widget=forms.DateInput(attrs={'type': 'date'}))
+    analysis_date = forms.DateField(required=True, widget=forms.DateInput(attrs={'type': 'date'}))
+    supporting_file = forms.FileField(required=True, label="Supporting Document")
+
+    def __init__(self, *args, **kwargs):
+        self.min_hi = kwargs.pop("min_hi", None)
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        sampling_date = cleaned_data.get("sampling_date")
+        analysis_date = cleaned_data.get("analysis_date")
+
+        if sampling_date and analysis_date and analysis_date < sampling_date:
+            self.add_error("analysis_date", "Analysis date cannot be before sampling date.")
+
+        # Calculate HI for validation if all results are present
+        pfhxs = cleaned_data.get("pfhxs_result")
+        hfpo_da = cleaned_data.get("hfpo_da_result")
+        pfna = cleaned_data.get("pfna_result")
+        pfbs = cleaned_data.get("pfbs_result")
+
+        if all(x is not None for x in [pfhxs, hfpo_da, pfna, pfbs]):
+            hi = round((pfhxs / 9.0) + (hfpo_da / 10.0) + (pfna / 10.0) + (pfbs / 2000.0), 2)
+            if self.min_hi is not None:
+                min_hi_val = round(float(self.min_hi), 2)
+                if hi <= min_hi_val:
+                    raise forms.ValidationError(
+                        f"New Hazard Index ({hi:.2f}) must be greater than the current maximum value of {min_hi_val:.2f}."
+                    )
+
+        return cleaned_data
+
+
 class AFUpdateForm(forms.ModelForm):
     supporting_file = forms.FileField(
         required=True,

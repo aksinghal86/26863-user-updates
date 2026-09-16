@@ -5,7 +5,8 @@ from django.contrib import messages
 
 from clientUpdates.utils.dropbox_utils import upload_to_dropbox
 from .utils import process_pfas, process_annual_flow, process_max_flow, get_dashboard_data, get_all_yearly_flows
-from .forms import PFASUpdateForm, AFUpdateForm, MFUpdateForm, AddNewSourceForm
+from .forms import PFASUpdateForm, AFUpdateForm, MFUpdateForm, AddNewSourceForm, HazardIndexUpdateForm
+from .models import UpdatePfasResult
 from clientUpdates.utils.calculations import calc_gpm_flow_rate
 
 from django.views.decorators.cache import never_cache
@@ -83,6 +84,94 @@ def pfas_update(request):
             "source_name": source_name,
             "min_value": min_value,
             "selected_analyte": selected_analyte
+        }
+    )
+
+
+@login_required
+@never_cache
+def hi_update(request):
+    if request.method == "POST":
+        min_hi = request.POST.get('min_hi')
+        
+        # Round min_hi to two decimal places if it exists
+        if min_hi:
+            try:
+                min_hi = f"{float(min_hi):.2f}"
+            except (ValueError, TypeError):
+                pass
+        
+        form = HazardIndexUpdateForm(request.POST, request.FILES, min_hi=min_hi)
+        if form.is_valid():
+            pwsid = request.POST.get('pwsid')
+            source_name = request.POST.get('source_name')
+
+            # Map values
+            analyte_map = {
+                'PFHxS': form.cleaned_data['pfhxs_result'],
+                'HFPO-DA': form.cleaned_data['hfpo_da_result'],
+                'PFNA': form.cleaned_data['pfna_result'],
+                'PFBS': form.cleaned_data['pfbs_result'],
+            }
+
+            supporting_file = request.FILES.get('supporting_file')
+            if supporting_file:
+                upload_to_dropbox(file=supporting_file, filetype="New Claims/PFAS", pwsid=pwsid)
+
+            for analyte, result in analyte_map.items():
+                instance = UpdatePfasResult(
+                    pwsid=pwsid,
+                    source_name=source_name,
+                    analyte=analyte,
+                    result_ppt=result,
+                    lab=form.cleaned_data['lab'],
+                    lab_sample_id=form.cleaned_data['lab_sample_id'],
+                    sample_collected_by=form.cleaned_data['sample_collected_by'],
+                    analysis_method=form.cleaned_data['analysis_method'],
+                    sampling_date=form.cleaned_data['sampling_date'],
+                    analysis_date=form.cleaned_data['analysis_date'],
+                    unit="ppt",
+                    filename=supporting_file.name if supporting_file else None
+                )
+                instance.save()
+
+            messages.success(request, "Hazard Index Updated Successfully!")
+            return redirect("comb_data_3mdtb:landing_page")
+        else:
+            pwsid = request.POST.get('pwsid')
+            source_name = request.POST.get('source_name')
+            return render(
+                request,
+                "comb_data_3mdtb/hi_update.html",
+                {
+                    "form": form,
+                    "pwsid": pwsid,
+                    "source_name": source_name,
+                    "min_hi": min_hi
+                }
+            )
+
+    # GET request
+    pwsid = request.GET.get('pwsid')
+    source_name = request.GET.get('source_name')
+    min_hi = request.GET.get('min_hi')
+    
+    # Round min_hi to two decimal places if it exists
+    if min_hi:
+        try:
+            min_hi = f"{float(min_hi):.2f}"
+        except (ValueError, TypeError):
+            pass
+
+    form = HazardIndexUpdateForm()
+    return render(
+        request,
+        "comb_data_3mdtb/hi_update.html",
+        {
+            "form": form,
+            "pwsid": pwsid,
+            "source_name": source_name,
+            "min_hi": min_hi
         }
     )
 

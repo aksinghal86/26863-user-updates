@@ -187,8 +187,15 @@
 
                         <!-- Hazard Index -->
                         <td class="result-value">
-                            <span class="value-display">
-                                {{ row.max_hazard_index | floatformat:2 | default:"--" }}
+                            <span class="editable-value">
+                                <span class="value-display">
+                                    {{ row.max_hazard_index | floatformat:2 | default:"--" }}
+                                </span>
+                                <a href="{% url 'comb_data_3mdtb:hi_update' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&min_hi={{ row.max_hazard_index|floatformat:2 }}"
+                                   class="edit-button-hover"
+                                   title="Edit Hazard Index">
+                                    Update
+                                </a>
                             </span>
                         </td>
 
@@ -211,23 +218,16 @@
                                     <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&all_nds={{ row.all_nds }}"
                                        class="edit-button-hover"
                                        title="Edit annual production">
-
                                         Update
-
                                     </a>
-
                                 {% else %}
-
                                     <span class="value-display">
                                         {{ row.average_annual_production_gpy | floatformat:1 | intcomma | default:"--" }}
                                     </span>
-
                                     <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&all_nds={{ row.all_nds }}"
                                        class="edit-button-hover"
                                        title="Edit annual production">
-
                                         Update
-
                                     </a>
 
                                 {% endif %}
