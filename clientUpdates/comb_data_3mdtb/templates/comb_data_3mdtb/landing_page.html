@@ -63,6 +63,7 @@
                         <th>Max PFOS<br>Result (ppt)</th>
                         <th>Max Other<br>PFAS Result (ppt)</th>
                         <th>Max Other<br>PFAS Analyte</th>
+                        <th>Hazard Index</th>
                         <th>Average Annual<br>Production (GPY)</th>
                         <th>Max Flow Rate<br>(GPM)</th>
                     </tr>
@@ -181,6 +182,14 @@
                         <!-- Max Other PFAS Analyte -->
                         <td>
                             {{ row.max_other_pfas_analyte | default:"--" }}
+                        </td>
+
+
+                        <!-- Hazard Index -->
+                        <td class="result-value">
+                            <span class="value-display">
+                                {{ row.max_hazard_index | floatformat:2 | default:"--" }}
+                            </span>
                         </td>
 
 

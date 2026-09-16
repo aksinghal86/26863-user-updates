@@ -25,7 +25,8 @@ def process_pfas(pwsid):
         "pwsid",
         "source_name",
         "analyte",
-        "result_ppt"
+        "result_ppt",
+        "sampling_date"
     ]
 
     # get eligible sources by claim
@@ -65,10 +66,13 @@ def process_pfas(pwsid):
     ).values(*fields))
 
     # Combine records from all models
-    data = data1 + data2 + data3 + data4
+    data = list(data1) + list(data2) + list(data3) + data4
 
     # Dictionary to store the results for each water source
     sources = {}
+
+    # Group records by (pwsid, source_name, sampling_date) for Hazard Index calculation
+    samples = {}
 
     # Process each PFAS record
     for record in data:
@@ -90,8 +94,20 @@ def process_pfas(pwsid):
 
                 # <-- CHANGE: Store the analyte associated
                 # with the maximum Other PFAS result
-                "max_other_pfas_analyte": None
+                "max_other_pfas_analyte": None,
+                "max_hazard_index": None
             }
+
+        # Track results by sampling date for Hazard Index
+        if record["sampling_date"]:
+            sample_key = (record["pwsid"], record["source_name"], record["sampling_date"])
+            if sample_key not in samples:
+                samples[sample_key] = {}
+            
+            # If multiple results for same analyte on same date, take max
+            current_val = samples[sample_key].get(record["analyte"])
+            if current_val is None or record["result_ppt"] > current_val:
+                samples[sample_key][record["analyte"]] = record["result_ppt"]
 
         # Get the PFAS result
         result = record["result_ppt"]
@@ -127,6 +143,22 @@ def process_pfas(pwsid):
             ):
                 sources[key]["max_other_pfas"] = result
                 sources[key]["max_other_pfas_analyte"] = record["analyte"]
+
+    # Calculate Hazard Index for each sample
+    # Formula: HI = [PFHxS]/9 + [HFPO-DA]/10 + [PFNA]/10 + [PFBS]/2000
+    for (pwsid, source_name, sampling_date), analytes in samples.items():
+        key = (pwsid, source_name)
+        
+        pfhxs = analytes.get("PFHxS", 0)
+        hfpo_da = analytes.get("HFPO-DA", analytes.get("GenX", 0))
+        pfna = analytes.get("PFNA", 0)
+        pfbs = analytes.get("PFBS", 0)
+        
+        hi = (pfhxs / 9.0) + (hfpo_da / 10.0) + (pfna / 10.0) + (pfbs / 2000.0)
+        
+        if hi > 0:
+            if sources[key]["max_hazard_index"] is None or hi > sources[key]["max_hazard_index"]:
+                sources[key]["max_hazard_index"] = hi
 
     # Determine whether each source has any reported PFAS result
     for source in sources.values():
@@ -408,7 +440,8 @@ def get_dashboard_data(pwsid):
         base_score = calc_base_score(pfas_score, afr)
 
         # Determine Bumps
-        reg_bump = 4 if pfoa >= 4 or pfos >= 4 else 0
+        hazard_index = pfas.get("max_hazard_index") or 0
+        reg_bump = 4 if pfoa >= 4 or pfos >= 4 or hazard_index >= 1 else 0
 
         # Determine Adjusted Base Score
         adj_base_score = calc_adj_base_score(base_score=base_score, reg_bump=reg_bump, lit_bump=0, bell_bump=0, idws=1)
@@ -442,6 +475,7 @@ def get_dashboard_data(pwsid):
             # PFAS information.
             "max_pfoa": pfas.get("max_pfoa"),
             "max_pfos": pfas.get("max_pfos"),
+            "max_hazard_index": pfas.get("max_hazard_index"),
             "max_other_pfas": pfas.get("max_other_pfas"),
             # Include the analyte associated
             # with the maximum Other PFAS result.
