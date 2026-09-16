@@ -63,7 +63,6 @@
                         <th>Max PFOS<br>Result (ppt)</th>
                         <th>Max Other<br>PFAS Result (ppt)</th>
                         <th>Max Other<br>PFAS Analyte</th>
-                        <th>Hazard Index</th>
                         <th>Average Annual<br>Production (GPY)</th>
                         <th>Max Flow Rate<br>(GPM)</th>
                     </tr>
@@ -185,12 +184,6 @@
                         </td>
 
 
-                        <!-- Hazard Index -->
-                        <td class="result-value">
-                            {{ row.hazard_index | floatformat:2 | default:"--" }}
-                        </td>
-
-
                         <!-- Average annual production -->
                         <td class="flow-value">
 
@@ -290,7 +283,6 @@
     $(document).ready(function() {
 
         $('#dashboard-table').DataTable({
-            scrollX:true,
             pageLength: 10,
             lengthChange: false
         });
