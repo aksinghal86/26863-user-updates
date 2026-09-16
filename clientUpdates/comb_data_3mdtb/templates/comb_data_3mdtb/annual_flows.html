@@ -19,9 +19,9 @@
 
     <!-- Dashboard table -->
     <div class="dashboard-table-card">
-        <div class="table-responsive">
+        <div class="">
             {% if source_data %}
-                <table id="annual-flows-table" class="dashboard-table">
+                <table id="annual-flows-table" class="annual-flows-table">
                     <thead>
                         <tr>
                             <th>Year</th>
@@ -71,11 +71,17 @@
                                            title="Update Flow Rate">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                    {% else %}
+                                    {% elif not future_data_provided %}
                                         <a href="{% url 'comb_data_3mdtb:af_update' %}?pwsid={{ pwsid }}&source_name={{ source_name | urlencode }}&year={{ year_info.year }}&all_nds={{ all_nds }}"
                                            class="needs-info-button"
-                                           title="Update Flow Rate">
+                                           title="More Info Needed">
                                             <i class="bi bi-exclamation-triangle"></i>
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'comb_data_3mdtb:af_update' %}?pwsid={{ pwsid }}&source_name={{ source_name | urlencode }}&year={{ year_info.year }}&all_nds={{ all_nds }}"
+                                           class="edit-button"
+                                           title="Update Flow Rate">
+                                            <i class="bi bi-pencil"></i>
                                         </a>
                                     {% endif %}
                                 </td>

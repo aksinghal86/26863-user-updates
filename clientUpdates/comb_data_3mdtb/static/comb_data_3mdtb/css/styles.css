@@ -125,8 +125,16 @@ body {
     border-spacing: 0;
 }
 
+.annual-flows-table {
+    width: 100%;
+    margin: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
 /* Table headers */
 .dashboard-table thead th,
+.annual-flows-table thead th,
 #annual-flows-table thead th {
     background-color: rgb(0, 124, 136);
     color: white;
@@ -140,12 +148,14 @@ body {
 }
 
 .dashboard-table thead th:first-child,
+.annual-flows-table thead th:first-child,
 #annual-flows-table thead th:first-child {
     text-align: center;
 }
 
 /* Table body cells */
-.dashboard-table tbody td {
+.dashboard-table tbody td,
+.annual-flows-table tbody td {
     padding: 14px 12px;
     border-bottom: 1px solid #e9eef5;
     text-align: center;
@@ -154,24 +164,28 @@ body {
 }
 
 /* Source name */
-.dashboard-table tbody td:first-child {
+.dashboard-table tbody td:first-child,
+.annual-flows-table tbody td:first-child {
     text-align: left;
     font-weight: 600;
     color: #164e63;
 }
 
 /* Alternating rows */
-.dashboard-table tbody tr:nth-child(even) {
+.dashboard-table tbody tr:nth-child(even),
+.annual-flows-table tbody tr:nth-child(even) {
     background-color: #f8fafc;
 }
 
 /* Hover */
-.dashboard-table tbody tr:hover {
+.dashboard-table tbody tr:hover,
+.annual-flows-table tbody tr:hover {
     background-color: #e8f3ff;
 }
 
 /* Last row */
-.dashboard-table tbody tr:last-child td {
+.dashboard-table tbody tr:last-child td,
+.annual-flows-table tbody tr:last-child td {
     border-bottom: none;
 }
 
@@ -338,6 +352,10 @@ body {
     .dashboard-table {
         min-width: 1200px;
     }
+
+    .annual-flows-table {
+        min-width: auto;
+    }
 }
 
 
@@ -373,22 +391,26 @@ body {
 }
 
 /* Highlight entire row when annual production information is missing */
-.dashboard-table tbody tr.needs-info-row {
+.dashboard-table tbody tr.needs-info-row,
+.annual-flows-table tbody tr.needs-info-row {
     background-color: #fff3cd;
     box-shadow: inset 4px 0 0 #e0a800;
 }
 
 /* Keep the highlight when hovering */
-.dashboard-table tbody tr.needs-info-row:hover {
+.dashboard-table tbody tr.needs-info-row:hover,
+.annual-flows-table tbody tr.needs-info-row:hover {
     background-color: #ffedb5;
 }
 
 /* Make sure the highlighted row overrides alternating row colors */
-.dashboard-table tbody tr.needs-info-row:nth-child(even) {
+.dashboard-table tbody tr.needs-info-row:nth-child(even),
+.annual-flows-table tbody tr.needs-info-row:nth-child(even) {
     background-color: #fff3cd;
 }
 
-.dashboard-table tbody tr.needs-info-row:nth-child(even):hover {
+.dashboard-table tbody tr.needs-info-row:nth-child(even):hover,
+.annual-flows-table tbody tr.needs-info-row:nth-child(even):hover {
     background-color: #ffedb5;
 }
 
