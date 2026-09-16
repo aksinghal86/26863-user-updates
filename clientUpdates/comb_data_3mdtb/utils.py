@@ -437,7 +437,7 @@ def get_dashboard_data(pwsid):
         pfas_score, _ = calc_pfas_score_and_method(pfoa, pfos, other_pfas)
 
         # Get Base Score
-        base_score = calc_base_score(pfas_score, afr)
+        base_score = 0 if pfas.get("all_nds") else calc_base_score(pfas_score, afr)
 
         # Determine Bumps
         hazard_index = pfas.get("max_hazard_index") or 0
