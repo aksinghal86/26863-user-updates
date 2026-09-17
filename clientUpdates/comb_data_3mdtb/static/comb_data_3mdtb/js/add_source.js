@@ -11,6 +11,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const pfasFile1 = form.querySelector('[name="pfas_file_1"]');
     const pfasFile2 = form.querySelector('[name="pfas_file_2"]');
     
+    const pwsOwnSource = form.querySelector('[name="pws_own_source"]');
+    const pwsOwnSourceExplanation = form.querySelector('[name="pws_own_source_explanation"]');
+    const pwsOwnSourceExplanationRow = document.getElementById('pws-own-source-explanation-row');
+    
+    const coOwners = form.querySelector('[name="co_owners"]');
+    const coOwnersExplanation = form.querySelector('[name="co_owners_explanation"]');
+    const coOwnersExplanationRow = document.getElementById('co-owners-explanation-row');
+    
     // Add validation error display function
     const showError = (input, message) => {
         const group = input.closest('.pfas-form-group');
@@ -57,6 +65,18 @@ document.addEventListener('DOMContentLoaded', function() {
         // Validate PFAS Tested/Detected logic
         if (pfasTested.value === 'No' && pfasDetected.value === 'Yes') {
             showError(pfasDetected, 'PFAS cannot be detected if it was not tested.');
+            isValid = false;
+        }
+
+        // Validate PWS Own Source Explanation
+        if (pwsOwnSource.value === 'No' && !pwsOwnSourceExplanation.value.trim()) {
+            showError(pwsOwnSourceExplanation, 'Please provide explanation for not owning the source.');
+            isValid = false;
+        }
+
+        // Validate Co-Owners Explanation
+        if (coOwners.value === 'Yes' && !coOwnersExplanation.value.trim()) {
+            showError(coOwnersExplanation, 'Please provide explanation for co-owners.');
             isValid = false;
         }
 
@@ -136,11 +156,53 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    pfasDetected.addEventListener('change', function() {
-        if (pfasTested.value === 'No' && this.value === 'Yes') {
-            showError(this, 'PFAS cannot be detected if it was not tested.');
-        } else {
-            clearError(this);
-        }
-    });
+    if (pfasDetected && pfasTested) {
+        pfasDetected.addEventListener('change', function() {
+            if (pfasTested.value === 'No' && this.value === 'Yes') {
+                showError(this, 'PFAS cannot be detected if it was not tested.');
+            } else {
+                clearError(this);
+            }
+        });
+    }
+
+    if (pwsOwnSource && pwsOwnSourceExplanationRow) {
+        const togglePwsOwnSourceExplanation = (value) => {
+            if (value === 'No') {
+                pwsOwnSourceExplanationRow.style.display = 'flex';
+            } else {
+                pwsOwnSourceExplanationRow.style.display = 'none';
+                if (pwsOwnSourceExplanation) {
+                    pwsOwnSourceExplanation.value = '';
+                    clearError(pwsOwnSourceExplanation);
+                }
+            }
+        };
+
+        pwsOwnSource.addEventListener('change', function() {
+            togglePwsOwnSourceExplanation(this.value);
+        });
+
+        togglePwsOwnSourceExplanation(pwsOwnSource.value);
+    }
+
+    if (coOwners && coOwnersExplanationRow) {
+        const toggleCoOwnersExplanation = (value) => {
+            if (value === 'Yes') {
+                coOwnersExplanationRow.style.display = 'flex';
+            } else {
+                coOwnersExplanationRow.style.display = 'none';
+                if (coOwnersExplanation) {
+                    coOwnersExplanation.value = '';
+                    clearError(coOwnersExplanation);
+                }
+            }
+        };
+
+        coOwners.addEventListener('change', function() {
+            toggleCoOwnersExplanation(this.value);
+        });
+
+        toggleCoOwnersExplanation(coOwners.value);
+    }
 });

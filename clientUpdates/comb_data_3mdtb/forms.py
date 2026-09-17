@@ -19,6 +19,8 @@ class AddNewSourceForm(forms.ModelForm):
             "pws_own_source",
             "pws_operate_source",
             "co_owners",
+            "pws_own_source_explanation",
+            "co_owners_explanation",
             "drinking_water",
             "idws",
             "comments",
@@ -68,13 +70,15 @@ class AddNewSourceForm(forms.ModelForm):
                 ("No", "No"),
                 ("Yes", "Yes"),
             ]),
+            "pws_own_source_explanation": forms.Textarea(attrs={"class": "pfas-form-control", "placeholder": "Please provide explanation for not owning the source", "rows": 2}),
+            "co_owners_explanation": forms.Textarea(attrs={"class": "pfas-form-control", "placeholder": "Please provide explanation for co-owners", "rows": 2}),
             "comments": forms.Textarea(attrs={"class": "pfas-form-control", "placeholder": "Enter any additional comments here", "rows": 3}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
-            if field_name not in ["comments", "pfas_file_1", "pfas_file_2", "source_other"]:
+            if field_name not in ["comments", "pfas_file_1", "pfas_file_2", "source_other", "pws_own_source_explanation", "co_owners_explanation"]:
                 field.required = True
             else:
                 field.required = False
@@ -87,9 +91,19 @@ class AddNewSourceForm(forms.ModelForm):
         pfas_detected = cleaned_data.get("pfas_detected")
         pfas_file_1 = cleaned_data.get("pfas_file_1")
         pfas_file_2 = cleaned_data.get("pfas_file_2")
+        pws_own_source = cleaned_data.get("pws_own_source")
+        pws_own_source_explanation = cleaned_data.get("pws_own_source_explanation")
+        co_owners = cleaned_data.get("co_owners")
+        co_owners_explanation = cleaned_data.get("co_owners_explanation")
 
         if source_type == "Other" and not source_other:
             self.add_error("source_other", "Please provide explanation for Other source type.")
+
+        if pws_own_source == "No" and not pws_own_source_explanation:
+            self.add_error("pws_own_source_explanation", "Please provide explanation for not owning the source.")
+
+        if co_owners == "Yes" and not co_owners_explanation:
+            self.add_error("co_owners_explanation", "Please provide explanation for co-owners.")
 
         if pfas_tested == "No" and pfas_detected == "Yes":
             self.add_error("pfas_detected", "PFAS cannot be detected if it was not tested.")

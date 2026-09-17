@@ -111,6 +111,26 @@
                     </div>
                 </div>
 
+                <!-- Explanation Boxes for PWS Own Source & Co-Owners -->
+                <div class="pfas-form-row" id="pws-own-source-explanation-row" style="display: none;">
+                    <div class="pfas-form-group col-md-12">
+                        <label for="{{ form.pws_own_source_explanation.id_for_label }}">Please explain why the PWS does not own this source</label>
+                        {{ form.pws_own_source_explanation }}
+                        {% if form.pws_own_source_explanation.errors %}
+                            <div class="text-danger small">{{ form.pws_own_source_explanation.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="pfas-form-row" id="co-owners-explanation-row" style="display: none;">
+                    <div class="pfas-form-group col-md-12">
+                        <label for="{{ form.co_owners_explanation.id_for_label }}">Please provide explanation for co-owners</label>
+                        {{ form.co_owners_explanation }}
+                        {% if form.co_owners_explanation.errors %}
+                            <div class="text-danger small">{{ form.co_owners_explanation.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
                 <!-- PWS Operate & Drinking Water Source -->
                 <div class="pfas-form-row">
                     <div class="pfas-form-group col-md-6">

@@ -76,6 +76,8 @@ class AddNewSource(models.Model):
     co_owners = models.TextField(blank=True, null=True)
     drinking_water = models.TextField(blank=True, null=True)
     idws = models.TextField(blank=True, null=True)
+    pws_own_source_explanation = models.TextField(blank=True, null=True)
+    co_owners_explanation = models.TextField(blank=True, null=True)
     filename_1 = models.TextField(blank=True, null=True)
     filename_2 = models.TextField(blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
