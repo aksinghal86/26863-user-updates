@@ -369,7 +369,6 @@ body {
     /*border: 1px solid #e0a800;*/
     border-radius: 6px;
 
-    background-color: #fff3cd;
     color: #856404;
 
     font-size: 1.3rem;
@@ -390,29 +389,6 @@ body {
     outline-offset: 2px;
 }
 
-/* Highlight entire row when annual production information is missing */
-.dashboard-table tbody tr.needs-info-row,
-.annual-flows-table tbody tr.needs-info-row {
-    background-color: #fff3cd;
-    box-shadow: inset 4px 0 0 #e0a800;
-}
-
-/* Keep the highlight when hovering */
-.dashboard-table tbody tr.needs-info-row:hover,
-.annual-flows-table tbody tr.needs-info-row:hover {
-    background-color: #ffedb5;
-}
-
-/* Make sure the highlighted row overrides alternating row colors */
-.dashboard-table tbody tr.needs-info-row:nth-child(even),
-.annual-flows-table tbody tr.needs-info-row:nth-child(even) {
-    background-color: #fff3cd;
-}
-
-.dashboard-table tbody tr.needs-info-row:nth-child(even):hover,
-.annual-flows-table tbody tr.needs-info-row:nth-child(even):hover {
-    background-color: #ffedb5;
-}
 
 /* Add space around DataTables controls */
 .dashboard-table-card .dataTables_wrapper {

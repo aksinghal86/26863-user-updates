@@ -181,27 +181,11 @@ def hi_update(request):
 def annual_flows(request):
     pwsid = request.GET.get('pwsid')
     source_name = request.GET.get('source_name')
-    all_nds_param = request.GET.get('all_nds')
-    has_three_years_non_zero_param = request.GET.get('has_three_years_non_zero')
 
     if not pwsid:
         pwsid = request.user.username
 
     yearly_flows = get_all_yearly_flows(pwsid, source_name)
-
-    # Convert has_three_years_non_zero_param string to boolean
-    if has_three_years_non_zero_param is not None:
-        has_three_years_non_zero = has_three_years_non_zero_param.lower() == 'true'
-    else:
-        # Fallback if not provided in URL
-        has_three_years_non_zero = False
-
-    # Convert all_nds_param string to boolean
-    if all_nds_param is not None:
-        all_nds = all_nds_param.lower() == 'true'
-    else:
-        # Fallback in case it's not provided
-        all_nds = False
 
     return render(
         request,
@@ -210,8 +194,6 @@ def annual_flows(request):
             "pwsid": pwsid,
             "source_name": source_name,
             "source_data": yearly_flows,
-            "all_nds": all_nds,
-            "has_three_years_non_zero": has_three_years_non_zero,
         }
     )
 
@@ -223,7 +205,6 @@ def af_update(request):
         pwsid = request.POST.get('pwsid')
         source_name = request.POST.get('source_name')
         year = request.POST.get('year')
-        all_nds = request.POST.get('all_nds')
 
         # Get existing flow rate for this year to prevent lower updates
         existing_flow_gpm = None
@@ -256,7 +237,6 @@ def af_update(request):
             query_string = urlencode({
                 "pwsid": pwsid,
                 "source_name": source_name,
-                "all_nds": all_nds
             })
             return redirect(f"{base_url}?{query_string}")
         else:
@@ -268,7 +248,6 @@ def af_update(request):
                     "pwsid": pwsid,
                     "source_name": source_name,
                     "year": year,
-                    "all_nds": all_nds,
                     "existing_flow_gpm": existing_flow_gpm,
                 }
             )
@@ -277,7 +256,6 @@ def af_update(request):
     pwsid = request.GET.get('pwsid')
     source_name = request.GET.get('source_name')
     year = request.GET.get('year')
-    all_nds = request.GET.get('all_nds')
 
     # Get existing flow rate for this year to prevent lower updates
     existing_flow_gpm = None
@@ -297,7 +275,6 @@ def af_update(request):
             "pwsid": pwsid,
             "source_name": source_name,
             "year": year,
-            "all_nds": all_nds,
             "existing_flow_gpm": existing_flow_gpm,
         }
     )

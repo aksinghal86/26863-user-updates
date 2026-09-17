@@ -33,7 +33,7 @@
                     </thead>
                     <tbody>
                         {% for year_info in source_data %}
-                            <tr {% if year_info.flow_rate_gpm is None and not all_nds %}class="needs-info-row"{% endif %}>
+                            <tr>
                             <td style="text-align: center;">{{ year_info.year|stringformat:"d" }}</td>
                                 
                                 <!-- Flow Rate -->
@@ -65,25 +65,11 @@
 
                                 <!-- Actions -->
                                 <td>
-                                    {% if year_info.flow_rate_gpm is not None or all_nds %}
-                                        <a href="{% url 'comb_data_3mdtb:af_update' %}?pwsid={{ pwsid }}&source_name={{ source_name | urlencode }}&year={{ year_info.year }}&all_nds={{ all_nds }}"
-                                           class="edit-button"
-                                           title="Update Flow Rate">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                    {% elif not has_three_years_non_zero %}
-                                        <a href="{% url 'comb_data_3mdtb:af_update' %}?pwsid={{ pwsid }}&source_name={{ source_name | urlencode }}&year={{ year_info.year }}&all_nds={{ all_nds }}"
-                                           class="needs-info-button"
-                                           title="More Info Needed">
-                                            <i class="bi bi-exclamation-triangle"></i>
-                                        </a>
-                                    {% else %}
-                                        <a href="{% url 'comb_data_3mdtb:af_update' %}?pwsid={{ pwsid }}&source_name={{ source_name | urlencode }}&year={{ year_info.year }}&all_nds={{ all_nds }}"
-                                           class="edit-button"
-                                           title="Update Flow Rate">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                    {% endif %}
+                                    <a href="{% url 'comb_data_3mdtb:af_update' %}?pwsid={{ pwsid }}&source_name={{ source_name | urlencode }}&year={{ year_info.year }}"
+                                       class="edit-button"
+                                       title="Update Flow Rate">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
                                 </td>
                             </tr>
                         {% endfor %}

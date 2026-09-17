@@ -36,8 +36,7 @@
                 Hover over any of the PFAS Results, Average Annual Flow, or Max Flow values to provide updated results.
                 <br>
                 <br>
-                If a row in the table is <span style="color: black; background-color: #fff3cd">highlighted yellow</span>, this means the source has PFAS impacts and some annual production data has not yet been provided. 
-                The warning symbol ( <i class="bi bi-exclamation-triangle" style="color: #856404; font-size: 1.1rem;"></i> ) indicates where there is missing data.
+                If a row in the table contains a warning symbol ( <i class="bi bi-exclamation-triangle" style="color: #856404; font-size: 1.1rem;"></i> ), this indicates where there is missing data.
             </p>
         </div>
     </div>
@@ -75,8 +74,7 @@
 
                     {% for row in data %}
 
-                    <!-- Highlight row when future annual production information is needed -->
-                    <tr class="{% if not row.future_data_provided and not row.all_nds %}needs-info-row{% endif %}">
+                    <tr>
 
 
                         <!-- Source name -->
@@ -205,17 +203,17 @@
 
                             <span class="editable-value">
 
-                                {% if not row.has_three_years_non_zero and not row.all_nds %}
+                                {% if not row.future_data_provided and not row.all_nds %}
 
                                     <span class="value-display">
-                                        <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&all_nds={{ row.all_nds }}&has_three_years_non_zero={{ row.has_three_years_non_zero }}"
+                                        <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}"
                                            class="needs-info-button"
                                            title="More Info Needed">
                                             <i class="bi bi-exclamation-triangle" style="size:1.2rem"></i>
                                         </a>
                                     </span>
 
-                                    <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&all_nds={{ row.all_nds }}&has_three_years_non_zero={{ row.has_three_years_non_zero }}"
+                                    <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}"
                                        class="edit-button-hover"
                                        title="Edit annual production">
                                         Update
@@ -224,7 +222,7 @@
                                     <span class="value-display">
                                         {{ row.average_annual_production_gpy | floatformat:1 | intcomma | default:"--" }}
                                     </span>
-                                    <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&all_nds={{ row.all_nds }}&has_three_years_non_zero={{ row.has_three_years_non_zero }}"
+                                    <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}"
                                        class="edit-button-hover"
                                        title="Edit annual production">
                                         Update
