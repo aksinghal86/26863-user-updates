@@ -476,6 +476,7 @@ def get_dashboard_data(pwsid):
             "average_annual_production_gpy": annual.get(
                 "average_annual_production_gpy"
             ),
+            "average_annual_production_mgy": (annual.get("average_annual_production_gpy") / 1000000) if annual.get("average_annual_production_gpy") is not None else None,
             "has_three_years_non_zero": annual.get(
                 "has_three_years_non_zero",
                 False,
