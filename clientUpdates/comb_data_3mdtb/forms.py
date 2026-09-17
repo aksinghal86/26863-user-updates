@@ -168,21 +168,21 @@ class PFASUpdateForm(forms.ModelForm):
         cleaned_data = super().clean()
 
         lab = cleaned_data.get("lab")
-        other_lab = self.data.get("other_lab")
+        lab_other = self.data.get("lab_other")
         analysis_method = cleaned_data.get("analysis_method")
-        other_analysis_method = self.data.get("other_analysis_method")
+        analysis_method_other = self.data.get("analysis_method_other")
 
         if lab == "Other":
-            if not other_lab:
+            if not lab_other:
                 self.add_error("lab", "Please provide the laboratory name.")
             else:
-                cleaned_data["lab"] = other_lab
+                cleaned_data["lab"] = lab_other
 
         if analysis_method == "Other":
-            if not other_analysis_method:
+            if not analysis_method_other:
                 self.add_error("analysis_method", "Please provide the analysis method.")
             else:
-                cleaned_data["analysis_method"] = other_analysis_method
+                cleaned_data["analysis_method"] = analysis_method_other
 
         sampling_date = cleaned_data.get("sampling_date")
         analysis_date = cleaned_data.get("analysis_date")
@@ -240,21 +240,21 @@ class HazardIndexUpdateForm(forms.Form):
         cleaned_data = super().clean()
 
         lab = cleaned_data.get("lab")
-        other_lab = self.data.get("other_lab")
+        lab_other = self.data.get("lab_other")
         analysis_method = cleaned_data.get("analysis_method")
-        other_analysis_method = self.data.get("other_analysis_method")
+        analysis_method_other = self.data.get("analysis_method_other")
 
         if lab == "Other":
-            if not other_lab:
+            if not lab_other:
                 self.add_error("lab", "Please provide the laboratory name.")
             else:
-                cleaned_data["lab"] = other_lab
+                cleaned_data["lab"] = lab_other
 
         if analysis_method == "Other":
-            if not other_analysis_method:
+            if not analysis_method_other:
                 self.add_error("analysis_method", "Please provide the analysis method.")
             else:
-                cleaned_data["analysis_method"] = other_analysis_method
+                cleaned_data["analysis_method"] = analysis_method_other
 
         sampling_date = cleaned_data.get("sampling_date")
         analysis_date = cleaned_data.get("analysis_date")

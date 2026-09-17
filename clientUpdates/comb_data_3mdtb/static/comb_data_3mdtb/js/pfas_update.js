@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Handle "Other" lab selection
     const labSelect = document.getElementById('lab');
     const otherLabContainer = document.getElementById('other_lab_container');
-    const otherLabInput = document.getElementById('other_lab');
+    const otherLabInput = document.getElementById('lab_other');
 
     function toggleOtherLab() {
         if (labSelect.value === 'Other') {
@@ -24,6 +24,15 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             otherLabContainer.style.display = 'none';
             otherLabInput.removeAttribute('required');
+            otherLabInput.value = ''; // Clear value if hidden
+            const group = otherLabInput.closest('.pfas-form-group');
+            if (group) {
+                const errorDiv = group.querySelector('.field-error');
+                if (errorDiv) {
+                    errorDiv.textContent = '';
+                    errorDiv.style.display = 'none';
+                }
+            }
         }
     }
 
@@ -35,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Handle "Other" analysis method selection
     const analysisMethodSelect = document.getElementById('analysis_method');
     const otherAnalysisMethodContainer = document.getElementById('other_analysis_method_container');
-    const otherAnalysisMethodInput = document.getElementById('other_analysis_method');
+    const otherAnalysisMethodInput = document.getElementById('analysis_method_other');
 
     function toggleOtherAnalysisMethod() {
         if (analysisMethodSelect.value === 'Other') {
@@ -44,6 +53,15 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             otherAnalysisMethodContainer.style.display = 'none';
             otherAnalysisMethodInput.removeAttribute('required');
+            otherAnalysisMethodInput.value = ''; // Clear value if hidden
+            const group = otherAnalysisMethodInput.closest('.pfas-form-group');
+            if (group) {
+                const errorDiv = group.querySelector('.field-error');
+                if (errorDiv) {
+                    errorDiv.textContent = '';
+                    errorDiv.style.display = 'none';
+                }
+            }
         }
     }
 
