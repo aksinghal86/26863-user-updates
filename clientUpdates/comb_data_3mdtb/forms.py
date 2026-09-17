@@ -1,5 +1,6 @@
 
 from django import forms
+from django.utils import timezone
 
 from .models import UpdatePfasResult, UpdateAnnualFlowRate, UpdateMaxFlowRate, AddNewSource
 
@@ -186,6 +187,14 @@ class PFASUpdateForm(forms.ModelForm):
         sampling_date = cleaned_data.get("sampling_date")
         analysis_date = cleaned_data.get("analysis_date")
 
+        today = timezone.localdate()
+
+        if sampling_date and sampling_date > today:
+            self.add_error("sampling_date", "Sampling date cannot be in the future.")
+
+        if analysis_date and analysis_date > today:
+            self.add_error("analysis_date", "Analysis date cannot be in the future.")
+
         # Analysis date cannot occur before the sampling date.
         if sampling_date and analysis_date:
             if analysis_date < sampling_date:
@@ -256,6 +265,14 @@ class HazardIndexUpdateForm(forms.Form):
 
         sampling_date = cleaned_data.get("sampling_date")
         analysis_date = cleaned_data.get("analysis_date")
+
+        today = timezone.localdate()
+
+        if sampling_date and sampling_date > today:
+            self.add_error("sampling_date", "Sampling date cannot be in the future.")
+
+        if analysis_date and analysis_date > today:
+            self.add_error("analysis_date", "Analysis date cannot be in the future.")
 
         if sampling_date and analysis_date and analysis_date < sampling_date:
             self.add_error("analysis_date", "Analysis date cannot be before sampling date.")

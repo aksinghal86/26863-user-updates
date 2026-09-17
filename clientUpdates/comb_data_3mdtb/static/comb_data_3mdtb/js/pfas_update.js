@@ -160,6 +160,17 @@ document.addEventListener('DOMContentLoaded', function () {
         if (samplingDateInput && analysisDateInput && samplingDateInput.value && analysisDateInput.value) {
             const sDate = new Date(samplingDateInput.value);
             const aDate = new Date(analysisDateInput.value);
+            const now = new Date();
+            now.setHours(0, 0, 0, 0);
+
+            if (sDate > now) {
+                showError('sampling_date', "Sampling date cannot be in the future.");
+                hasErrors = true;
+            }
+            if (aDate > now) {
+                showError('analysis_date', "Analysis date cannot be in the future.");
+                hasErrors = true;
+            }
             if (aDate < sDate) {
                 showError('analysis_date', "Analysis date cannot be before sampling date.");
                 hasErrors = true;
