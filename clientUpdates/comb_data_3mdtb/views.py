@@ -126,7 +126,6 @@ def hi_update(request):
                     result_ppt=result,
                     lab=form.cleaned_data['lab'],
                     lab_sample_id=form.cleaned_data['lab_sample_id'],
-                    sample_collected_by=form.cleaned_data['sample_collected_by'],
                     analysis_method=form.cleaned_data['analysis_method'],
                     sampling_date=form.cleaned_data['sampling_date'],
                     analysis_date=form.cleaned_data['analysis_date'],
