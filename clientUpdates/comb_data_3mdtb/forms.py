@@ -25,6 +25,8 @@ class AddNewSourceForm(forms.ModelForm):
             "pws_operate_source_explanation",
             "drinking_water",
             "idws",
+            "purchased_water",
+            "purchased_water_explanation",
             "comments",
         ]
         widgets = {
@@ -72,6 +74,12 @@ class AddNewSourceForm(forms.ModelForm):
                 ("No", "No"),
                 ("Yes", "Yes"),
             ]),
+            "purchased_water": forms.Select(attrs={"class": "pfas-form-control"}, choices=[
+                ("", ""),
+                ("No", "No"),
+                ("Yes", "Yes"),
+            ]),
+            "purchased_water_explanation": forms.Textarea(attrs={"class": "pfas-form-control", "placeholder": "Please provide explanation for purchased water, such as the PWSID that it was purchased from and who is responsible for PFAS treatment", "rows": 2}),
             "pws_own_source_explanation": forms.Textarea(attrs={"class": "pfas-form-control", "placeholder": "Please provide explanation for not owning the source", "rows": 2}),
             "co_owners_explanation": forms.Textarea(attrs={"class": "pfas-form-control", "placeholder": "Please provide explanation for co-owners", "rows": 2}),
             "pws_operate_source_explanation": forms.Textarea(attrs={"class": "pfas-form-control", "placeholder": "Who operates this source? (PWSID and PWS Name)", "rows": 2}),
@@ -81,7 +89,7 @@ class AddNewSourceForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
-            if field_name not in ["comments", "pfas_file_1", "pfas_file_2", "source_other", "pws_own_source_explanation", "co_owners_explanation", "pws_operate_source_explanation"]:
+            if field_name not in ["comments", "pfas_file_1", "pfas_file_2", "source_other", "pws_own_source_explanation", "co_owners_explanation", "pws_operate_source_explanation", "purchased_water", "purchased_water_explanation"]:
                 field.required = True
             else:
                 field.required = False
@@ -100,6 +108,8 @@ class AddNewSourceForm(forms.ModelForm):
         pws_operate_source_explanation = cleaned_data.get("pws_operate_source_explanation")
         co_owners = cleaned_data.get("co_owners")
         co_owners_explanation = cleaned_data.get("co_owners_explanation")
+        purchased_water = cleaned_data.get("purchased_water")
+        purchased_water_explanation = cleaned_data.get("purchased_water_explanation")
 
         if source_type == "Other" and not source_other:
             self.add_error("source_other", "Please provide explanation for Other source type.")
@@ -112,6 +122,9 @@ class AddNewSourceForm(forms.ModelForm):
 
         if co_owners == "Yes" and not co_owners_explanation:
             self.add_error("co_owners_explanation", "Please provide explanation for co-owners.")
+
+        if purchased_water == "Yes" and not purchased_water_explanation:
+            self.add_error("purchased_water_explanation", "Please provide explanation for purchased water.")
 
         if pfas_tested == "No" and pfas_detected == "Yes":
             self.add_error("pfas_detected", "PFAS cannot be detected if it was not tested.")

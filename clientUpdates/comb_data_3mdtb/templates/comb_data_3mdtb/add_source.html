@@ -168,6 +168,23 @@
                             <div class="text-danger small">{{ form.idws.errors }}</div>
                         {% endif %}
                     </div>
+                    <div class="pfas-form-group col-md-6">
+                        <label for="{{ form.purchased_water.id_for_label }}">Purchased Water?</label>
+                        {{ form.purchased_water }}
+                        {% if form.purchased_water.errors %}
+                            <div class="text-danger small">{{ form.purchased_water.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="pfas-form-row" id="purchased-water-explanation-row" style="display: none;">
+                    <div class="pfas-form-group col-md-12">
+                        <label for="{{ form.purchased_water_explanation.id_for_label }}">Please provide explanation for purchased water</label>
+                        {{ form.purchased_water_explanation }}
+                        {% if form.purchased_water_explanation.errors %}
+                            <div class="text-danger small">{{ form.purchased_water_explanation.errors }}</div>
+                        {% endif %}
+                    </div>
                 </div>
 
                 <div class="pfas-form-row">

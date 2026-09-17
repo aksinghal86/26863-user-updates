@@ -23,6 +23,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const coOwnersExplanation = form.querySelector('[name="co_owners_explanation"]');
     const coOwnersExplanationRow = document.getElementById('co-owners-explanation-row');
     
+    const purchasedWater = form.querySelector('[name="purchased_water"]');
+    const purchasedWaterExplanation = form.querySelector('[name="purchased_water_explanation"]');
+    const purchasedWaterExplanationRow = document.getElementById('purchased-water-explanation-row');
+    
     // Add validation error display function
     const showError = (input, message) => {
         const group = input.closest('.pfas-form-group');
@@ -87,6 +91,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Validate Co-Owners Explanation
         if (coOwners.value === 'Yes' && !coOwnersExplanation.value.trim()) {
             showError(coOwnersExplanation, 'Please provide explanation for co-owners.');
+            isValid = false;
+        }
+
+        // Validate Purchased Water Explanation
+        if (purchasedWater.value === 'Yes' && !purchasedWaterExplanation.value.trim()) {
+            showError(purchasedWaterExplanation, 'Please provide explanation for purchased water.');
             isValid = false;
         }
 
@@ -260,5 +270,25 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         toggleCoOwnersExplanation(coOwners.value);
+    }
+
+    if (purchasedWater && purchasedWaterExplanationRow) {
+        const togglePurchasedWaterExplanation = (value) => {
+            if (value === 'Yes') {
+                purchasedWaterExplanationRow.style.display = 'flex';
+            } else {
+                purchasedWaterExplanationRow.style.display = 'none';
+                if (purchasedWaterExplanation) {
+                    purchasedWaterExplanation.value = '';
+                    clearError(purchasedWaterExplanation);
+                }
+            }
+        };
+
+        purchasedWater.addEventListener('change', function() {
+            togglePurchasedWaterExplanation(this.value);
+        });
+
+        togglePurchasedWaterExplanation(purchasedWater.value);
     }
 });
