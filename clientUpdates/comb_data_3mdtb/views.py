@@ -22,7 +22,10 @@ def landing_page(request):
     # retrieve all dashboard data for the given pwsid
     data = get_dashboard_data(pwsid)
 
-    return render(request, "comb_data_3mdtb/landing_page.html", {"data": data, "pwsid": pwsid})
+    # Calculate total estimate
+    total_estimate = sum(row.get('carrier4_est', 0) for row in data if row.get('carrier4_est') is not None)
+
+    return render(request, "comb_data_3mdtb/landing_page.html", {"data": data, "pwsid": pwsid, "total_estimate": total_estimate})
 
 
 @login_required

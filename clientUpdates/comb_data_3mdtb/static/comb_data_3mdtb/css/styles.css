@@ -495,3 +495,46 @@ body {
 }
 
 @keyframes l1 {to{transform: rotate(.5turn)}}
+/* =========================================================
+   Summary Stats (Big Number Styling)
+   ========================================================= */
+
+.summary-stats-container {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 24px;
+}
+
+.summary-stat-card {
+    background-color: white;
+    padding: 24px 30px;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(33, 37, 41, 0.08);
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-left: 6px solid #28a745;
+}
+
+.stat-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: rgb(12, 66, 102);
+    margin: 0;
+    line-height: 1;
+}
+
+.stat-subtext {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin: 0;
+}

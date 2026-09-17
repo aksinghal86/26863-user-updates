@@ -42,6 +42,16 @@
     </div>
 
 
+    <!-- Summary Statistics -->
+    <div class="summary-stats-container">
+        <div class="summary-stat-card">
+            <span class="stat-label">Total Estimated Allocation</span>
+            <h2 class="stat-value">${{ total_estimate|floatformat:2|intcomma }}</h2>
+            <p class="stat-subtext">Sum of all source estimates for {{ pwsid }}</p>
+        </div>
+    </div>
+
+
     <!-- Dashboard table -->
     <div class="dashboard-table-card">
 
@@ -213,15 +223,12 @@
                                         </a>
                                     </span>
 
-                                    <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}"
-                                       class="edit-button-hover"
-                                       title="Edit annual production">
-                                        Update
-                                    </a>
                                 {% else %}
+
                                     <span class="value-display">
                                         {{ row.average_annual_production_mgy | floatformat:2 | intcomma | default:"--" }}
                                     </span>
+
                                     <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}"
                                        class="edit-button-hover"
                                        title="Edit annual production">
@@ -240,17 +247,29 @@
 
                             <span class="editable-value">
 
-                                <span class="value-display">
-                                    {{ row.max_flow_gpm | floatformat:1 | intcomma | default:"--" }}
-                                </span>
+                                {% if not row.future_data_provided and not row.all_nds %}
 
-                                <a href="{% url 'comb_data_3mdtb:mf_update' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}"
-                                   class="edit-button-hover"
-                                   title="Edit maximum flow rate">
+                                    <span class="value-display">
+                                        <a href="{% url 'comb_data_3mdtb:mf_update' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}"
+                                           class="needs-info-button"
+                                           title="More Info Needed">
+                                            <i class="bi bi-exclamation-triangle" style="size:1.2rem"></i>
+                                        </a>
+                                    </span>
 
-                                    Update
+                                {% else %}
 
-                                </a>
+                                    <span class="value-display">
+                                        {{ row.max_flow_gpm | floatformat:1 | intcomma | default:"--" }}
+                                    </span>
+
+                                    <a href="{% url 'comb_data_3mdtb:mf_update' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}"
+                                       class="edit-button-hover"
+                                       title="Edit maximum flow rate">
+                                        Update
+                                    </a>
+
+                                {% endif %}
 
                             </span>
 
