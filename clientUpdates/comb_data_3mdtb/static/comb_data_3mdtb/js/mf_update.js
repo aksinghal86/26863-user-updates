@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             
             if (newGpm <= existingGpm) {
-                showError('flow_rate', `New flow rate must be greater than the current value of ${existingGpm.toFixed(1)} GPM.`);
+                showError('flow_rate', `New flow rate (${newFlowGpm.toFixed(1)} GPM) must be greater than the current value of ${existingGpm.toFixed(1)} GPM.`);
                 hasErrors = true;
             }
         }

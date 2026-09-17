@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 
                 if (newFlowGpm <= (existingFlowGpm + 0.00001)) { // Small epsilon to handle floating point and strict inequality
-                    showError('flow_rate', `New flow rate must be greater than the current value of ${existingFlowGpm.toFixed(1)} GPM.`);
+                    showError('flow_rate', `New flow rate (${newFlowGpm.toFixed(1)} GPM) must be greater than the current value of ${existingFlowGpm.toFixed(1)} GPM.`);
                     hasErrors = true;
                 }
             }
