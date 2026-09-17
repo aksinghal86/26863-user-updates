@@ -34,7 +34,6 @@ class AddNewSourceForm(forms.ModelForm):
                 ("Groundwater Well", "Groundwater Well"),
                 ("Surface Water", "Surface Water"),
                 ("Interconnection", "Interconnection"),
-                ("Purchased Water", "Purchased Water"),
                 ("Other", "Other"),
             ]),
             "source_other": forms.TextInput(attrs={"class": "pfas-form-control", "placeholder": "Please specify other source type"}),
