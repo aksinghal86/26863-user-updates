@@ -90,8 +90,8 @@ document.addEventListener('DOMContentLoaded', function() {
             isValid = false;
         }
 
-        // Validate at least one file is uploaded
-        if (!pfasFile1.value && !pfasFile2.value) {
+        // Validate at least one file is uploaded if PFAS tested is Yes
+        if (pfasTested.value === 'Yes' && !pfasFile1.value && !pfasFile2.value) {
             showError(pfasFile1, 'At least one PFAS data file must be uploaded.');
             isValid = false;
         }
@@ -158,13 +158,39 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    pfasTested.addEventListener('change', function() {
-        if (this.value === 'No' && pfasDetected.value === 'Yes') {
-            showError(pfasDetected, 'PFAS cannot be detected if it was not tested.');
-        } else {
-            clearError(pfasDetected);
-        }
-    });
+    if (pfasTested && pfasFile1 && pfasFile2) {
+        const pfasFileUploadRow = pfasFile1.closest('.pfas-form-row');
+        const togglePfasFiles = (value) => {
+            if (value === 'Yes') {
+                if (pfasFileUploadRow) pfasFileUploadRow.style.display = 'block';
+            } else {
+                if (pfasFileUploadRow) pfasFileUploadRow.style.display = 'none';
+                pfasFile1.value = '';
+                pfasFile2.value = '';
+                clearError(pfasFile1);
+            }
+        };
+
+        pfasTested.addEventListener('change', function() {
+            togglePfasFiles(this.value);
+            if (this.value === 'No' && pfasDetected.value === 'Yes') {
+                showError(pfasDetected, 'PFAS cannot be detected if it was not tested.');
+            } else {
+                clearError(pfasDetected);
+            }
+        });
+
+        // Initial check
+        togglePfasFiles(pfasTested.value);
+    } else if (pfasTested) {
+        pfasTested.addEventListener('change', function() {
+            if (this.value === 'No' && pfasDetected.value === 'Yes') {
+                showError(pfasDetected, 'PFAS cannot be detected if it was not tested.');
+            } else {
+                clearError(pfasDetected);
+            }
+        });
+    }
 
     if (pfasDetected && pfasTested) {
         pfasDetected.addEventListener('change', function() {

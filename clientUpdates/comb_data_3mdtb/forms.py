@@ -115,7 +115,7 @@ class AddNewSourceForm(forms.ModelForm):
         if pfas_tested == "No" and pfas_detected == "Yes":
             self.add_error("pfas_detected", "PFAS cannot be detected if it was not tested.")
 
-        if not pfas_file_1 and not pfas_file_2:
+        if pfas_tested == "Yes" and not pfas_file_1 and not pfas_file_2:
             self.add_error("pfas_file_1", "At least one PFAS data file must be uploaded.")
 
         return cleaned_data
