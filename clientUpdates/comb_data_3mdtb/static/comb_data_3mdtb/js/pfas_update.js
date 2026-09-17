@@ -12,6 +12,46 @@ document.addEventListener('DOMContentLoaded', function () {
     const analyteText = document.getElementById('pfas-analyte-text');
     const analyteSelect = document.getElementById('pfas-analyte-select');
 
+    // Handle "Other" lab selection
+    const labSelect = document.getElementById('lab');
+    const otherLabContainer = document.getElementById('other_lab_container');
+    const otherLabInput = document.getElementById('other_lab');
+
+    function toggleOtherLab() {
+        if (labSelect.value === 'Other') {
+            otherLabContainer.style.display = 'block';
+            otherLabInput.setAttribute('required', 'required');
+        } else {
+            otherLabContainer.style.display = 'none';
+            otherLabInput.removeAttribute('required');
+        }
+    }
+
+    if (labSelect) {
+        labSelect.addEventListener('change', toggleOtherLab);
+        toggleOtherLab(); // Initial state
+    }
+
+    // Handle "Other" analysis method selection
+    const analysisMethodSelect = document.getElementById('analysis_method');
+    const otherAnalysisMethodContainer = document.getElementById('other_analysis_method_container');
+    const otherAnalysisMethodInput = document.getElementById('other_analysis_method');
+
+    function toggleOtherAnalysisMethod() {
+        if (analysisMethodSelect.value === 'Other') {
+            otherAnalysisMethodContainer.style.display = 'block';
+            otherAnalysisMethodInput.setAttribute('required', 'required');
+        } else {
+            otherAnalysisMethodContainer.style.display = 'none';
+            otherAnalysisMethodInput.removeAttribute('required');
+        }
+    }
+
+    if (analysisMethodSelect) {
+        analysisMethodSelect.addEventListener('change', toggleOtherAnalysisMethod);
+        toggleOtherAnalysisMethod(); // Initial state
+    }
+
     if (analyte === 'Other PFAS') {
         if (analyteText) {
             analyteText.style.display = 'none';

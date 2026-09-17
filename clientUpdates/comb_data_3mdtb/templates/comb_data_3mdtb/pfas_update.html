@@ -192,6 +192,13 @@
                     </div>
                 </div>
 
+                <div class="pfas-form-row" id="other_lab_container" style="display: none;">
+                    <div class="pfas-form-group col-md-12">
+                        <label for="other_lab">Specify Laboratory</label>
+                        <input type="text" id="other_lab" name="other_lab" class="pfas-form-control" placeholder="Enter laboratory name" value="{{ request.POST.other_lab|default:'' }}">
+                    </div>
+                </div>
+
                 <!-- Sample Collector & Analysis Method -->
                 <div class="pfas-form-row">
                     <div class="pfas-form-group col-md-6">
@@ -234,6 +241,13 @@
                         {% else %}
                             <div class="pfas-error-message field-error" style="color: red; display: none;"></div>
                         {% endif %}
+                    </div>
+                </div>
+
+                <div class="pfas-form-row" id="other_analysis_method_container" style="display: none;">
+                    <div class="pfas-form-group col-md-12">
+                        <label for="other_analysis_method">Specify Analysis Method</label>
+                        <input type="text" id="other_analysis_method" name="other_analysis_method" class="pfas-form-control" placeholder="Enter analysis method" value="{{ request.POST.other_analysis_method|default:'' }}">
                     </div>
                 </div>
 
