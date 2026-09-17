@@ -285,11 +285,9 @@ def process_annual_flow(pwsid):
         # Convert GPM to GPY.
         average_gpy = average_gpm * 60 * 24 * 365
 
-        # Future data is false until the new model is implemented.
-        future_data_provided = (
-                yearly_data[2024] is not None
-                and yearly_data[2025] is not None
-        )
+        # Check if there are at least three years of non-zero flow rates.
+        # Ensure we only count non-None and non-zero values.
+        has_three_years_non_zero = sum(1 for item in valid_years if item.get("gpm") and item["gpm"] > 0) >= 3
 
         results.append({
             "pwsid": pwsid,
@@ -297,7 +295,7 @@ def process_annual_flow(pwsid):
             "highest_three_years": highest_three,
             "average_annual_production_gpm": average_gpm,
             "average_annual_production_gpy": average_gpy,
-            "future_data_provided": future_data_provided,
+            "has_three_years_non_zero": has_three_years_non_zero,
         })
 
     return results
@@ -464,8 +462,8 @@ def get_dashboard_data(pwsid):
             "average_annual_production_gpy": annual.get(
                 "average_annual_production_gpy"
             ),
-            "future_data_provided": annual.get(
-                "future_data_provided",
+            "has_three_years_non_zero": annual.get(
+                "has_three_years_non_zero",
                 False,
             ),
 

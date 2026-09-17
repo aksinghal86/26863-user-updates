@@ -182,19 +182,19 @@ def annual_flows(request):
     pwsid = request.GET.get('pwsid')
     source_name = request.GET.get('source_name')
     all_nds_param = request.GET.get('all_nds')
-    future_data_provided_param = request.GET.get('future_data_provided')
+    has_three_years_non_zero_param = request.GET.get('has_three_years_non_zero')
 
     if not pwsid:
         pwsid = request.user.username
 
     yearly_flows = get_all_yearly_flows(pwsid, source_name)
 
-    # Convert future_data_provided_param string to boolean
-    if future_data_provided_param is not None:
-        future_data_provided = future_data_provided_param.lower() == 'true'
+    # Convert has_three_years_non_zero_param string to boolean
+    if has_three_years_non_zero_param is not None:
+        has_three_years_non_zero = has_three_years_non_zero_param.lower() == 'true'
     else:
         # Fallback if not provided in URL
-        future_data_provided = False
+        has_three_years_non_zero = False
 
     # Convert all_nds_param string to boolean
     if all_nds_param is not None:
@@ -211,7 +211,7 @@ def annual_flows(request):
             "source_name": source_name,
             "source_data": yearly_flows,
             "all_nds": all_nds,
-            "future_data_provided": future_data_provided,
+            "has_three_years_non_zero": has_three_years_non_zero,
         }
     )
 

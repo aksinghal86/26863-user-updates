@@ -205,17 +205,17 @@
 
                             <span class="editable-value">
 
-                                {% if not row.future_data_provided and not row.all_nds %}
+                                {% if not row.has_three_years_non_zero and not row.all_nds %}
 
                                     <span class="value-display">
-                                        <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&all_nds={{ row.all_nds }}&future_data_provided={{ row.future_data_provided }}"
+                                        <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&all_nds={{ row.all_nds }}&has_three_years_non_zero={{ row.has_three_years_non_zero }}"
                                            class="needs-info-button"
                                            title="More Info Needed">
                                             <i class="bi bi-exclamation-triangle" style="size:1.2rem"></i>
                                         </a>
                                     </span>
 
-                                    <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&all_nds={{ row.all_nds }}&future_data_provided={{ row.future_data_provided }}"
+                                    <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&all_nds={{ row.all_nds }}&has_three_years_non_zero={{ row.has_three_years_non_zero }}"
                                        class="edit-button-hover"
                                        title="Edit annual production">
                                         Update
@@ -224,7 +224,7 @@
                                     <span class="value-display">
                                         {{ row.average_annual_production_gpy | floatformat:1 | intcomma | default:"--" }}
                                     </span>
-                                    <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&all_nds={{ row.all_nds }}&future_data_provided={{ row.future_data_provided }}"
+                                    <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&all_nds={{ row.all_nds }}&has_three_years_non_zero={{ row.has_three_years_non_zero }}"
                                        class="edit-button-hover"
                                        title="Edit annual production">
                                         Update
