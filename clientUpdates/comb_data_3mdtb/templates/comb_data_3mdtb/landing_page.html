@@ -207,7 +207,11 @@
                         <td class="result-value">
                             <span class="editable-value">
                                 <span class="value-display">
-                                    {{ row.max_hazard_index | floatformat:2 | default:"--" }}
+                                    {% if row.reg_bump == 4 %}
+                                        --
+                                    {% else %}
+                                        {{ row.max_hazard_index | floatformat:2 | default:"--" }}
+                                    {% endif %}
                                 </span>
                                 <a href="{% url 'comb_data_3mdtb:hi_update' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&min_hi={{ row.max_hazard_index|floatformat:2 }}"
                                    class="edit-button-hover"

@@ -464,6 +464,7 @@ def get_dashboard_data(pwsid):
 
             # carrier4_est
             "carrier4_est": carrier4_est,
+            "reg_bump": reg_bump,
 
             # Annual flow information.
             "highest_three_years": annual.get("highest_three_years"),
