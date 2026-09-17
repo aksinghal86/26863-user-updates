@@ -25,7 +25,15 @@ def landing_page(request):
     # Calculate total estimate
     total_estimate = sum(row.get('carrier4_est', 0) for row in data if row.get('carrier4_est') is not None)
 
-    return render(request, "comb_data_3mdtb/landing_page.html", {"data": data, "pwsid": pwsid, "total_estimate": total_estimate})
+    # Calculate number of impacted sources
+    impacted_sources_count = sum(1 for row in data if not row.get('all_nds', True))
+
+    return render(request, "comb_data_3mdtb/landing_page.html", {
+        "data": data,
+        "pwsid": pwsid,
+        "total_estimate": total_estimate,
+        "impacted_sources_count": impacted_sources_count
+    })
 
 
 @login_required

@@ -49,6 +49,11 @@
             <h2 class="stat-value">${{ total_estimate|floatformat:2|intcomma }}</h2>
             <p class="stat-subtext">Sum of all source estimates for {{ pwsid }}</p>
         </div>
+        <div class="summary-stat-card" style="border-left: 6px solid #dc3545; margin-left: 20px;">
+            <span class="stat-label">Impacted Sources</span>
+            <h2 class="stat-value">{{ impacted_sources_count }}</h2>
+            <p class="stat-subtext">Number of sources with PFAS detections</p>
+        </div>
     </div>
 
 

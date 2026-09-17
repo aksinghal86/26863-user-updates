@@ -501,7 +501,7 @@ body {
 
 .summary-stats-container {
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-evenly;
     margin-bottom: 24px;
 }
 
