@@ -13,6 +13,7 @@ class AddNewSourceForm(forms.ModelForm):
         fields = [
             "source_name",
             "source_type",
+            "source_other",
             "pfas_tested",
             "pfas_detected",
             "pws_own_source",
@@ -31,6 +32,7 @@ class AddNewSourceForm(forms.ModelForm):
                 ("Interconnection", "Interconnection"),
                 ("Other", "Other"),
             ]),
+            "source_other": forms.TextInput(attrs={"class": "pfas-form-control", "placeholder": "Please specify other source type"}),
             "pfas_tested": forms.Select(attrs={"class": "pfas-form-control"}, choices=[
                 ("", ""),
                 ("No", "No"),
@@ -72,17 +74,22 @@ class AddNewSourceForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
-            if field_name not in ["comments", "pfas_file_1", "pfas_file_2"]:
+            if field_name not in ["comments", "pfas_file_1", "pfas_file_2", "source_other"]:
                 field.required = True
             else:
                 field.required = False
 
     def clean(self):
         cleaned_data = super().clean()
+        source_type = cleaned_data.get("source_type")
+        source_other = cleaned_data.get("source_other")
         pfas_tested = cleaned_data.get("pfas_tested")
         pfas_detected = cleaned_data.get("pfas_detected")
         pfas_file_1 = cleaned_data.get("pfas_file_1")
         pfas_file_2 = cleaned_data.get("pfas_file_2")
+
+        if source_type == "Other" and not source_other:
+            self.add_error("source_other", "Please provide explanation for Other source type.")
 
         if pfas_tested == "No" and pfas_detected == "Yes":
             self.add_error("pfas_detected", "PFAS cannot be detected if it was not tested.")

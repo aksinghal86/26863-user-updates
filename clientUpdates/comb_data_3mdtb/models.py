@@ -68,6 +68,7 @@ class AddNewSource(models.Model):
     pwsid = models.TextField(blank=True, null=True)
     source_name = models.TextField(blank=True, null=True)
     source_type = models.TextField(blank=True, null=True)
+    source_other = models.TextField(blank=True, null=True)
     pfas_tested = models.TextField(blank=True, null=True)
     pfas_detected = models.TextField(blank=True, null=True)
     pws_own_source = models.TextField(blank=True, null=True)

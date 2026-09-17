@@ -3,6 +3,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!form) return;
 
     const sourceName = form.querySelector('[name="source_name"]');
+    const sourceType = form.querySelector('[name="source_type"]');
+    const sourceOther = form.querySelector('[name="source_other"]');
+    const sourceOtherRow = document.getElementById('source-other-row');
     const pfasTested = form.querySelector('[name="pfas_tested"]');
     const pfasDetected = form.querySelector('[name="pfas_detected"]');
     const pfasFile1 = form.querySelector('[name="pfas_file_1"]');
@@ -42,6 +45,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Validate Source Name
         if (sourceName.value.trim().length < 3) {
             showError(sourceName, 'Source name must be at least 3 characters long.');
+            isValid = false;
+        }
+
+        // Validate Source Other if Source Type is "Other"
+        if (sourceType.value === 'Other' && !sourceOther.value.trim()) {
+            showError(sourceOther, 'Please provide explanation for Other source type.');
             isValid = false;
         }
 
@@ -91,7 +100,34 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Real-time validation for PFAS logic
+    if (sourceType && sourceOtherRow) {
+        const toggleSourceOther = (value) => {
+            if (value === 'Other') {
+                sourceOtherRow.style.display = 'flex';
+            } else {
+                sourceOtherRow.style.display = 'none';
+                if (sourceOther) {
+                    sourceOther.value = '';
+                    clearError(sourceOther);
+                }
+            }
+        };
+
+        sourceType.addEventListener('change', function() {
+            toggleSourceOther(this.value);
+        });
+
+        // Initial check
+        toggleSourceOther(sourceType.value);
+
+        // Some plugins might trigger jQuery change event
+        if (typeof jQuery !== 'undefined') {
+            jQuery(sourceType).on('change', function() {
+                toggleSourceOther(this.value);
+            });
+        }
+    }
+
     pfasTested.addEventListener('change', function() {
         if (this.value === 'No' && pfasDetected.value === 'Yes') {
             showError(pfasDetected, 'PFAS cannot be detected if it was not tested.');

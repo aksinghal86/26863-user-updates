@@ -64,6 +64,17 @@
                     </div>
                 </div>
 
+                <!-- Other Source Type Explanation -->
+                <div class="pfas-form-row" id="source-other-row" style="display: none;">
+                    <div class="pfas-form-group col-md-12">
+                        <label for="{{ form.source_other.id_for_label }}">Please explain "Other" source type</label>
+                        {{ form.source_other }}
+                        {% if form.source_other.errors %}
+                            <div class="text-danger small">{{ form.source_other.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
                 <!-- PFAS Tested & Detected -->
                 <div class="pfas-form-row">
                     <div class="pfas-form-group col-md-6">
