@@ -15,6 +15,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const pwsOwnSourceExplanation = form.querySelector('[name="pws_own_source_explanation"]');
     const pwsOwnSourceExplanationRow = document.getElementById('pws-own-source-explanation-row');
     
+    const pwsOperateSource = form.querySelector('[name="pws_operate_source"]');
+    const pwsOperateSourceExplanation = form.querySelector('[name="pws_operate_source_explanation"]');
+    const pwsOperateSourceExplanationRow = document.getElementById('pws-operate-source-explanation-row');
+    
     const coOwners = form.querySelector('[name="co_owners"]');
     const coOwnersExplanation = form.querySelector('[name="co_owners_explanation"]');
     const coOwnersExplanationRow = document.getElementById('co-owners-explanation-row');
@@ -71,6 +75,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Validate PWS Own Source Explanation
         if (pwsOwnSource.value === 'No' && !pwsOwnSourceExplanation.value.trim()) {
             showError(pwsOwnSourceExplanation, 'Please provide explanation for not owning the source.');
+            isValid = false;
+        }
+
+        // Validate PWS Operate Source Explanation
+        if (pwsOperateSource.value === 'No' && !pwsOperateSourceExplanation.value.trim()) {
+            showError(pwsOperateSourceExplanation, 'Who operates this source? (PWSID and PWS Name)');
             isValid = false;
         }
 
@@ -184,6 +194,26 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         togglePwsOwnSourceExplanation(pwsOwnSource.value);
+    }
+
+    if (pwsOperateSource && pwsOperateSourceExplanationRow) {
+        const togglePwsOperateSourceExplanation = (value) => {
+            if (value === 'No') {
+                pwsOperateSourceExplanationRow.style.display = 'flex';
+            } else {
+                pwsOperateSourceExplanationRow.style.display = 'none';
+                if (pwsOperateSourceExplanation) {
+                    pwsOperateSourceExplanation.value = '';
+                    clearError(pwsOperateSourceExplanation);
+                }
+            }
+        };
+
+        pwsOperateSource.addEventListener('change', function() {
+            togglePwsOperateSourceExplanation(this.value);
+        });
+
+        togglePwsOperateSourceExplanation(pwsOperateSource.value);
     }
 
     if (coOwners && coOwnersExplanationRow) {
