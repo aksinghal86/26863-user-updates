@@ -432,7 +432,16 @@ def get_dashboard_data(pwsid):
         pfos = pfas.get("max_pfos") if pfas.get("max_pfos") is not None else 0
         other_pfas = pfas.get("max_other_pfas") if pfas.get("max_other_pfas") is not None else 0
 
-        pfas_score, _ = calc_pfas_score_and_method(pfoa, pfos, other_pfas)
+        pfas_score, pfas_score_method = calc_pfas_score_and_method(pfoa, pfos, other_pfas)
+
+        # If the PFAS score method is not max_pfoa_pfos,
+        # then the other PFAS results should be hidden.
+        if pfas_score_method == "max_pfoa_pfos":
+            other_pfas = None
+            max_other_pfas_analyte = None
+        else:
+            other_pfas = pfas.get("max_other_pfas")
+            max_other_pfas_analyte = pfas.get("max_other_pfas_analyte")
 
         # Get Base Score
         base_score = 0 if pfas.get("all_nds") else calc_base_score(pfas_score, afr)
@@ -445,7 +454,7 @@ def get_dashboard_data(pwsid):
         adj_base_score = calc_adj_base_score(base_score=base_score, reg_bump=reg_bump, lit_bump=0, bell_bump=0, idws=1)
 
         # Determine Estimated Allocation
-        carrier4_est = adj_base_score * 0.0047 * 0.75
+        carrier4_est = adj_base_score * 0.0047 * 0.48
 
         # Determine if future annual production data is needed
         future_data_provided = annual.get("has_three_years_non_zero", False)
@@ -479,12 +488,10 @@ def get_dashboard_data(pwsid):
             "max_pfoa": pfas.get("max_pfoa"),
             "max_pfos": pfas.get("max_pfos"),
             "max_hazard_index": pfas.get("max_hazard_index"),
-            "max_other_pfas": pfas.get("max_other_pfas"),
+            "max_other_pfas": other_pfas,
             # Include the analyte associated
             # with the maximum Other PFAS result.
-            "max_other_pfas_analyte": pfas.get(
-                "max_other_pfas_analyte"
-            ),
+            "max_other_pfas_analyte": max_other_pfas_analyte,
             "all_nds": pfas.get("all_nds"),
         })
         # test
