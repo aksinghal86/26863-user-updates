@@ -1,5 +1,5 @@
 {% extends 'base_templ_no_info_bar.html' %}
-{% load static %}
+{% load static humanize %}
 
 {% block extra_head %}
     <link rel="stylesheet" href="{% static 'comb_data_3mdtb/css/styles.css' %}">
@@ -72,7 +72,7 @@
                                value="{{ form.flow_rate.value|default:'' }}"
                                required>
                         {% if existing_max_flow_gpm %}
-                            <small class="form-text text-muted">New value must be greater than {{ existing_max_flow_gpm|floatformat:1 }} GPM.</small>
+                            <small class="form-text text-muted">New value must be greater than {{ existing_max_flow_gpm|floatformat:1|intcomma }} GPM.</small>
                         {% endif %}
                         <div class="field-error" style="color: red; display: none;"></div>
                         {% if form.flow_rate.errors %}

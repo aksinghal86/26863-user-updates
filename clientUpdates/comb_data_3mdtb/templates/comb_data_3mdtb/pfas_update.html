@@ -1,5 +1,5 @@
 {% extends 'base_templ_no_info_bar.html' %}
-{% load static %}
+{% load static humanize %}
 
 {% block extra_head %}
     <link rel="stylesheet" href="{% static 'comb_data_3mdtb/css/styles.css' %}">
@@ -130,7 +130,7 @@
                                value="{{ form.result_ppt.value|default:'' }}"
                                required>
                         {% if min_value %}
-                            <small class="form-text text-muted">Current maximum: {{ min_value }} ng/L. New value must be > {{ min_value }} ng/L.</small>
+                            <small class="form-text text-muted">Current maximum: {{ min_value|floatformat:1|intcomma }} ng/L. New value must be > {{ min_value|floatformat:1|intcomma }} ng/L.</small>
                         {% endif %}
 
                         {% if form.result_ppt.errors %}

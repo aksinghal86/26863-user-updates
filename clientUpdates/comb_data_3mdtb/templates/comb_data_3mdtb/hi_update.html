@@ -1,5 +1,5 @@
 {% extends 'base_templ_no_info_bar.html' %}
-{% load static %}
+{% load static humanize %}
 
 {% block extra_head %}
     <link rel="stylesheet" href="{% static 'comb_data_3mdtb/css/styles.css' %}">
@@ -109,7 +109,7 @@
 
                 {% if min_hi %}
                     <div style="margin-bottom: 20px; font-size: 0.9rem; color: #64748b;">
-                        Current maximum Hazard Index: <strong>{{ min_hi }}</strong>. New calculation must be > {{ min_hi }}.
+                        Current maximum Hazard Index: <strong>{{ min_hi|floatformat:1|intcomma }}</strong>. New calculation must be > {{ min_hi|floatformat:1|intcomma }}.
                     </div>
                 {% endif %}
 
