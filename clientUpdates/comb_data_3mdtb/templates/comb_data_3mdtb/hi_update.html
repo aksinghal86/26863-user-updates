@@ -150,15 +150,7 @@
                 </div>
 
                 <div class="pfas-form-row">
-                    <div class="pfas-form-group col-md-6">
-                        <label for="sample_collected_by">Sample Collected By</label>
-                        <input type="text" id="sample_collected_by" name="sample_collected_by" class="pfas-form-control" placeholder="Enter company or entity name" value="{{ form.sample_collected_by.value|default:'' }}" required>
-                        {% if form.sample_collected_by.errors %}
-                            <div class="pfas-error-message field-error" style="color: red;">{{ form.sample_collected_by.errors.0 }}</div>
-                        {% endif %}
-                    </div>
-
-                    <div class="pfas-form-group col-md-6">
+                    <div class="pfas-form-group col-md-12">
                         <label for="analysis_method">Analysis Method</label>
                         <select id="analysis_method" name="analysis_method" class="pfas-form-control" required>
                             <option value="">Select analysis method</option>

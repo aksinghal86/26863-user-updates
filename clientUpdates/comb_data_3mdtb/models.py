@@ -14,7 +14,6 @@ class UpdatePfasResult(models.Model):
     analysis_date = models.DateField(blank=True, null=True)
     analyte = models.TextField(blank=True, null=True)
     result_ppt = models.FloatField(blank=True, null=True)
-    sample_collected_by = models.TextField(blank=True, null=True)
     unit = models.TextField(blank=True, null=True)
     filename = models.TextField(blank=True, null=True)
     data_origin = models.TextField(default="EHE Portal")

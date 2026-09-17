@@ -136,7 +136,6 @@ class PFASUpdateForm(forms.ModelForm):
             "result_ppt",
             "lab",
             "lab_sample_id",
-            "sample_collected_by",
             "analysis_method",
             "sampling_date",
             "analysis_date"
@@ -217,7 +216,6 @@ class HazardIndexUpdateForm(forms.Form):
         required=True
     )
     lab_sample_id = forms.CharField(required=True, label="Lab Sample ID")
-    sample_collected_by = forms.CharField(required=True, label="Sample Collected By")
     analysis_method = forms.ChoiceField(
         choices=[
             ('', 'Select analysis method'),
