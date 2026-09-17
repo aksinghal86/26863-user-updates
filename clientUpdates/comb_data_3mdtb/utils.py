@@ -456,9 +456,6 @@ def get_dashboard_data(pwsid):
         # Determine Estimated Allocation
         carrier4_est = adj_base_score * 0.0047 * 0.48
 
-        # Determine if future annual production data is needed
-        future_data_provided = annual.get("has_three_years_non_zero", False)
-
         # Combine the annual flow, max flow, and PFAS data
         # into one result for this source.
         results.append({
@@ -467,9 +464,6 @@ def get_dashboard_data(pwsid):
 
             # carrier4_est
             "carrier4_est": carrier4_est,
-
-            # Status flag
-            "future_data_provided": future_data_provided,
 
             # Annual flow information.
             "highest_three_years": annual.get("highest_three_years"),
@@ -484,6 +478,8 @@ def get_dashboard_data(pwsid):
 
             # Maximum flow information.
             "max_flow_gpm": maximum.get("max_flow_gpm"),
+
+            "max_flow_zero": maximum.get("max_flow_gpm") == 0,
 
             # PFAS information.
             "max_pfoa": pfas.get("max_pfoa"),

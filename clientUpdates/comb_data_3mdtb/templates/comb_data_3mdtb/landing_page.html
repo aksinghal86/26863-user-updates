@@ -213,7 +213,7 @@
 
                             <span class="editable-value">
 
-                                {% if not row.future_data_provided and not row.all_nds %}
+                                {% if not row.has_three_years_non_zero and not row.all_nds %}
 
                                     <span class="value-display">
                                         <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}"
@@ -247,7 +247,7 @@
 
                             <span class="editable-value">
 
-                                {% if not row.future_data_provided and not row.all_nds %}
+                                {% if row.max_flow_zero and not row.all_nds %}
 
                                     <span class="value-display">
                                         <a href="{% url 'comb_data_3mdtb:mf_update' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}"
