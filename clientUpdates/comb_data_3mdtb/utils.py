@@ -98,35 +98,35 @@ def process_pfas(pwsid):
                 "max_hazard_index": None
             }
 
+        # Get the PFAS result
+        result = record["result_ppt"]
+
+        # Get analyte
+        analyte = record["analyte"]
+
+        # Ignore missing or zero results or null analyte
+        if result is None or result == 0 or analyte is None:
+            continue
+
         # Track results by sampling date for Hazard Index
         if record["sampling_date"]:
             sample_key = (record["pwsid"], record["source_name"], record["sampling_date"])
             if sample_key not in samples:
                 samples[sample_key] = {}
 
-            analyte = record["analyte"]
-            new_val = record["result_ppt"]
-
             if analyte not in samples[sample_key]:
                 # First result for this analyte, even if None
-                samples[sample_key][analyte] = new_val
+                samples[sample_key][analyte] = result
 
-            elif new_val is not None:
+            else:
                 current_val = samples[sample_key][analyte]
 
                 # Replace None with a numeric result, or keep the higher result
-                if current_val is None or new_val > current_val:
-                    samples[sample_key][analyte] = new_val
-
-        # Get the PFAS result
-        result = record["result_ppt"]
-
-        # Ignore missing or zero results
-        if result is None or result == 0:
-            continue
+                if result > current_val:
+                    samples[sample_key][analyte] = result
 
         # If PFOA, keep the highest PFOA result for this source
-        if record["analyte"] == "PFOA":
+        if analyte == "PFOA":
 
             sources[key]["max_pfoa"] = max(
                 sources[key]["max_pfoa"] or result,
@@ -134,7 +134,7 @@ def process_pfas(pwsid):
             )
 
         # If PFOS, keep the highest PFOS result for this source
-        elif record["analyte"] == "PFOS":
+        elif analyte == "PFOS":
 
             sources[key]["max_pfos"] = max(
                 sources[key]["max_pfos"] or result,
