@@ -246,7 +246,6 @@
                             <span class="editable-value">
 
                                 {% if not row.has_three_years_non_zero and not row.all_nds %}
-
                                     <span class="value-display">
                                         <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}"
                                            class="needs-info-button"
@@ -254,7 +253,11 @@
                                             <i class="bi bi-exclamation-triangle" style="size:1.2rem"></i>
                                         </a>
                                     </span>
-
+                                    <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}"
+                                       class="edit-button-hover"
+                                       title="Edit annual production">
+                                        Update
+                                    </a>
                                 {% else %}
 
                                     <span class="value-display">
@@ -280,7 +283,6 @@
                             <span class="editable-value">
 
                                 {% if row.max_flow_zero and not row.all_nds %}
-
                                     <span class="value-display">
                                         <a href="{% url 'comb_data_3mdtb:mf_update' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}"
                                            class="needs-info-button"
@@ -288,7 +290,11 @@
                                             <i class="bi bi-exclamation-triangle" style="size:1.2rem"></i>
                                         </a>
                                     </span>
-
+                                    <a href="{% url 'comb_data_3mdtb:mf_update' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}"
+                                       class="edit-button-hover"
+                                       title="Edit maximum flow rate">
+                                        Update
+                                    </a>
                                 {% else %}
 
                                     <span class="value-display">

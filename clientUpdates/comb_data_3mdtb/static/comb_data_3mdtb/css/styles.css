@@ -229,7 +229,8 @@ body {
     display: none;
 }
 
-.editable-value:hover .edit-button-hover {
+.editable-value:hover .edit-button-hover,
+.editable-value:hover .needs-info-button + .edit-button-hover {
     display: inline-flex;
 }
 
