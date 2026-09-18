@@ -225,7 +225,7 @@
                         <td class="result-value">
                             <span class="editable-value">
                                 <span class="value-display">
-                                    {% if row.reg_bump == 4 %}
+                                    {% if row.max_pfoa >= 4 or row.max_pfos >= 4 %}
                                         --
                                     {% else %}
                                         {{ row.max_hazard_index | floatformat:2 | default:"--" }}
