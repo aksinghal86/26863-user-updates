@@ -169,11 +169,15 @@ class PFASUpdateForm(forms.ModelForm):
                 "Result cannot be negative."
             )
 
-        if result_ppt is not None and self.min_result is not None:
-            if result_ppt <= float(self.min_result):
-                raise forms.ValidationError(
-                    f"New result must be greater than the current value of {self.min_result} ng/L."
-                )
+        if result_ppt is not None and self.min_result:
+            try:
+                min_result_val = float(self.min_result)
+                if result_ppt <= min_result_val:
+                    raise forms.ValidationError(
+                        f"New result must be greater than the current value of {self.min_result} ng/L."
+                    )
+            except (ValueError, TypeError):
+                pass
 
         return result_ppt
 
@@ -298,12 +302,15 @@ class HazardIndexUpdateForm(forms.Form):
 
         if all(x is not None for x in [pfhxs, hfpo_da, pfna, pfbs]):
             hi = round((pfhxs / 9.0) + (hfpo_da / 10.0) + (pfna / 10.0) + (pfbs / 2000.0), 2)
-            if self.min_hi is not None:
-                min_hi_val = round(float(self.min_hi), 2)
-                if hi <= min_hi_val:
-                    raise forms.ValidationError(
-                        f"New Hazard Index ({hi:.2f}) must be greater than the current maximum value of {min_hi_val:.2f}."
-                    )
+            if self.min_hi:
+                try:
+                    min_hi_val = round(float(self.min_hi), 2)
+                    if hi <= min_hi_val:
+                        raise forms.ValidationError(
+                            f"New Hazard Index ({hi:.2f}) must be greater than the current maximum value of {min_hi_val:.2f}."
+                        )
+                except (ValueError, TypeError):
+                    pass
 
         return cleaned_data
 
@@ -347,14 +354,18 @@ class AFUpdateForm(forms.ModelForm):
         if flow_rate is not None and flow_rate < 0:
             raise forms.ValidationError("Flow rate cannot be negative.")
         
-        if flow_rate is not None and unit and self.existing_flow_gpm is not None:
-            from clientUpdates.utils.calculations import calc_gpm_flow_rate
-            new_flow_gpm = calc_gpm_flow_rate(flow_rate, unit.lower())
-            
-            if new_flow_gpm <= float(self.existing_flow_gpm):
-                raise forms.ValidationError(
-                    f"New flow rate must be greater than the current value of {self.existing_flow_gpm:.1f} GPM."
-                )
+        if flow_rate is not None and unit and self.existing_flow_gpm:
+            try:
+                existing_flow_gpm_val = float(self.existing_flow_gpm)
+                from clientUpdates.utils.calculations import calc_gpm_flow_rate
+                new_flow_gpm = calc_gpm_flow_rate(flow_rate, unit.lower())
+                
+                if new_flow_gpm <= existing_flow_gpm_val:
+                    raise forms.ValidationError(
+                        f"New flow rate must be greater than the current value of {existing_flow_gpm_val:.1f} GPM."
+                    )
+            except (ValueError, TypeError):
+                pass
                 
         return flow_rate
 
@@ -387,14 +398,18 @@ class MFUpdateForm(forms.ModelForm):
         if flow_rate is not None and flow_rate < 0:
             raise forms.ValidationError("Flow rate cannot be negative.")
 
-        if flow_rate is not None and unit and self.existing_max_flow_gpm is not None:
-            from clientUpdates.utils.calculations import calc_gpm_flow_rate
-            new_flow_gpm = calc_gpm_flow_rate(flow_rate, unit.lower())
-            
-            if new_flow_gpm <= float(self.existing_max_flow_gpm):
-                raise forms.ValidationError(
-                    f"New flow rate must be greater than the current value of {self.existing_max_flow_gpm:.1f} GPM."
-                )
+        if flow_rate is not None and unit and self.existing_max_flow_gpm:
+            try:
+                existing_max_flow_gpm_val = float(self.existing_max_flow_gpm)
+                from clientUpdates.utils.calculations import calc_gpm_flow_rate
+                new_flow_gpm = calc_gpm_flow_rate(flow_rate, unit.lower())
+                
+                if new_flow_gpm <= existing_max_flow_gpm_val:
+                    raise forms.ValidationError(
+                        f"New flow rate must be greater than the current value of {existing_max_flow_gpm_val:.1f} GPM."
+                    )
+            except (ValueError, TypeError):
+                pass
                 
         return flow_rate
 
