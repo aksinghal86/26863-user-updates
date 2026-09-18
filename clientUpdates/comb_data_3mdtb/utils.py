@@ -103,11 +103,20 @@ def process_pfas(pwsid):
             sample_key = (record["pwsid"], record["source_name"], record["sampling_date"])
             if sample_key not in samples:
                 samples[sample_key] = {}
-            
-            # If multiple results for same analyte on same date, take max
-            current_val = samples[sample_key].get(record["analyte"])
-            if current_val is None or record["result_ppt"] > current_val:
-                samples[sample_key][record["analyte"]] = record["result_ppt"]
+
+            analyte = record["analyte"]
+            new_val = record["result_ppt"]
+
+            if analyte not in samples[sample_key]:
+                # First result for this analyte, even if None
+                samples[sample_key][analyte] = new_val
+
+            elif new_val is not None:
+                current_val = samples[sample_key][analyte]
+
+                # Replace None with a numeric result, or keep the higher result
+                if current_val is None or new_val > current_val:
+                    samples[sample_key][analyte] = new_val
 
         # Get the PFAS result
         result = record["result_ppt"]
