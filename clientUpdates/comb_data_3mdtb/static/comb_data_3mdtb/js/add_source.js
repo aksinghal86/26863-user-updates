@@ -27,6 +27,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const purchasedWaterExplanation = form.querySelector('[name="purchased_water_explanation"]');
     const purchasedWaterExplanationRow = document.getElementById('purchased-water-explanation-row');
     
+    const pfasWarningBlurb = document.getElementById('pfas-warning-blurb');
+    
     // Add validation error display function
     const showError = (input, message) => {
         const group = input.closest('.pfas-form-group');
@@ -173,8 +175,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const togglePfasFiles = (value) => {
             if (value === 'Yes') {
                 if (pfasFileUploadRow) pfasFileUploadRow.style.display = 'block';
+                if (pfasWarningBlurb) pfasWarningBlurb.style.display = 'block';
             } else {
                 if (pfasFileUploadRow) pfasFileUploadRow.style.display = 'none';
+                if (pfasWarningBlurb) pfasWarningBlurb.style.display = 'none';
                 pfasFile1.value = '';
                 pfasFile2.value = '';
                 clearError(pfasFile1);
