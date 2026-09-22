@@ -564,8 +564,11 @@ def get_all_yearly_flows(pwsid, source_name):
     # Combine records from all three models.
     data = data1 + data2 + data3 + af_updates
 
-    # Dictionary to store the maximum flow for each year.
-    yearly_flows = {}
+    # Initialize every year from 2013 through 2025 to None.
+    yearly_flows = {
+        year: None
+        for year in range(2013, 2026)
+    }
 
     # Process each flow record.
     for record in data:
@@ -573,9 +576,13 @@ def get_all_yearly_flows(pwsid, source_name):
         year = record["year"]
         flow = record["flow_rate_gpm"]
 
-        # If this is the first value for the year,
-        # store it as the maximum.
-        if year not in yearly_flows:
+        # Ignore None flow values.
+        if flow is None:
+            continue
+
+        # If there is currently no flow value for the year,
+        # store this value.
+        if yearly_flows[year] is None:
             yearly_flows[year] = flow
 
         # Otherwise, keep whichever flow value is higher.
@@ -584,11 +591,6 @@ def get_all_yearly_flows(pwsid, source_name):
                 yearly_flows[year],
                 flow
             )
-
-    # Add 2024 and 2025 if they are not already present.
-    yearly_flows.setdefault(2024, None)
-    yearly_flows.setdefault(2025, None)
-
     # Return the results sorted by year.
     return [
         {
