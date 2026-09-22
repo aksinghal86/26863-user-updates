@@ -18,7 +18,7 @@ def get_eligible_sources(pwsid):
     return phase1_source_names, tb_source_names, phase2_source_names
 
 
-def process_pfas(pwsid):
+def process_pfas(pwsid, source_name=None):
 
     # Fields we want from each PFAS model
     fields = [
@@ -67,6 +67,13 @@ def process_pfas(pwsid):
 
     # Combine records from all models
     data = list(data1) + list(data2) + list(data3) + data4
+
+    # If a source name was provided, filter to a specific source
+    if source_name is not None:
+        data = [
+            record for record in data
+            if record["source_name"] == source_name
+        ]
 
     # Dictionary to store the results for each water source
     sources = {}

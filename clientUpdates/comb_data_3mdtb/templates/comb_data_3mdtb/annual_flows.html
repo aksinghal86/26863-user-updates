@@ -25,7 +25,14 @@
             <h4 style="margin: 0; color: #164e63; font-size: 1.1rem; font-weight: 600;">Important Information</h4>
             <p style="margin: 5px 0 0; color: #243447; font-size: 0.95rem;">
                 For the "CAAN" settlements, Public Water System's are required to provide the three highest years of
-                annual production from 2013 - 2025 <b>for all sources with PFAS detections</b>.
+                annual production from 2013 - 2025 <b>for all sources with PFAS detections</b>. Notably, the CAAN settlements
+                include two additional years (2024 and 2025) beyond what was required in the previous settlements associated
+                with 3M, DuPont, Tyco, and BASF.
+                <br>
+                <br>
+                {{ source_pfas_data.source_name }} is {% if source_pfas_data.all_nds %} not impacted by PFAS and therefore
+                providing annual production data is not necessary at this time. {% else %} impacted by PFAS and therefore
+                the three highest years of annual production from 2013 - 2025 should be provided.{% endif %}
             </p>
         </div>
     </div>

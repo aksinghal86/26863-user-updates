@@ -193,8 +193,8 @@ def annual_flows(request):
     pwsid = request.user.username
     source_name = request.GET.get('source_name')
 
-    if not pwsid:
-        pwsid = request.user.username
+    # get the pfas data by source
+    source_pfas_data = process_pfas(pwsid, source_name=source_name)[0]
 
     yearly_flows = get_all_yearly_flows(pwsid, source_name)
 
@@ -205,6 +205,7 @@ def annual_flows(request):
             "pwsid": pwsid,
             "source_name": source_name,
             "source_data": yearly_flows,
+            "source_pfas_data": source_pfas_data,
         }
     )
 
