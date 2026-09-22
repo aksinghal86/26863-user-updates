@@ -24,7 +24,6 @@ class AddNewSourceForm(forms.ModelForm):
             "co_owners_explanation",
             "pws_operate_source_explanation",
             "drinking_water",
-            "idws",
             "purchased_water",
             "purchased_water_explanation",
             "comments",
@@ -68,11 +67,6 @@ class AddNewSourceForm(forms.ModelForm):
                 ("", ""),
                 ("Yes", "Yes"),
                 ("No", "No"),
-            ]),
-            "idws": forms.Select(attrs={"class": "pfas-form-control"}, choices=[
-                ("", ""),
-                ("No", "No"),
-                ("Yes", "Yes"),
             ]),
             "purchased_water": forms.Select(attrs={"class": "pfas-form-control"}, choices=[
                 ("", ""),

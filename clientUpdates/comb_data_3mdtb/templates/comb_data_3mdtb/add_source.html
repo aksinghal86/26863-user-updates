@@ -161,14 +161,7 @@
 
                 <!-- IDWS -->
                 <div class="pfas-form-row">
-                    <div class="pfas-form-group col-md-6">
-                        <label for="{{ form.idws.id_for_label }}">Is this Source part of an IDWS?</label>
-                        {{ form.idws }}
-                        {% if form.idws.errors %}
-                            <div class="text-danger small">{{ form.idws.errors }}</div>
-                        {% endif %}
-                    </div>
-                    <div class="pfas-form-group col-md-6">
+                    <div class="pfas-form-group col-md-12">
                         <label for="{{ form.purchased_water.id_for_label }}">Purchased Water?</label>
                         {{ form.purchased_water }}
                         {% if form.purchased_water.errors %}

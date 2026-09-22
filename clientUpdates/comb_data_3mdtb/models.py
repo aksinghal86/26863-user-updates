@@ -74,7 +74,6 @@ class AddNewSource(models.Model):
     pws_operate_source = models.TextField(blank=True, null=True)
     co_owners = models.TextField(blank=True, null=True)
     drinking_water = models.TextField(blank=True, null=True)
-    idws = models.TextField(blank=True, null=True)
     purchased_water = models.TextField(blank=True, null=True)
     purchased_water_explanation = models.TextField(blank=True, null=True)
     pws_own_source_explanation = models.TextField(blank=True, null=True)
