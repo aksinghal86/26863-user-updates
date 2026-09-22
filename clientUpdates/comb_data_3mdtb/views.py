@@ -122,16 +122,24 @@ def pfas_update(request):
 @never_cache
 def hi_update(request):
     pwsid = request.user.username
-    if request.method == "POST":
-        min_hi = request.POST.get('min_hi')
-        
-        # Round min_hi to two decimal places if it exists
-        if min_hi:
+
+    # Common logic to get min_hi from process_pfas
+    source_name = request.POST.get('source_name') or request.GET.get('source_name')
+
+    min_hi = 0
+    if source_name:
+        pfas_data = process_pfas(pwsid, source_name=source_name)
+        if pfas_data:
+            source_data = pfas_data[0]
+            min_hi = source_data.get("max_hazard_index") or 0
+
+            # Round min_hi to two decimal places
             try:
                 min_hi = f"{float(min_hi):.2f}"
             except (ValueError, TypeError):
-                pass
-        
+                min_hi = "0.00"
+
+    if request.method == "POST":
         form = HazardIndexUpdateForm(request.POST, request.FILES, min_hi=min_hi)
         if form.is_valid():
             source_name = request.POST.get('source_name')
@@ -167,7 +175,6 @@ def hi_update(request):
             messages.success(request, "Hazard Index Updated Successfully!")
             return redirect("comb_data_3mdtb:landing_page")
         else:
-            source_name = request.POST.get('source_name')
             return render(
                 request,
                 "comb_data_3mdtb/hi_update.html",
@@ -180,16 +187,6 @@ def hi_update(request):
             )
 
     # GET request
-    source_name = request.GET.get('source_name')
-    min_hi = request.GET.get('min_hi')
-    
-    # Round min_hi to two decimal places if it exists
-    if min_hi:
-        try:
-            min_hi = f"{float(min_hi):.2f}"
-        except (ValueError, TypeError):
-            pass
-
     form = HazardIndexUpdateForm()
     return render(
         request,

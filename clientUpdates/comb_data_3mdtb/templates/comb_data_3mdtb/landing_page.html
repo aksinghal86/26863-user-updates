@@ -232,7 +232,7 @@
                                         {{ row.max_hazard_index | floatformat:2 | default:"--" }}
                                     {% endif %}
                                 </span>
-                                <a href="{% url 'comb_data_3mdtb:hi_update' %}?source_name={{ row.source_name | urlencode }}&min_hi={{ row.max_hazard_index|floatformat:2 }}"
+                                <a href="{% url 'comb_data_3mdtb:hi_update' %}?source_name={{ row.source_name|urlencode }}"
                                    class="edit-button-hover"
                                    title="Edit Hazard Index">
                                     Update

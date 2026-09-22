@@ -573,10 +573,6 @@ def get_all_yearly_flows(pwsid, source_name):
         year = record["year"]
         flow = record["flow_rate_gpm"]
 
-        # Ignore missing flow values.
-        if flow is None:
-            continue
-
         # If this is the first value for the year,
         # store it as the maximum.
         if year not in yearly_flows:
