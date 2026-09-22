@@ -159,7 +159,7 @@
                                     {{ row.max_pfoa | floatformat:1 | default:"--" }}
                                 </span>
 
-                                <a href="{% url 'comb_data_3mdtb:pfas_update' %}?analyte=PFOA&pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&min_value={{ row.max_pfoa | default:0 }}"
+                                <a href="{% url 'comb_data_3mdtb:pfas_update' %}?analyte=PFOA&source_name={{ row.source_name | urlencode }}&min_value={{ row.max_pfoa | default:0 }}"
                                    class="edit-button-hover"
                                    title="Edit PFOA">
 
@@ -181,7 +181,7 @@
                                     {{ row.max_pfos | floatformat:1 | default:"--" }}
                                 </span>
 
-                                <a href="{% url 'comb_data_3mdtb:pfas_update' %}?analyte=PFOS&pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&min_value={{ row.max_pfos | default:0 }}"
+                                <a href="{% url 'comb_data_3mdtb:pfas_update' %}?analyte=PFOS&source_name={{ row.source_name | urlencode }}&min_value={{ row.max_pfos | default:0 }}"
                                    class="edit-button-hover"
                                    title="Edit PFOS">
 
@@ -203,7 +203,7 @@
                                     {{ row.max_other_pfas | floatformat:1 | default:"--" }}
                                 </span>
 
-                                <a href="{% url 'comb_data_3mdtb:pfas_update' %}?analyte=Other PFAS&pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&min_value={{ row.max_other_pfas | default:0 }}&selected_analyte={{ row.max_other_pfas_analyte | urlencode }}"
+                                <a href="{% url 'comb_data_3mdtb:pfas_update' %}?analyte=Other PFAS&source_name={{ row.source_name | urlencode }}&min_value={{ row.max_other_pfas | default:0 }}&selected_analyte={{ row.max_other_pfas_analyte | urlencode }}"
                                    class="edit-button-hover"
                                    title="Edit Other PFAS">
 
@@ -232,7 +232,7 @@
                                         {{ row.max_hazard_index | floatformat:2 | default:"--" }}
                                     {% endif %}
                                 </span>
-                                <a href="{% url 'comb_data_3mdtb:hi_update' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}&min_hi={{ row.max_hazard_index|floatformat:2 }}"
+                                <a href="{% url 'comb_data_3mdtb:hi_update' %}?source_name={{ row.source_name | urlencode }}&min_hi={{ row.max_hazard_index|floatformat:2 }}"
                                    class="edit-button-hover"
                                    title="Edit Hazard Index">
                                     Update
@@ -248,13 +248,13 @@
 
                                 {% if not row.has_three_years_non_zero and not row.all_nds %}
                                     <span class="value-display">
-                                        <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}"
+                                        <a href="{% url 'comb_data_3mdtb:annual_flows' %}?source_name={{ row.source_name | urlencode }}"
                                            class="needs-info-button"
                                            title="More Info Needed">
                                             <i class="bi bi-exclamation-triangle" style="size:1.2rem"></i>
                                         </a>
                                     </span>
-                                    <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}"
+                                    <a href="{% url 'comb_data_3mdtb:annual_flows' %}?source_name={{ row.source_name | urlencode }}"
                                        class="edit-button-hover"
                                        title="Edit annual production">
                                         Update
@@ -265,7 +265,7 @@
                                         {{ row.average_annual_production_mgy | floatformat:2 | intcomma | default:"--" }}
                                     </span>
 
-                                    <a href="{% url 'comb_data_3mdtb:annual_flows' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}"
+                                    <a href="{% url 'comb_data_3mdtb:annual_flows' %}?source_name={{ row.source_name | urlencode }}"
                                        class="edit-button-hover"
                                        title="Edit annual production">
                                         Update
@@ -285,13 +285,13 @@
 
                                 {% if row.max_flow_zero and not row.all_nds %}
                                     <span class="value-display">
-                                        <a href="{% url 'comb_data_3mdtb:mf_update' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}"
+                                        <a href="{% url 'comb_data_3mdtb:mf_update' %}?source_name={{ row.source_name | urlencode }}"
                                            class="needs-info-button"
                                            title="More Info Needed">
                                             <i class="bi bi-exclamation-triangle" style="size:1.2rem"></i>
                                         </a>
                                     </span>
-                                    <a href="{% url 'comb_data_3mdtb:mf_update' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}"
+                                    <a href="{% url 'comb_data_3mdtb:mf_update' %}?source_name={{ row.source_name | urlencode }}"
                                        class="edit-button-hover"
                                        title="Edit maximum flow rate">
                                         Update
@@ -302,7 +302,7 @@
                                         {{ row.max_flow_gpm | floatformat:1 | intcomma | default:"--" }}
                                     </span>
 
-                                    <a href="{% url 'comb_data_3mdtb:mf_update' %}?pwsid={{ row.pwsid }}&source_name={{ row.source_name | urlencode }}"
+                                    <a href="{% url 'comb_data_3mdtb:mf_update' %}?source_name={{ row.source_name | urlencode }}"
                                        class="edit-button-hover"
                                        title="Edit maximum flow rate">
                                         Update

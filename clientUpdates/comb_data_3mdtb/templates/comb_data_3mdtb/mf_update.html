@@ -46,7 +46,6 @@
             {% csrf_token %}
             
             <!-- Hidden context fields -->
-            <input type="hidden" name="pwsid" value="{{ pwsid|default:'' }}">
             <input type="hidden" name="source_name" value="{{ source_name|default:'' }}">
             <input type="hidden" id="existing-max-flow-gpm" value="{{ existing_max_flow_gpm|default:'' }}">
 

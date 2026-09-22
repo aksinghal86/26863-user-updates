@@ -43,6 +43,7 @@ def landing_page(request):
 @login_required
 @never_cache
 def pfas_update(request):
+    pwsid = request.user.username
     if request.method == "POST":
         min_value = request.POST.get('min_value')
         form = PFASUpdateForm(request.POST, request.FILES, min_result=min_value)
@@ -51,7 +52,7 @@ def pfas_update(request):
             instance = form.save(commit=False)
 
             # Ensure pwsid and source_name are saved from the form (which are hidden)
-            instance.pwsid = request.POST.get('pwsid')
+            instance.pwsid = pwsid
             instance.source_name = request.POST.get('source_name')
             instance.unit = "ppt" # Standard unit for these updates
 
@@ -67,7 +68,6 @@ def pfas_update(request):
         else:
             # Re-render update page with form errors
             analyte = request.POST.get('analyte', 'PFOA')
-            pwsid = request.POST.get('pwsid')
             source_name = request.POST.get('source_name')
             return render(
                 request,
@@ -83,7 +83,6 @@ def pfas_update(request):
     
     # GET request
     analyte = request.GET.get('analyte', 'PFOA')
-    pwsid = request.GET.get('pwsid')
     source_name = request.GET.get('source_name')
     min_value = request.GET.get('min_value')
     selected_analyte = request.GET.get('selected_analyte')
@@ -106,6 +105,7 @@ def pfas_update(request):
 @login_required
 @never_cache
 def hi_update(request):
+    pwsid = request.user.username
     if request.method == "POST":
         min_hi = request.POST.get('min_hi')
         
@@ -118,7 +118,6 @@ def hi_update(request):
         
         form = HazardIndexUpdateForm(request.POST, request.FILES, min_hi=min_hi)
         if form.is_valid():
-            pwsid = request.POST.get('pwsid')
             source_name = request.POST.get('source_name')
 
             # Map values
@@ -152,7 +151,6 @@ def hi_update(request):
             messages.success(request, "Hazard Index Updated Successfully!")
             return redirect("comb_data_3mdtb:landing_page")
         else:
-            pwsid = request.POST.get('pwsid')
             source_name = request.POST.get('source_name')
             return render(
                 request,
@@ -166,7 +164,6 @@ def hi_update(request):
             )
 
     # GET request
-    pwsid = request.GET.get('pwsid')
     source_name = request.GET.get('source_name')
     min_hi = request.GET.get('min_hi')
     
@@ -193,7 +190,7 @@ def hi_update(request):
 @login_required
 @never_cache
 def annual_flows(request):
-    pwsid = request.GET.get('pwsid')
+    pwsid = request.user.username
     source_name = request.GET.get('source_name')
 
     if not pwsid:
@@ -215,8 +212,8 @@ def annual_flows(request):
 @login_required
 @never_cache
 def af_update(request):
+    pwsid = request.user.username
     if request.method == "POST":
-        pwsid = request.POST.get('pwsid')
         source_name = request.POST.get('source_name')
         year = request.POST.get('year')
 
@@ -249,7 +246,6 @@ def af_update(request):
             # Safely build the redirect URL with encoded parameters
             base_url = reverse("comb_data_3mdtb:annual_flows")
             query_string = urlencode({
-                "pwsid": pwsid,
                 "source_name": source_name,
             })
             return redirect(f"{base_url}?{query_string}")
@@ -267,7 +263,6 @@ def af_update(request):
             )
     
     # GET request
-    pwsid = request.GET.get('pwsid')
     source_name = request.GET.get('source_name')
     year = request.GET.get('year')
 
@@ -297,9 +292,8 @@ def af_update(request):
 @login_required
 @never_cache
 def mf_update(request):
+    pwsid = request.user.username
     if request.method == "POST":
-        form = MFUpdateForm(request.POST, request.FILES)
-        pwsid = request.POST.get('pwsid')
         source_name = request.POST.get('source_name')
 
         # Get existing max flow rate for validation in form
@@ -341,7 +335,6 @@ def mf_update(request):
             )
     
     # GET request
-    pwsid = request.GET.get('pwsid')
     source_name = request.GET.get('source_name')
     
     # Get existing max flow rate to prevent lower updates

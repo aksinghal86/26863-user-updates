@@ -48,7 +48,6 @@
             {% csrf_token %}
             
             <!-- Hidden context fields -->
-            <input type="hidden" name="pwsid" value="{{ pwsid|default:'' }}">
             <input type="hidden" name="source_name" value="{{ source_name|default:'' }}">
             <input type="hidden" name="min_value" value="{{ min_value|default:'' }}">
             
