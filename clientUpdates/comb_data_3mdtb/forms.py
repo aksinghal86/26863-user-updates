@@ -107,6 +107,10 @@ class AddNewSourceForm(forms.ModelForm):
         purchased_water = cleaned_data.get("purchased_water")
         purchased_water_explanation = cleaned_data.get("purchased_water_explanation")
 
+        for field in cleaned_data:
+            if cleaned_data[field] == '':
+                cleaned_data[field] = None
+
         if source_type == "Other" and not source_other:
             self.add_error("source_other", "Please provide explanation for Other source type.")
 
