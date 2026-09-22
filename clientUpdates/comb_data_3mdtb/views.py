@@ -394,6 +394,11 @@ def add_source(request):
             if pfas_file_2:
                 instance.filename_2 = pfas_file_2.name
                 upload_to_dropbox(file=pfas_file_2, filetype="New Claims/PFAS", pwsid=pwsid)
+                
+            pfas_file_3 = request.FILES.get('pfas_file_3')
+            if pfas_file_3:
+                instance.filename_3 = pfas_file_3.name
+                upload_to_dropbox(file=pfas_file_3, filetype="New Claims/PFAS", pwsid=pwsid)
 
             instance.save()
             messages.success(request, "Form Submitted Successfully!")

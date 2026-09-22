@@ -81,6 +81,7 @@ class AddNewSource(models.Model):
     pws_operate_source_explanation = models.TextField(blank=True, null=True)
     filename_1 = models.TextField(blank=True, null=True)
     filename_2 = models.TextField(blank=True, null=True)
+    filename_3 = models.TextField(blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
     submit_date = models.DateTimeField(auto_now_add=True)
 

@@ -193,28 +193,37 @@
                 <!-- PFAS Data File Uploads -->
                 <div class="pfas-form-row" style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
                     <div class="pfas-form-group col-md-12">
-                        <label>PFAS Lab Report Upload (Maximum 2 files)</label>
+                        <label>PFAS Lab Report Upload (Maximum 3 files)</label>
                         <div class="pfas-form-row" id="pfas-warning-blurb" style="display: none; margin-top: 20px; margin-bottom: 10px;">
                             <div class="pfas-form-group col-md-12">
                                 <div class="alert alert-warning" style="margin-bottom: 0;">
                                     <i class="bi bi-exclamation-triangle-fill" style="margin-right: 8px;"></i>
-                                    If the source has PFAS detections, please provide lab reports corresponding .
+                                    If the source has PFAS detections, please provide lab reports (with chain of custody)
+                                    corresponding to the highest PFOA, highest PFOS, and highest non-PFOA/PFOS results. If the source has not
+                                    exhibited any PFAS detections, please provide lab reports (with chain of custody) that can validate this.
                                 </div>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 {{ form.pfas_file_1 }}
                                 <small class="text-muted">File 1</small>
                                 {% if form.pfas_file_1.errors %}
                                     <div class="text-danger small">{{ form.pfas_file_1.errors }}</div>
                                 {% endif %}
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 {{ form.pfas_file_2 }}
                                 <small class="text-muted">File 2</small>
                                 {% if form.pfas_file_2.errors %}
                                     <div class="text-danger small">{{ form.pfas_file_2.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.pfas_file_3 }}
+                                <small class="text-muted">File 3</small>
+                                {% if form.pfas_file_3.errors %}
+                                    <div class="text-danger small">{{ form.pfas_file_3.errors }}</div>
                                 {% endif %}
                             </div>
                         </div>

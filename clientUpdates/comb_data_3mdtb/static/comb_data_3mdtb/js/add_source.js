@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const pfasDetected = form.querySelector('[name="pfas_detected"]');
     const pfasFile1 = form.querySelector('[name="pfas_file_1"]');
     const pfasFile2 = form.querySelector('[name="pfas_file_2"]');
+    const pfasFile3 = form.querySelector('[name="pfas_file_3"]');
     
     const pwsOwnSource = form.querySelector('[name="pws_own_source"]');
     const pwsOwnSourceExplanation = form.querySelector('[name="pws_own_source_explanation"]');
@@ -103,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Validate at least one file is uploaded if PFAS tested is Yes
-        if (pfasTested.value === 'Yes' && !pfasFile1.value && !pfasFile2.value) {
+        if (pfasTested.value === 'Yes' && !pfasFile1.value && !pfasFile2.value && !pfasFile3.value) {
             showError(pfasFile1, 'At least one PFAS data file must be uploaded.');
             isValid = false;
         }
@@ -170,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    if (pfasTested && pfasFile1 && pfasFile2) {
+    if (pfasTested && pfasFile1 && pfasFile2 && pfasFile3) {
         const pfasFileUploadRow = pfasFile1.closest('.pfas-form-row');
         const togglePfasFiles = (value) => {
             if (value === 'Yes') {
@@ -181,6 +182,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (pfasWarningBlurb) pfasWarningBlurb.style.display = 'none';
                 pfasFile1.value = '';
                 pfasFile2.value = '';
+                pfasFile3.value = '';
                 clearError(pfasFile1);
             }
         };

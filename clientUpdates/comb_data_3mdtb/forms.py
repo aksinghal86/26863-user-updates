@@ -8,6 +8,7 @@ from .models import UpdatePfasResult, UpdateAnnualFlowRate, UpdateMaxFlowRate, A
 class AddNewSourceForm(forms.ModelForm):
     pfas_file_1 = forms.FileField(required=False, widget=forms.FileInput(attrs={"class": "pfas-form-control", "style": "padding: 10px;"}))
     pfas_file_2 = forms.FileField(required=False, widget=forms.FileInput(attrs={"class": "pfas-form-control", "style": "padding: 10px;"}))
+    pfas_file_3 = forms.FileField(required=False, widget=forms.FileInput(attrs={"class": "pfas-form-control", "style": "padding: 10px;"}))
 
     class Meta:
         model = AddNewSource
@@ -83,7 +84,7 @@ class AddNewSourceForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
-            if field_name not in ["comments", "pfas_file_1", "pfas_file_2", "source_other", "pws_own_source_explanation", "co_owners_explanation", "pws_operate_source_explanation", "purchased_water", "purchased_water_explanation"]:
+            if field_name not in ["comments", "pfas_file_1", "pfas_file_2", "pfas_file_3", "source_other", "pws_own_source_explanation", "co_owners_explanation", "pws_operate_source_explanation", "purchased_water", "purchased_water_explanation"]:
                 field.required = True
             else:
                 field.required = False
@@ -96,6 +97,7 @@ class AddNewSourceForm(forms.ModelForm):
         pfas_detected = cleaned_data.get("pfas_detected")
         pfas_file_1 = cleaned_data.get("pfas_file_1")
         pfas_file_2 = cleaned_data.get("pfas_file_2")
+        pfas_file_3 = cleaned_data.get("pfas_file_3")
         pws_own_source = cleaned_data.get("pws_own_source")
         pws_own_source_explanation = cleaned_data.get("pws_own_source_explanation")
         pws_operate_source = cleaned_data.get("pws_operate_source")
