@@ -44,8 +44,29 @@ def landing_page(request):
 @never_cache
 def pfas_update(request):
     pwsid = request.user.username
+    
+    # Common logic to get min_value from process_pfas
+    analyte = request.POST.get('analyte') or request.GET.get('analyte', 'PFOA')
+    source_name = request.POST.get('source_name') or request.GET.get('source_name')
+    
+    min_value = 0
+    if source_name:
+        pfas_data = process_pfas(pwsid, source_name=source_name)
+        if pfas_data:
+            source_data = pfas_data[0]
+            if analyte == "PFOA":
+                min_value = source_data.get("max_pfoa") or 0
+            elif analyte == "PFOS":
+                min_value = source_data.get("max_pfos") or 0
+            else:
+                # For "Other PFAS" or specific other analytes
+                # If we are in the "Other PFAS" category from landing page, 
+                # we might need to be careful if multiple exist, but 
+                # landing page passes the specific max_other_pfas_analyte.
+                # Here we use max_other_pfas as the threshold for any 'Other' analyte update.
+                min_value = source_data.get("max_other_pfas") or 0
+
     if request.method == "POST":
-        min_value = request.POST.get('min_value')
         form = PFASUpdateForm(request.POST, request.FILES, min_result=min_value)
         if form.is_valid():
             # Save form instance without committing immediately
@@ -53,7 +74,7 @@ def pfas_update(request):
 
             # Ensure pwsid and source_name are saved from the form (which are hidden)
             instance.pwsid = pwsid
-            instance.source_name = request.POST.get('source_name')
+            instance.source_name = source_name
             instance.unit = "ppt" # Standard unit for these updates
 
             # Map the uploaded file name to the filename field in the model
@@ -67,8 +88,6 @@ def pfas_update(request):
             return redirect("comb_data_3mdtb:landing_page")
         else:
             # Re-render update page with form errors
-            analyte = request.POST.get('analyte', 'PFOA')
-            source_name = request.POST.get('source_name')
             return render(
                 request,
                 "comb_data_3mdtb/pfas_update.html",
@@ -82,9 +101,6 @@ def pfas_update(request):
             )
     
     # GET request
-    analyte = request.GET.get('analyte', 'PFOA')
-    source_name = request.GET.get('source_name')
-    min_value = request.GET.get('min_value')
     selected_analyte = request.GET.get('selected_analyte')
     
     form = PFASUpdateForm()
